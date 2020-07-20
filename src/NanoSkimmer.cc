@@ -79,7 +79,7 @@ void NanoSkimmer::EventLoop(const float &xSec){
 			producers[i]->Produce(cutflows);
 
 			//If for all channels one producer failes, reject event
-		for(CutFlow &cutflow: cutflows){
+			for(CutFlow &cutflow: cutflows){
 				if(!cutflow.passed) nFailed++;
 			}
 

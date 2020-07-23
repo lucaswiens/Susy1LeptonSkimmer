@@ -54,7 +54,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
 
 	// Possibly name difference for different years?
 	muonIdSFHist        = (TH2F*) muonIdSFFile->Get("MC_NUM_MediumID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
-	muonIsolationSFHist = (TH2F*) muonIsolationSFFile->Get("MediumISO_MediumID_pt_eta/pt_abseta_ratio");
+	muonIsolationSFHist = (TH2F*) muonIsolationSFFile->Get("LooseISO_MediumID_pt_eta/pt_abseta_ratio");
 	muonTriggerSFHist   = (TH2F*) muonTriggerSFFile->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
 	// SF Histogram seems to be empty, calculate it yourself

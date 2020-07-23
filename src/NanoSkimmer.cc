@@ -1,6 +1,6 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/NanoSkimmer.h>
 
-#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/MuonProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/LeptonProducer.h>
 //#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TestProducer.h>
 
 NanoSkimmer::NanoSkimmer(){}
@@ -36,7 +36,7 @@ void NanoSkimmer::ProgressBar(const int &progress){
 void NanoSkimmer::Configure(const float &xSec, const int &era, TTreeReader& reader){
 	producers = {
 		//std::shared_ptr<TestProducer>(new TestProducer(2017, 20., 2.4, reader)),
-		std::shared_ptr<MuonProducer>(new MuonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
+		std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
 	};
 }
 

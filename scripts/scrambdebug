@@ -1,0 +1,6 @@
+#!/bin/sh
+TMP=`pwd`
+echo $TMP
+cd $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/ && scram b clean
+cd $CMSSW_BASE/src && scram b -j 4 USER_CXXFLAGS="-g"
+cd $TMP

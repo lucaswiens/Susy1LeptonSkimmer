@@ -1,7 +1,7 @@
-#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/MuonProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/LeptonProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
-MuonProducer::MuonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader):
+LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader):
 	BaseProducer(&reader),
 	era(era),
 	ptCut(ptCut),
@@ -12,7 +12,7 @@ MuonProducer::MuonProducer(const int& era, const float& ptCut, const float& etaC
 	isoCut(etaCut)
 	{}
 
-void MuonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
+void LeptonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
 	//Set data bool
 	this->isData = isData;
 	this->isSyst = isSyst;
@@ -103,7 +103,7 @@ void MuonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
 	//tree->Branch("Lepton", &);
 }
 
-void MuonProducer::Produce(CutFlow& cutflow){
+void LeptonProducer::Produce(CutFlow& cutflow){
 	//Initialize all variables as -999
 	Pt = -999;
 	Eta = -999;
@@ -173,5 +173,5 @@ void MuonProducer::Produce(CutFlow& cutflow){
 	}
 }
 
-void MuonProducer::EndJob(TFile* file){
+void LeptonProducer::EndJob(TFile* file){
 }

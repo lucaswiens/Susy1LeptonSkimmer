@@ -1,9 +1,9 @@
-#ifndef MUONPRODUCER_H
-#define MUONPRODUCER_H
+#ifndef LEPTONPRODUCER_H
+#define LEPTONPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 
-class MuonProducer: public BaseProducer {
+class LeptonProducer: public BaseProducer {
 	private:
 		//Check if it is data or MC
 		bool isData;
@@ -42,7 +42,7 @@ class MuonProducer: public BaseProducer {
 		std::unique_ptr<TTreeReaderArray<int>> electronPdgId, electronCutBased, electronCharge;
 
 	public:
-		MuonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader);
+		LeptonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader);
 
 		void BeginJob(TTree* tree, bool& isData, const bool& isSyst=false);
 		void Produce(CutFlow& cutflow);

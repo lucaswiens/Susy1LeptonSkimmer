@@ -20,12 +20,12 @@ int main(int argc, char* argv[]){
 	//Extract informations of command line
 	std::string fileName = std::string(argv[1]);
 	bool isData = std::string(argv[2]) == "True" ? true : false;
-	std::vector<std::string> channels = SplitString(std::string(argv[3]), " ");
+	int era = std::stoi(std::string(argv[3]));
 	float xSec = std::stof(std::string(argv[4]));
 	std::string outName = std::string(argv[5]);
 
 	NanoSkimmer skimmer(fileName, isData);
-	skimmer.EventLoop(xSec);
+	skimmer.EventLoop(xSec, era);
 	skimmer.WriteOutput(outName);
 }
 

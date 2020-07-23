@@ -27,8 +27,8 @@ class TestProducer: public BaseProducer {
 	public:
 		TestProducer(const int& era, const float& ptCut, const float& etaCut, TTreeReader& reader);
 
-		void BeginJob(std::vector<TTree*>& trees, bool& isData, const bool& isSyst=false);
-		void Produce(std::vector<CutFlow>& cutflows);
+		void BeginJob(TTree* tree, bool& isData, const bool& isSyst=false);
+		void Produce(CutFlow cutflow);
 		void EndJob(TFile* file);
 };
 

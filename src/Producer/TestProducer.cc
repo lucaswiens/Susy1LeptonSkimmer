@@ -7,7 +7,7 @@ TestProducer::TestProducer(const int& era, const float& ptCut, const float& etaC
 	etaCut(etaCut)
 	{}
 
-void TestProducer::BeginJob(std::vector<TTree*>& trees, bool &isData, const bool& isSyst){
+void TestProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
 	//Set data bool
 	this->isData = isData;
 	this->isSyst = isSyst;
@@ -29,16 +29,14 @@ void TestProducer::BeginJob(std::vector<TTree*>& trees, bool &isData, const bool
 	};
 
 	//Set Branches of output tree
-	for(TTree* tree: trees){
-		tree->Branch("Electron_Size", &nElectrons);
+	tree->Branch("Electron_Size", &nElectrons);
 
-		for(std::pair<const std::string, std::vector<float>&>& var: floatVar){
-			tree->Branch(("Electron_" + var.first).c_str(), &var.second);
-		}
+	for(std::pair<const std::string, std::vector<float>&>& var: floatVar){
+		tree->Branch(("Electron_" + var.first).c_str(), &var.second);
 	}
 }
 
-void TestProducer::Produce(std::vector<CutFlow>& cutflows){
+void TestProducer::Produce(CutFlow cutflow){
 	//Clear variables vector
 	for(std::pair<const std::string, std::vector<float>&>& var: floatVar){
 		var.second.clear();
@@ -62,17 +60,13 @@ void TestProducer::Produce(std::vector<CutFlow>& cutflows){
 
 	nElectrons = Pt.size();
 
-	for(CutFlow &cutflow: cutflows){
-		if(cutflow.nMinEle <= Pt.size()){
-			if(cutflow.nMinEle!=0 and cutflow.passed){
-				std::string cutName("N_{e} >= " + std::to_string(cutflow.nMinEle) + " (no iso/ID req)");
-				cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
-			}
+	if(cutflow.nMinElectron <= Pt.size()){
+		if(cutflow.nMinElectron!=0 and cutflow.passed){
+			std::string cutName("N_{e} >= " + std::to_string(cutflow.nMinElectron) + " (no iso/ID req)");
+			cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 		}
-
-		else{
-			cutflow.passed = false;
-		}
+	} else {
+		cutflow.passed = false;
 	}
 }
 

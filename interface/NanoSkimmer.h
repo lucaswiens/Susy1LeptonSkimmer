@@ -22,7 +22,8 @@ class NanoSkimmer{
 		std::vector<std::shared_ptr<BaseProducer>> producers;
 
 		//Vector of trees for each analysis
-		std::vector<TTree*> outputTrees;
+		//std::vector<TTree*> outputTrees;
+		TTree* outputTree;
 
 		//Vector of cutflow histograms for each analysis
 		std::vector<CutFlow> cutflows;
@@ -32,12 +33,12 @@ class NanoSkimmer{
 		void ProgressBar(const int &progress);
 
 		//Configure analysis modules
-		void Configure(const float &xSec, TTreeReader& reader);
+		void Configure(const float &xSec, const int &era, TTreeReader& reader);
 
 
 	public:
 		NanoSkimmer();
 		NanoSkimmer(const std::string &inFile, const bool &isData);
-		void EventLoop(const float &xSec = 1.);
+		void EventLoop(const float &xSec = 1., const int &era = 2016);
 		void WriteOutput(const std::string &outFile);
 };

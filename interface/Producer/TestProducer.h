@@ -1,5 +1,4 @@
-#ifndef TESTPRODUCER_H
-#define TESTPRODUCER_H
+#pragma once
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 
@@ -31,5 +30,3 @@ class TestProducer: public BaseProducer {
 		void Produce(CutFlow cutflow);
 		void EndJob(TFile* file);
 };
-
-#endif

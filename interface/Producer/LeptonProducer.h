@@ -1,5 +1,4 @@
-#ifndef LEPTONPRODUCER_H
-#define LEPTONPRODUCER_H
+#pragma once
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 
@@ -9,13 +8,7 @@ class LeptonProducer: public BaseProducer {
 		bool isData;
 		//bool isSignal // or maybe make a fastsim flag
 
-		//Lepton Scale Factor files
-		std::map<int, TString> muonTriggerScaleFactorFile;
-		std::map<int, TString> muonIsolationScaleFactorFile;
-		std::map<int, TString> muonIdScaleFactorFile;
-		std::map<int, TString> electronMVAScaleFactorFile;
-		std::map<int, TString> electronGSFScaleFactorFile;
-
+		//Histograms containing scalefactors
 		TH2F* muonTriggerSFHist;
 		TH2F* muonIsolationSFHist;
 		TH2F* muonIdSFHist;
@@ -48,5 +41,3 @@ class LeptonProducer: public BaseProducer {
 		void Produce(CutFlow& cutflow);
 		void EndJob(TFile* file);
 };
-
-#endif

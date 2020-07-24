@@ -1,5 +1,4 @@
-#ifndef BASEPRODUCER_H
-#define BASEPRODUCER_H
+#pragma once
 
 #include <memory>
 #include <map>
@@ -76,4 +75,3 @@ class BaseProducer {
 
 		static float DeltaR(const float& eta1, const float& phi1, const float& eta2, const float& phi2);
 };
-#endif

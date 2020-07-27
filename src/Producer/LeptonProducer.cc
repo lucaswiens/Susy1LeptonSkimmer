@@ -6,10 +6,10 @@ LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& 
 	era(era),
 	ptCut(ptCut),
 	etaCut(etaCut),
-	dxyCut(etaCut),
-	dzCut(etaCut),
-	sip3dCut(etaCut),
-	isoCut(etaCut)
+	dxyCut(dxyCut),
+	dzCut(dzCut),
+	sip3dCut(sip3dCut),
+	isoCut(isoCut)
 	{}
 
 void LeptonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){

@@ -24,15 +24,13 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
 	TString electronGSFSFFileLocation   = TString("$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/leptonSF/EGM2D_eleGSF.root");
 	TString electronMVASFFileLocation   = TString("$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/leptonSF/EGM2D_eleMVA90.root");
 
-	TFile* muonIdSFFile        = TFile::Open(muonTriggerSFFileLocation, "READ");
+	TFile* muonIdSFFile        = TFile::Open(muonIdSFFileLocation, "READ");
 	TFile* muonIsolationSFFile = TFile::Open(muonIsolationSFFileLocation, "READ");
 	TFile* muonTriggerSFFile   = TFile::Open(muonTriggerSFFileLocation, "READ");
 
 	TFile* electronGSFSFFile = TFile::Open(electronGSFSFFileLocation, "READ");
 	TFile* electronMVASFFile = TFile::Open(electronMVASFFileLocation, "READ");
 
-
-	// Possibly name difference for different years?
 	muonIdSFHist        = static_cast<TH2F*>(muonIdSFFile->Get("MC_NUM_MediumID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio"));
 	muonIsolationSFHist = static_cast<TH2F*>(muonIsolationSFFile->Get("LooseISO_MediumID_pt_eta/pt_abseta_ratio"));
 	muonTriggerSFHist   = static_cast<TH2F*>(muonTriggerSFFile->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio"));
@@ -94,59 +92,61 @@ void LeptonProducer::Produce(CutFlow& cutflow){
 	CutBased = -999;
 	ScaleFactor = -999;
 
-	nMuon = *muonNumber->Get();//muonPt->GetSize();
-	nElectron = *electronNumber->Get(); //electronPt->GetSize();
+	nMuon = *muonNumber->Get();
+	nElectron = *electronNumber->Get();
 	nLepton = nMuon + nElectron;
 
 	// Create WeightCalculator class for easier acces to SF
 	WeightCalculator* wc;
 
-	if (nMuon == 1){
-		const float& pt = muonPt->At(0);
-		const float& eta = muonEta->At(0);
-		const float& phi = muonPhi->At(0);
-		const float& dxy = muonDxy->At(0);
-		const float& dz = muonDz->At(0);
-		const float& sip3d = muonSip3d->At(0);
-		const float& miniPFRelIsoAll = muonMiniPFRelIsoAll->At(0);
-		const bool& isPFCand = muonIsPFCand->At(0);
+	if(nLepton){
+		if (nMuon == 1){
+			const float& pt = muonPt->At(0);
+			const float& eta = muonEta->At(0);
+			const float& phi = muonPhi->At(0);
+			const float& dxy = muonDxy->At(0);
+			const float& dz = muonDz->At(0);
+			const float& sip3d = muonSip3d->At(0);
+			const float& miniPFRelIsoAll = muonMiniPFRelIsoAll->At(0);
+			const bool& isPFCand = muonIsPFCand->At(0);
 
-		if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand){
-			if(!isData){
-				const float& idSF = 1;//wc->Get2DWeight(pt, eta, muonIdSFHist);//TODO FIX THIS
-				const float& isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
-				const float& triggerSF = wc->Get2DWeight(pt, eta, muonTriggerSFHist);
-				ScaleFactor = idSF * isolationSF * triggerSF;
+			if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand){
+				if(!isData){
+					const float& idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
+					const float& isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
+					const float& triggerSF = wc->Get2DWeight(pt, eta, muonTriggerSFHist);
+					ScaleFactor = idSF * isolationSF * triggerSF;
+				}
+
+				Pt = pt; Eta = eta; Phi = phi; MiniPFRelIsoAll = miniPFRelIsoAll;
+				const bool& looseId = muonLooseId->At(0);
+				const bool& mediumId = muonMediumId->At(0);
+				const bool& tightId = muonTightId->At(0);
+				if(tightId){ CutBased = 4;}
+				else if (mediumId){ CutBased = 3;}
+				else if (looseId){ CutBased = 2;}
+				else { CutBased = 1;}
 			}
+		} else if (nElectron == 1){
+			const float& pt = electronPt->At(0);
+			const float& eta = electronEta->At(0);
+			const float& phi = electronPhi->At(0);
+			const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(0);
 
-			Pt = pt; Eta = eta; Phi = phi; MiniPFRelIsoAll = miniPFRelIsoAll;
-			const bool& looseId = muonLooseId->At(0);
-			const bool& mediumId = muonMediumId->At(0);
-			const bool& tightId = muonTightId->At(0);
-			if(tightId){ CutBased = 4;}
-			else if (mediumId){ CutBased = 3;}
-			else if (looseId){ CutBased = 2;}
-			else { CutBased = 1;}
-		}
-	} else if (nElectron == 1){
-		const float& pt = electronPt->At(0);
-		const float& eta = electronEta->At(0);
-		const float& phi = electronPhi->At(0);
-		const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(0);
+			if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut){
+				if(!isData){
+					const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
+					const float& MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
+					ScaleFactor = GSFSF * MVASF;
+				}
 
-		if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut){
-			if(!isData){
-				const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
-				const float& MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
-				ScaleFactor = GSFSF * MVASF;
+				Pt = pt; Eta = eta; Phi = phi; MiniPFRelIsoAll = miniPFRelIsoAll;
+				CutBased = electronCutBased->At(0);
 			}
-
-			Pt = pt; Eta = eta; Phi = phi; MiniPFRelIsoAll = miniPFRelIsoAll;
-			CutBased = electronCutBased->At(0);
 		}
 	}
 
-	if (Pt != 999){
+	if (Pt != -999){
 		std::string cutName("N_{#ell} = 1 (no ID req and Iso < 0.4)");
 		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 	} else {

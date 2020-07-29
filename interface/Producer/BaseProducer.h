@@ -15,6 +15,8 @@
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
 
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
+
 //Struct for cutflow
 struct CutFlow {
 	TH1F* hist;
@@ -69,8 +71,8 @@ class BaseProducer {
 		virtual ~BaseProducer(){};
 		BaseProducer();
 		BaseProducer(TTreeReader* reader);
-		virtual void BeginJob(TTree* tree, bool& isData, const bool& isSyst=false) = 0;
-		virtual void Produce(CutFlow& cutflow) = 0;
+		virtual void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct product, const bool& isSyst=false) = 0;
+		virtual void Produce(CutFlow& cutflow, Susy1LeptonProduct product) = 0;
 		virtual void EndJob(TFile* file) = 0;
 
 		static float DeltaR(const float& eta1, const float& phi1, const float& eta2, const float& phi2);

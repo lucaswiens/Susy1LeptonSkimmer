@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 
 class TestProducer: public BaseProducer {
 	/*
@@ -26,7 +27,7 @@ class TestProducer: public BaseProducer {
 	public:
 		TestProducer(const int& era, const float& ptCut, const float& etaCut, TTreeReader& reader);
 
-		void BeginJob(TTree* tree, bool& isData, const bool& isSyst=false);
-		void Produce(CutFlow cutflow);
+		void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct product, const bool& isSyst=false);
+		void Produce(CutFlow cutflow, Susy1LeptonProduct product);
 		void EndJob(TFile* file);
 };

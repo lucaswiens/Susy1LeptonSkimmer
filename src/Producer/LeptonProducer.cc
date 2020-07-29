@@ -12,7 +12,7 @@ LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& 
 	isoCut(isoCut)
 	{}
 
-void LeptonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
+void LeptonProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct product, const bool& isSyst){
 	//Set data bool
 	this->isData = isData;
 	this->isSyst = isSyst;
@@ -81,7 +81,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData, const bool& isSyst){
 	//tree->Branch("Lepton", &);
 }
 
-void LeptonProducer::Produce(CutFlow& cutflow){
+void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct product){
 	//Initialize all variables as -999
 	Pt = -999;
 	Eta = -999;
@@ -145,6 +145,10 @@ void LeptonProducer::Produce(CutFlow& cutflow){
 			}
 		}
 	}
+	//Store values in product for later producers.. Apparantly doing this directly causes problems when storing the values in the branches, so only store needed values
+	product.leptonPt = Pt;
+	product.leptonEta = Eta;
+	product.leptonPhi = Phi;
 
 	if (Pt != -999){
 		std::string cutName("N_{#ell} = 1 (no ID req and Iso < 0.4)");

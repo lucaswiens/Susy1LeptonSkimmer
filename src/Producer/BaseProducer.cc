@@ -1,4 +1,5 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 
 //BaseProducer::BaseProducer(): isNANO(false){}
 BaseProducer::BaseProducer(TTreeReader* reader): reader(reader){}

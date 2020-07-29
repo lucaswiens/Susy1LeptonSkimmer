@@ -1,4 +1,5 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/NanoSkimmer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/LeptonProducer.h>
 //#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TestProducer.h>
@@ -58,9 +59,12 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	cutflow.hist->GetYaxis()->SetName("Events");
 	cutflow.weight = 1;
 
+	//Product for passing newly calculated variables to each producer
+	Susy1LeptonProduct product;
+
 	//Begin jobs for all producers
 	for (std::shared_ptr<BaseProducer> producer: producers){
-		producer->BeginJob(outputTree, isData);
+		producer->BeginJob(outputTree, isData, product);
 	}
 
 	//Progress bar at 0%
@@ -71,7 +75,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	while(reader.Next()){
 		//Call each producer
 		for (unsigned int i = 0; i < producers.size(); i++){
-			producers[i]->Produce(cutflow);
+			producers[i]->Produce(cutflow, product);
 
 			//If the cutflow fails for one producer, reject the event
 			if (!cutflow.passed){ break;}

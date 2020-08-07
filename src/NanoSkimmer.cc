@@ -64,7 +64,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 
 	//Begin jobs for all producers
 	for (std::shared_ptr<BaseProducer> producer: producers){
-		producer->BeginJob(outputTree, isData, product);
+		producer->BeginJob(outputTree, isData, &product);
 	}
 
 	//Progress bar at 0%
@@ -75,7 +75,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	while(reader.Next()){
 		//Call each producer
 		for (unsigned int i = 0; i < producers.size(); i++){
-			producers[i]->Produce(cutflow, product);
+			producers[i]->Produce(cutflow, &product);
 
 			//If the cutflow fails for one producer, reject the event
 			if (!cutflow.passed){ break;}

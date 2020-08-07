@@ -38,7 +38,7 @@ class LeptonProducer: public BaseProducer {
 	public:
 		LeptonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader);
 
-		void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct product, const bool& isSyst=false);
-		void Produce(CutFlow& cutflow, Susy1LeptonProduct product);
+		void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct *product, const bool& isSyst=false);
+		void Produce(CutFlow& cutflow, Susy1LeptonProduct *product);
 		void EndJob(TFile* file);
 };

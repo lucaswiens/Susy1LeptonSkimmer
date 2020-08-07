@@ -7,7 +7,7 @@ TestProducer::TestProducer(const int& era, const float& ptCut, const float& etaC
 	etaCut(etaCut)
 	{}
 
-void TestProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct product, const bool& isSyst){
+void TestProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *product, const bool& isSyst){
 	//Set data bool
 	this->isData = isData;
 	this->isSyst = isSyst;
@@ -36,7 +36,7 @@ void TestProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct produc
 	}
 }
 
-void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct product){
+void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product){
 	//Clear variables vector
 	for(std::pair<const std::string, std::vector<float>&>& var: floatVar){
 		var.second.clear();

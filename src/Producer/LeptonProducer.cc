@@ -12,7 +12,7 @@ LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& 
 	isoCut(isoCut)
 	{}
 
-void LeptonProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct product, const bool& isSyst){
+void LeptonProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *product, const bool& isSyst){
 	//Set data bool
 	this->isData = isData;
 	this->isSyst = isSyst;
@@ -76,12 +76,13 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct prod
 	tree->Branch("LeptonPt", &Pt);
 	tree->Branch("LeptonEta", &Eta);
 	tree->Branch("LeptonPhi", &Phi);
+	tree->Branch("LeptonMass", &Mass);
 	tree->Branch("LeptonMiniPFRelIsoAll", &MiniPFRelIsoAll);
 	tree->Branch("LeptonSF", &ScaleFactor);
 	//tree->Branch("Lepton", &);
 }
 
-void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct product){
+void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	//Initialize all variables as -999
 	Pt = -999;
 	Eta = -999;
@@ -140,15 +141,15 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct product){
 					ScaleFactor = GSFSF * MVASF;
 				}
 
-				Pt = pt; Eta = eta; Phi = phi; MiniPFRelIsoAll = miniPFRelIsoAll;
+				Pt = pt; Eta = eta; Phi = phi; Mass = mass; MiniPFRelIsoAll = miniPFRelIsoAll, PdgId = pdgId;
 				CutBased = electronCutBased->At(0);
 			}
 		}
 	}
-	//Store values in product for later producers.. Apparantly doing this directly causes problems when storing the values in the branches, so only store needed values
-	product.leptonPt = Pt;
-	product.leptonEta = Eta;
-	product.leptonPhi = Phi;
+	//Store values in product to calculate high level variables
+	product->leptonPt = Pt;
+	product->leptonPhi = Phi;
+	product->leptonEta = Eta;
 
 	if (Pt != -999){
 		std::string cutName("N_{#ell} = 1 (no ID req and Iso < 0.4)");

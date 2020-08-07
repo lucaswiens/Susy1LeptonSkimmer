@@ -22,17 +22,17 @@ class LeptonProducer: public BaseProducer {
 		float ptCut, etaCut, dxyCut, dzCut, sip3dCut, isoCut;
 
 		//Vector for the output variables
-		float Pt, Eta, Phi, MiniPFRelIsoAll, ScaleFactor;
+		float Pt, Eta, Phi, Mass, MiniPFRelIsoAll, ScaleFactor;
 		bool LooseId, MediumId, TightId, IsPFCand;
 		unsigned int nMuon, nElectron, nLepton, PdgId, CutBased;
 		int Charge;
 
 		//TTreeReader Values for NANO AOD analysis
 		std::unique_ptr<TTreeReaderValue<unsigned int>> muonNumber, electronNumber;
-		std::unique_ptr<TTreeReaderArray<float>> muonPt, muonEta, muonPhi, muonIso, muonDxy, muonDz, muonSip3d, muonMiniPFRelIsoAll;
+		std::unique_ptr<TTreeReaderArray<float>> muonPt, muonEta, muonPhi, muonMass, muonIso, muonDxy, muonDz, muonSip3d, muonMiniPFRelIsoAll;
 		std::unique_ptr<TTreeReaderArray<int>> muonPdgId, muonCharge;
 		std::unique_ptr<TTreeReaderArray<bool>> muonLooseId, muonMediumId, muonTightId, muonIsPFCand;
-		std::unique_ptr<TTreeReaderArray<float>> electronPt, electronEta, electronPhi, electronMiniPFRelIsoAll;
+		std::unique_ptr<TTreeReaderArray<float>> electronPt, electronEta, electronPhi, electronMass, electronMiniPFRelIsoAll;
 		std::unique_ptr<TTreeReaderArray<int>> electronPdgId, electronCutBased, electronCharge;
 
 	public:

@@ -44,6 +44,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *pro
 	muonPt = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_pt");
 	muonEta = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_eta");
 	muonPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_phi");
+	muonMass = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_mass");
 	muonDxy = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_dxy");
 	muonDz = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_dz");
 	muonPdgId = std::make_unique<TTreeReaderArray<int>>(*reader, "Muon_pdgId");
@@ -59,6 +60,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *pro
 	electronPt = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_pt");
 	electronEta = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_eta");
 	electronPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_phi");
+	electronMass = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_mass");
 	electronPdgId = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_pdgId");
 	electronMiniPFRelIsoAll = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_miniPFRelIso_all");
 	electronCutBased = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_cutBased");
@@ -100,16 +102,18 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	// Create WeightCalculator class for easier acces to SF
 	WeightCalculator* wc;
 
-	if(nLepton){
+	if(nLepton == 1){
 		if (nMuon == 1){
 			const float& pt = muonPt->At(0);
 			const float& eta = muonEta->At(0);
 			const float& phi = muonPhi->At(0);
+			const float& mass = muonMass->At(0);
 			const float& dxy = muonDxy->At(0);
 			const float& dz = muonDz->At(0);
 			const float& sip3d = muonSip3d->At(0);
 			const float& miniPFRelIsoAll = muonMiniPFRelIsoAll->At(0);
 			const bool& isPFCand = muonIsPFCand->At(0);
+			const float& pdgId = muonPdgId->At(0);
 
 			if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand){
 				if(!isData){
@@ -119,7 +123,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 					ScaleFactor = idSF * isolationSF * triggerSF;
 				}
 
-				Pt = pt; Eta = eta; Phi = phi; MiniPFRelIsoAll = miniPFRelIsoAll;
+				Pt = pt; Eta = eta; Phi = phi; Mass = mass; MiniPFRelIsoAll = miniPFRelIsoAll, PdgId = pdgId;
 				const bool& looseId = muonLooseId->At(0);
 				const bool& mediumId = muonMediumId->At(0);
 				const bool& tightId = muonTightId->At(0);
@@ -132,7 +136,9 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			const float& pt = electronPt->At(0);
 			const float& eta = electronEta->At(0);
 			const float& phi = electronPhi->At(0);
+			const float& mass = electronMass->At(0);
 			const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(0);
+			const float& pdgId = electronPdgId->At(0);
 
 			if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut){
 				if(!isData){
@@ -150,6 +156,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	product->leptonPt = Pt;
 	product->leptonPhi = Phi;
 	product->leptonEta = Eta;
+	product->leptonMass = Mass;
 
 	if (Pt != -999){
 		std::string cutName("N_{#ell} = 1 (no ID req and Iso < 0.4)");

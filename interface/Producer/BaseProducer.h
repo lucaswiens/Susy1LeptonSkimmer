@@ -39,13 +39,25 @@ class BaseProducer {
 		std::string filePath = std::string(std::getenv("CMSSW_BASE")) + "/src/Susy1LeptonAnalsis/Susy1LeptonSkimmer/data/";
 
 		std::map<int, std::map<std::string, std::pair<int, int>>> runEras = {
-			{2017, {
-						{"B", {297046, 299329}},
-						{"C", {299368, 302029}},
-						{"DE", {302030, 304797}},
-						{"F", {305040, 306462}},
-				 }
+			{2016,	{
+					{"BCD", {297046, 299329}},
+					{"EF", {302030, 304797}},
+					{"GH", {305040, 306462}}
+				}
 			},
+			{2017,	{
+					{"B", {297046, 299329}},
+					{"C", {299368, 302029}},
+					{"DE", {302030, 304797}},
+					{"F", {305040, 306462}}
+				}
+			},
+			{2018,	{
+					{"A", {297046, 299329}},
+					{"B", {297046, 299329}},
+					{"CD", {299368, 302029}}
+				}
+			}
 		};
 
 		//Collection which are used in several producers if NANO AOD is produced

@@ -47,8 +47,7 @@ class JetProducer: public BaseProducer {
 		float ptCut, etaCut, deltaRCut;
 
 		//Vector for the output variables
-		std::vector<float> JetPt, JetEta, JetPhi, JetMass, JetPtUp, JetEtaUp, JetPhiUp, JetMassUp, JetPtDown, JetEtaDown, JetPhiDown, JetMassDown;
-		std::vector<int> JetCSVBTag;
+		std::vector<float> JetPt, JetEta, JetPhi, JetMass, JetCSVBTag, JetPtUp, JetEtaUp, JetPhiUp, JetMassUp, JetPtDown, JetEtaDown, JetPhiDown, JetMassDown;
 		std::vector<bool> JetLooseBTag, JetMediumBTag, JetTightBTag, JetLooseCSVBTag, JetMediumCSVBTag, JetTightCSVBTag;
 		float METPt, METEta, METPhi, METMass, JetRho;
 		int runNumber;

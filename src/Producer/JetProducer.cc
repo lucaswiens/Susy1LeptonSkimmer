@@ -348,18 +348,15 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 	runNumber = -999;
 
-	nJet = -999;
-	nFatJet = -999;
-	nLooseCSVBTagJet = -999;
-	nMediumCSVBTagJet = -999;
-	nTightCSVBTagJet = -999;
-	nLooseBTagJet = -999;
-	nMediumBTagJet = -999;
-	nTightBTagJet = -999;
-
-	nLooseCSVBTagJet = -999;
-	nMediumCSVBTagJet = -999;
-	nTightCSVBTagJet = -999;
+	//unsigned int
+	nJet = 0;
+	nFatJet = 0;
+	nLooseCSVBTagJet = 0;
+	nMediumCSVBTagJet = 0;
+	nTightCSVBTagJet = 0;
+	nLooseBTagJet = 0;
+	nMediumBTagJet = 0;
+	nTightBTagJet = 0;
 
 	//float CSVBValue = 0, DeepBValue = 0;
 	float metPx = 0, metPy;

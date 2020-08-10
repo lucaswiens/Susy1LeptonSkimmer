@@ -88,11 +88,23 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	Pt = -999;
 	Eta = -999;
 	Phi = -999;
+	Mass = -999;
 	MiniPFRelIsoAll = -999;
+	ScaleFactor = -999;
+
+	LooseId = -999;
+	MediumId = -999;
+	TightId = -999;
+	IsPFCand = -999;
+
 	Charge = -999;
 	PdgId = -999;
-	CutBased = -999;
-	ScaleFactor = -999;
+
+	//unsigned int
+	nMuon = 0;
+	nElectron = 0;
+	nLepton = 0;
+	CutBased = 0;
 
 	nMuon = *muonNumber->Get();
 	nElectron = *electronNumber->Get();
@@ -111,8 +123,10 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			const float& dz = muonDz->At(0);
 			const float& sip3d = muonSip3d->At(0);
 			const float& miniPFRelIsoAll = muonMiniPFRelIsoAll->At(0);
+
 			const bool& isPFCand = muonIsPFCand->At(0);
-			const float& pdgId = muonPdgId->At(0);
+
+			const int& pdgId = muonPdgId->At(0);
 
 			if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand){
 				if(!isData){
@@ -137,7 +151,8 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			const float& phi = electronPhi->At(0);
 			const float& mass = electronMass->At(0);
 			const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(0);
-			const float& pdgId = electronPdgId->At(0);
+
+			const int & pdgId = electronPdgId->At(0);
 
 			if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut){
 				if(!isData){

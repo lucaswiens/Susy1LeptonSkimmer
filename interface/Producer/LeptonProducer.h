@@ -31,8 +31,8 @@ class LeptonProducer: public BaseProducer {
 		//Vector for the output variables
 		float Pt, Eta, Phi, Mass, MiniPFRelIsoAll, ScaleFactor;
 		bool LooseId, MediumId, TightId, IsPFCand;
-		unsigned int nMuon, nElectron, nLepton, PdgId, CutBased;
-		int Charge;
+		unsigned int nMuon, nElectron, nLepton, CutBased;
+		int Charge, PdgId;
 
 		//TTreeReader Values for NANO AOD analysis
 		std::unique_ptr<TTreeReaderValue<unsigned int>> muonNumber, electronNumber;

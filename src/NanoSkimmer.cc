@@ -50,6 +50,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	//TTreeReader preperation
 	TFile* inputFile = TFile::Open(inFile.c_str(), "READ");
 	TTree* eventTree = (TTree*)inputFile->Get("Events");
+	eventTree->SetAutoFlush(400000); // Flush tree to Disk to avoid memory leaks
 	TTreeReader reader(eventTree);
 
 	Configure(xSec, era, reader);

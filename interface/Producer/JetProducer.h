@@ -35,11 +35,12 @@ class JetProducer: public BaseProducer {
 		bool isJERsyst = false;
 		//std::int<systematic, float> smearFactor;
 
-		// JEC dict
-		//std::map<int, std::vector<std::string>> jecMC, jecFastSim, jerMC, jecData;
-		//std::map<int, std::string> jmePtReso, jmeSF;
+		// JEC map
 		std::map<int, std::vector<std::string>> jecMC, jecFastSim, jerMC, jecData;
 		std::map<int, std::string> jmePtReso, jmeSF, jecUnc;
+
+		// Btag Map
+		std::map<int, std::map<char, float>> bTag, deepCSVBTag;
 
 		//Cut Variables
 		int era;
@@ -47,21 +48,20 @@ class JetProducer: public BaseProducer {
 
 		//Vector for the output variables
 		std::vector<float> JetPt, JetEta, JetPhi, JetMass, JetPtUp, JetEtaUp, JetPhiUp, JetMassUp, JetPtDown, JetEtaDown, JetPhiDown, JetMassDown;
-		std::map<JetType, std::vector<int>> TrueFlavour, Charge, FatJetIdx, partID, mothID, grandID; //TODO Might be not needed
+		std::vector<int> JetCSVBTag;
+		std::vector<bool> JetLooseBTag, JetMediumBTag, JetTightBTag, JetLooseCSVBTag, JetMediumCSVBTag, JetTightCSVBTag;
 		float METPt, METEta, METPhi, METMass, JetRho;
 		int runNumber;
-		unsigned int nJet, nFatJet;
+		unsigned int nJet, nFatJet, nLooseCSVBTagJet, nMediumCSVBTagJet, nTightCSVBTagJet, nLooseBTagJet, nMediumBTagJet, nTightBTagJet;
 
 		//TTreeReader Values
 		std::unique_ptr<TTreeReaderValue<unsigned int>> jetNumber, fatJetNumber;
-		//std::unique_ptr<TTreeReaderArray<float>> jetPt, jetEta, jetPhi, jetMass;
-		//std::unique_ptr<TTreeReaderValue<float>> metPt, metPhi;// jetRho;
 
 		std::unique_ptr<TTreeReaderArray<float>> fatJetPt, fatJetEta, fatJetPhi, fatJetMass, fatJetArea, fatJetCSV;
 		std::unique_ptr<TTreeReaderArray<float>> fatJetTau1, fatJetTau2, fatJetTau3;
 
 		std::unique_ptr<TTreeReaderArray<int>> jetGenIdx, jetFlavour;
-		std::unique_ptr<TTreeReaderArray<float>> jetMass, jetPt, jetEta, jetPhi, jetArea, jetDeepBValue;
+		std::unique_ptr<TTreeReaderArray<float>> jetMass, jetPt, jetEta, jetPhi, jetArea, jetCSV;
 
 		std::unique_ptr<TTreeReaderArray<float>> genJetPt, genJetEta, genJetPhi, genJetMass;
 		std::unique_ptr<TTreeReaderArray<float>> genFatJetPt, genFatJetEta, genFatJetPhi, genFatJetMass;
@@ -78,7 +78,6 @@ class JetProducer: public BaseProducer {
 
 		float CorrectEnergy(const float& pt, const float& eta, const float& rho, const float& area, const JetType &type);
 		std::map<char, float> SmearEnergy(const float& pt, const float& eta, const float& phi, const float& rho, const float& coneSize, const JetType& type);
-		void SetGenParticles(const int& i, const float& pt, const float& eta, const float& phi, const std::vector<int>& pdgID, const JetType &type);
 
 		template <typename T>
 		void SortByIndex(T& var, std::vector<int> idx);

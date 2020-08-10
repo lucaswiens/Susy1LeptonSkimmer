@@ -7,9 +7,6 @@
 #include <cmath>
 #include <random>
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<float> > RMFLV;
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > CartesianRMFLV;
-
 JetProducer::JetProducer(const int& era, const float& ptCut, const float& etaCut, const float& deltaRCut, TTreeReader& reader):
 	BaseProducer(&reader),
 	era(era),
@@ -20,7 +17,8 @@ JetProducer::JetProducer(const int& era, const float& ptCut, const float& etaCut
 
 template <typename T>
 void JetProducer::SortByIndex(T& var, std::vector<int> idx){
-	std::vector<float> tmp(nJet);
+	//std::vector<float> tmp(nJet);
+	T tmp(nJet);
 	for (unsigned int i = 0; i < nJet; i++){
 		tmp.at(i) = var.at(idx[i]);
 	}
@@ -30,10 +28,10 @@ void JetProducer::SortByIndex(T& var, std::vector<int> idx){
 void JetProducer::SetCorrector(const JetType& type, const int& runNumber){
 	std::vector<JetCorrectorParameters> corrVec;
 
-	for(std::string fileName: isData? jecData[era] : jecMC[era]){
-		if(fileName.find("@") != std::string::npos){
-			for(std::pair<std::string, std::pair<int, int>> eraNames: runEras[era]){
-				if(eraNames.second.first <= runNumber and runNumber <= eraNames.second.second){
+	for (std::string fileName: isData? jecData[era] : jecMC[era]){
+		if (fileName.find("@") != std::string::npos){
+			for (std::pair<std::string, std::pair<int, int>> eraNames: runEras[era]){
+				if (eraNames.second.first <= runNumber and runNumber <= eraNames.second.second){
 					fileName.replace(fileName.find("@"), 1, eraNames.first);
 				}
 			}
@@ -65,7 +63,7 @@ std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta
 	float resoSF;
 	float resoSFUp;
 	float resoSFDown;
-	//if(!isJERsyst) resoSF = resolution_sf[type].getScaleFactor(jetParameter);
+	//if (!isJERsyst) resoSF = resolution_sf[type].getScaleFactor(jetParameter);
 	//else resoSF = resolution_sf[type].getScaleFactor(jetParameter, isUp ? Variation::UP : Variation::DOWN);
 	resoSF     = resolution_sf[type].getScaleFactor(jetParameter);
 	resoSFUp   = resolution_sf[type].getScaleFactor(jetParameter, Variation::UP);
@@ -82,7 +80,7 @@ std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta
 	unsigned int size = (type == AK4) ? genJetPt->GetSize(): genFatJetPt->GetSize();
 
 	//Loop over all gen jets and find match
-	for(unsigned int i = 0; i < size; i++){
+	for (unsigned int i = 0; i < size; i++){
 		genPt = (type == AK4) ? genJetPt->At(i): genFatJetPt->At(i);
 		genPhi = (type == AK4) ? genJetPhi->At(i): genFatJetPhi->At(i);
 		genEta = (type == AK4) ? genJetEta->At(i): genFatJetEta->At(i);
@@ -91,7 +89,7 @@ std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta
 		dR = std::sqrt(std::pow(phi - genPhi, 2) + std::pow(eta - genEta, 2));
 
 		//Check if jet and gen jet are matched
-		if(dR < coneSize/2. and abs(pt - genPt) < 3. * reso * pt){
+		if (dR < coneSize/2. and abs(pt - genPt) < 3. * reso * pt){
 			genJet[type] = ROOT::Math::PtEtaPhiMVector(genPt, genEta, genPhi, genMass);
 			isMatched = true;
 			break;
@@ -99,11 +97,11 @@ std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta
 	}
 
 	//If you found gen matched
-	if(isMatched){
+	if (isMatched){
 		smearFactor     = 1. + (resoSF-1) * (pt - genPt) / pt;
 		smearFactorUp   = 1. + (resoSFUp-1) * (pt - genPt) / pt;
 		smearFactorDown = 1. + (resoSFDown-1) * (pt - genPt) / pt;
-	} else if(resoSF > 1.) {
+	} else if (resoSF > 1.) {
 		std::default_random_engine generator;
 		std::normal_distribution<> gaus(0, reso * std::sqrt(resoSF * resoSF - 1));
 		std::normal_distribution<> gausUp(0, reso * std::sqrt(resoSFUp * resoSFUp - 1));
@@ -114,67 +112,12 @@ std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta
 	}
 
 	//Check if direction of jet not changed
-	if(pt * smearFactor     < 1e-2){ smearFactor     = 1e-2 / pt;}
-	if(pt * smearFactorUp   < 1e-2){ smearFactorUp   = 1e-2 / pt;}
-	if(pt * smearFactorDown < 1e-2){ smearFactorDown = 1e-2 / pt;}
+	if (pt * smearFactor     < 1e-2){ smearFactor     = 1e-2 / pt;}
+	if (pt * smearFactorUp   < 1e-2){ smearFactorUp   = 1e-2 / pt;}
+	if (pt * smearFactorDown < 1e-2){ smearFactorDown = 1e-2 / pt;}
 
 	return {{'c', smearFactor}, {'u', smearFactorUp}, {'d', smearFactorDown}};
 }
-
-void JetProducer::SetGenParticles(const int& i, const float& pt, const float& eta, const float& phi, const std::vector<int>& pdgID, const JetType &type){
-	float dR;
-
-	//partID.at(type).push_back(-99.);
-	//mothID.at(type).push_back(-99.);
-	//grandID.at(type).push_back(-99.);
-
-	partID[type].push_back(-99.);
-	mothID[type].push_back(-99.);
-	grandID[type].push_back(-99.);
-
-	float bestDR = 30.; float bestPt = 100.;
-	int index=-1;
-
-	//Check if gen matched particle exist
-	if(genJet[type].Pt() != 0){
-		//Find Gen particle to gen Jet
-		const char& size = genPt->GetSize();
-
-		for(int i=0; i < size; i++){
-			const int ID = abs(genID->At(i));
-
-			if(std::find(pdgID.begin(), pdgID.end(), ID) != pdgID.end()){
-				index = FirstCopy(i, ID);
-			} else continue;
-
-			const float& ptGen = genPt->At(index);
-			const float& phiGen = genPhi->At(index);
-			const float& etaGen = genEta->At(index);
-
-			dR = BaseProducer::DeltaR(etaGen, phiGen, genJet[type].Eta(), genJet[type].Phi());
-			const float& dPt = abs((genJet[type].Pt() - ptGen) / genJet[type].Pt());
-
-			if(dR < bestDR and dPt < bestPt){
-				if(std::find(alreadySeen.begin(), alreadySeen.end(), index) != alreadySeen.end()) continue;
-				else alreadySeen.push_back(index);
-
-				bestDR = dR;
-				bestPt = dPt;
-
-				const int motherID = abs(genID->At(genMotherIdx->At(index)));
-				const int motherIdx = FirstCopy(genMotherIdx->At(index), motherID);
-				const int grandMotherID = abs(genID->At(genMotherIdx->At(motherIdx)));
-
-				partID[type].back() = ID;
-				mothID[type].back() = motherID;
-				grandID[type].back() = grandMotherID;
-				break;
-			}
-		}
-	}
-	if (index != -1) alreadySeen.push_back(index);
-}
-*/
 
 void JetProducer::BeginJob(TTree* tree, bool &isData){
 	//Set data bool
@@ -247,7 +190,55 @@ void JetProducer::BeginJob(TTree* tree, bool &isData){
 			filePath + "Autumn18/Autumn18_FastSimV1_MC_L2Relative_&PFchs.txt",
 			filePath + "Autumn18/Autumn18_FastSimV1_MC_L3Absolute_&PFchs.txt"}
 		}
-	};//also do uncertainties for this
+	};// TODO also do uncertainties for this
+
+	/*
+	BTag Working Points
+	2016: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+	2017: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+	2018: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+	TODO: Just use DeepCSV?
+	*/
+	bTag = {
+		{2016, {
+				{'l', 0.5426},
+				{'m', 0.8484},
+				{'t', 0.9535}
+			}
+		},
+		{2017, {
+				{'l', 0.5803},
+				{'m', 0.8838},
+				{'t', 0.9693}
+			}
+		},
+		{2018, {//TODO Twiki only gave deepCSV values
+				{'l', 0},
+				{'m', 0},
+				{'t', 0}
+			}
+		}
+	};
+	deepCSVBTag = {
+		{2016, {
+				{'l', 0.2219},
+				{'m', 0.6324},
+				{'t', 0.8958}
+			}
+		},
+		{2017, {
+				{'l', 0.1522},
+				{'m', 0.4941},
+				{'t', 0.8001}
+			}
+		},
+		{2018, {
+				{'l', 0.1241},
+				{'m', 0.4184},
+				{'t', 0.7527}
+			}
+		}
+	};
 
 	//Set TTreeReader for genpart and trigger obj from BaseProducer
 	SetCollection(this->isData);
@@ -257,6 +248,7 @@ void JetProducer::BeginJob(TTree* tree, bool &isData){
 	jetEta = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_eta");
 	jetMass = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_mass");
 	jetArea = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_area");
+	jetCSV = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_btagDeepB");
 	jetRho = std::make_unique<TTreeReaderValue<float>>(*reader, "fixedGridRhoFastjetAll");
 	metPt = std::make_unique<TTreeReaderValue<float>>(*reader, "MET_pt");
 	metPhi = std::make_unique<TTreeReaderValue<float>>(*reader, "MET_phi");
@@ -272,7 +264,7 @@ void JetProducer::BeginJob(TTree* tree, bool &isData){
 	fatJetTau2 = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_tau2");
 	fatJetTau3 = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_tau3");
 
-	if(!this->isData){
+	if (!this->isData){
 		genJetPt = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJet_pt");
 		genJetEta = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJet_eta");
 		genJetPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJet_phi");
@@ -287,7 +279,7 @@ void JetProducer::BeginJob(TTree* tree, bool &isData){
 		jetGenIdx = std::make_unique<TTreeReaderArray<int>>(*reader, "Jet_genJetIdx");
 	}
 
-	for(JetType type: {AK4, AK8}){
+	for (JetType type: {AK4, AK8}){
 		//Set configuration for JER tools
 		std::string fileName = jmePtReso[era];
 		fileName.replace(fileName.find("&"), 1, type == AK4 ? "AK4": "AK8");
@@ -311,17 +303,63 @@ void JetProducer::BeginJob(TTree* tree, bool &isData){
 	tree->Branch("JetEta", &JetEta);
 	tree->Branch("JetRho", &JetRho);
 	tree->Branch("JetMass", &JetMass);
+	tree->Branch("JetCSVBTag", &JetCSVBTag);
 	tree->Branch("METPt", &METPt);
 	tree->Branch("METPhi", &METPhi);
+	//tree->Branch("JetLooseBTag", &JetLooseBTag);
+	//tree->Branch("JetMediumBTag", &JetMediumBTag);
+	//tree->Branch("JetTightBTag", &JetTightBTag);
+	tree->Branch("JetLooseCSVBTag", &JetLooseCSVBTag);
+	tree->Branch("JetMediumCSVBTag", &JetMediumCSVBTag);
+	tree->Branch("JetTightCSVBTag", &JetTightCSVBTag);
+	tree->Branch("nLooseCSVBTagJet", &nLooseCSVBTagJet);
+	tree->Branch("nMediumCSVBTagJet", &nMediumCSVBTagJet);
+	tree->Branch("nTightCSVBTagJet", &nTightCSVBTagJet);
 }
 
 void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
-	//Initialize all variables as -999
+	// clear vectors for each event, otherwise this creates a memory leak
 	JetPt.clear();
-	JetPhi.clear();
 	JetEta.clear();
+	JetPhi.clear();
+	JetMass.clear();
+	JetPtUp.clear();
+	JetEtaUp.clear();
+	JetPhiUp.clear();
+	JetMassUp.clear();
+	JetPtDown.clear();
+	JetEtaDown.clear();
+	JetPhiDown.clear();
+	JetMassDown.clear();
+	JetCSVBTag.clear();
+	JetLooseBTag.clear();
+	JetMediumBTag.clear();
+	JetTightBTag.clear();
+	JetLooseCSVBTag.clear();
+	JetMediumCSVBTag.clear();
+	JetTightCSVBTag.clear();
+
+	//Initialize all variables as -999
 	METPt = -999;
+	METEta = -999;
 	METPhi = -999;
+	METMass = -999;
+	JetRho = -999;
+
+	runNumber = -999;
+
+	nJet = -999;
+	nFatJet = -999;
+	nLooseCSVBTagJet = -999;
+	nMediumCSVBTagJet = -999;
+	nTightCSVBTagJet = -999;
+	nLooseBTagJet = -999;
+	nMediumBTagJet = -999;
+	nTightBTagJet = -999;
+
+	nLooseCSVBTagJet = -999;
+	nMediumCSVBTagJet = -999;
+	nTightCSVBTagJet = -999;
 
 	//float CSVBValue = 0, DeepBValue = 0;
 	float metPx = 0, metPy;
@@ -330,16 +368,12 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	nFatJet = *fatJetNumber->Get();
 	runNumber = *run->Get();
 
-	for(const JetType& type: {AK4, AK8}){
+	for (const JetType& type: {AK4, AK8}){
 			SetCorrector(type, runNumber);
 	}
 
-	//RMFLV metP4 = RMFLV(0, 0, 0, 0);
-	//metP4.SetPt(1);
-
 	const float& metpt = *metPt->Get();
 	const float& metphi = *metPhi->Get();
-	//const float& jetrho = *jetRho->Get();
 	metPx = metpt * std::cos(metphi);
 	metPy = metpt * std::sin(metphi);
 
@@ -354,7 +388,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		float correctionFactor = CorrectEnergy(pt, eta, *jetRho->Get(), jetArea->At(i), AK4);
 		float correctionFactorUp, correctionFactorDown;
 
-		if(jecUnc[AK4] !=  nullptr){
+		if (jecUnc[AK4] !=  nullptr){
 			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * pt);
 			jetCorrectionUncertainty[AK4]->setJetEta(eta);
 			const float uncUp = jetCorrectionUncertainty[AK4]->getUncertainty(true);
@@ -365,7 +399,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			//correctionFactorDown = (1 - uncDown) * correctionFactor ;
 		}
 
-		if(isData){
+		if (isData){
 			smearFactor = {{'c', 1.0}, {'u', 1.0}, {'d', 1.0}};
 		} else {
 			smearFactor = JetProducer::SmearEnergy(pt, eta, phi, *jetRho->Get(), jetArea->At(i), AK4);
@@ -374,9 +408,48 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		const float& correctedPt = smearFactor['c'] * correctionFactor * pt;
 		const float& correctedMass = smearFactor['c'] * correctionFactor * mass;
 
-		if( correctedPt > ptCut && abs(eta) < etaCut){
+		if (correctedPt > ptCut && abs(eta) < etaCut){
 			//correctionFactor = CorrectEnergy(pt, eta, *jetRho->Get(), jetArea->At(i), AK4);
+			/*
+			const float& bTagValue = jet->At(i);
+			if (BTagValue > bTag[era]['l']){
+				JetLooseBTag.push_back(true);
+				JetMediumBTag.push_back(true);
+				JetTightBTag.push_back(true);
+			} else if (bTagValue > bTag[era]['m']) {
+				JetLooseBTag.push_back(false);
+				JetMediumBTag.push_back(true);
+				JetTightBTag.push_back(true);
+			} else if (bTagValue > bTag[era]['t']) {
+				JetLooseBTag.push_back(false);
+				JetMediumBTag.push_back(false);
+				JetTightBTag.push_back(true);
+			} else {
+				JetLooseBTag.push_back(false);
+				JetMediumBTag.push_back(false);
+				JetTightBTag.push_back(false);
+			}
+			*/
 
+			const float& csvBTagValue = jetCSV->At(i);
+			JetCSVBTag.push_back(csvBTagValue);
+			if (csvBTagValue > deepCSVBTag[era]['t']){
+				JetLooseCSVBTag.push_back(true);
+				JetMediumCSVBTag.push_back(true);
+				JetTightCSVBTag.push_back(true);
+			} else if (csvBTagValue > deepCSVBTag[era]['m']) {
+				JetLooseCSVBTag.push_back(true);
+				JetMediumCSVBTag.push_back(true);
+				JetTightCSVBTag.push_back(false);
+			} else if (csvBTagValue > deepCSVBTag[era]['l']) {
+				JetLooseCSVBTag.push_back(true);
+				JetMediumCSVBTag.push_back(false);
+				JetTightCSVBTag.push_back(false);
+			} else {
+				JetLooseCSVBTag.push_back(false);
+				JetMediumCSVBTag.push_back(false);
+				JetTightCSVBTag.push_back(false);
+			}
 			//Jet four momentum components
 			JetPt.push_back(correctedPt);
 			JetEta.push_back(eta);
@@ -385,9 +458,6 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			//JECCorrection.push_back(correctionFactor);
 			metPx += pt * std::cos(phi) - JetPt.back() * std::cos(phi);
 			metPy += pt * std::sin(phi) - JetPt.back() * std::sin(phi);
-			if(!isData){
-				SetGenParticles(i, JetPt.back(), JetEta.back(), JetPhi.back(), {5}, AK4); //pdgid = 5 => b quark
-			}
 		}
 	}
 
@@ -406,10 +476,16 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		JetEta.erase(JetEta.begin() + nearestJetIndex);
 		JetPhi.erase(JetPhi.begin() + nearestJetIndex);
 		JetMass.erase(JetMass.begin() + nearestJetIndex);
+		JetLooseCSVBTag.erase(JetLooseCSVBTag.begin() + nearestJetIndex);
+		JetMediumCSVBTag.erase(JetMediumCSVBTag.begin() + nearestJetIndex);
+		JetTightCSVBTag.erase(JetTightCSVBTag.begin() + nearestJetIndex);
 	}
+	for (bool btag : JetLooseCSVBTag){ if(btag) {nLooseCSVBTagJet++;}}
+	for (bool btag : JetMediumCSVBTag){ if(btag) {nMediumCSVBTagJet++;}}
+	for (bool btag : JetTightCSVBTag){ if(btag) {nTightCSVBTagJet++;}}
 
 	/* TODO Loop over fat jets, will be done later
-	for(unsigned int i = 0; i < nFatJet; i++){
+	for (unsigned int i = 0; i < nFatJet; i++){
 		//JER smearing
 
 		float fatPt = fatJetPt->At(i);
@@ -421,14 +497,14 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		float correctionFactor = CorrectEnergy(fatPt, fatEta, *jetRho->Get(), fatJetArea->At(i), AK4);
 		float correctionFactorUp, correctionFactorDown;
 
-		if(isData){
+		if (isData){
 			smearFactor = {{'c', 1.0}, {'u', 1.0}, {'d', 1.0}};
 		} else {
 			smearFactor = JetProducer::SmearEnergy(fatPt, fatEta, fatPhi, *jetRho->Get(), fatJetArea->At(i), AK4);
 		}
 
 		//Get jet uncertainty
-		if(jecUnc[AK8] !=  nullptr){
+		if (jecUnc[AK8] !=  nullptr){
 			jetCorrectionUncertainty[AK8]->setJetPt(correctionFactor * fatPt);
 			jetCorrectionUncertainty[AK8]->setJetEta(fatEta);
 			const float uncUp = jetCorrectionUncertainty[AK4]->getUncertainty(true);
@@ -453,6 +529,9 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		SortByIndex<std::vector<float>>(JetPhi, idx);
 		SortByIndex<std::vector<float>>(JetEta, idx);
 		SortByIndex<std::vector<float>>(JetMass, idx);
+		SortByIndex<std::vector<bool>>(JetLooseCSVBTag, idx);
+		SortByIndex<std::vector<bool>>(JetMediumCSVBTag, idx);
+		SortByIndex<std::vector<bool>>(JetTightCSVBTag, idx);
 	}
 
 	//Store values in product to calculate high level variables
@@ -472,11 +551,14 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		cutflow.passed = false;
 	}
 
-	for(const JetType& type: {AK4, AK8}){
+	for (const JetType& type: {AK4, AK8}){
 		delete jetCorrector[type];
 	}
 
 }
 
 void JetProducer::EndJob(TFile* file){
+	for (const JetType& type: {AK4, AK8}){
+		delete jetCorrectionUncertainty[type];
+	}
 }

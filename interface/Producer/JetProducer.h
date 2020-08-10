@@ -85,7 +85,7 @@ class JetProducer: public BaseProducer {
 	public:
 		JetProducer(const int& era, const float& ptCut, const float& etaCut, const float& deltaRCut, TTreeReader& reader);
 
-		void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct *product, const bool& isSyst=false);
+		void BeginJob(TTree* tree, bool& isData);
 		void Produce(CutFlow& cutflow, Susy1LeptonProduct *product);
 		void EndJob(TFile* file);
 };

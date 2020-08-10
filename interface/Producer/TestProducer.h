@@ -27,7 +27,7 @@ class TestProducer: public BaseProducer {
 	public:
 		TestProducer(const int& era, const float& ptCut, const float& etaCut, TTreeReader& reader);
 
-		void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct *product, const bool& isSyst=false);
+		void BeginJob(TTree* tree, bool& isData);
 		void Produce(CutFlow cutflow, Susy1LeptonProduct *product);
 		void EndJob(TFile* file);
 };

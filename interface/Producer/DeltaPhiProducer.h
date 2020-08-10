@@ -19,7 +19,7 @@ class DeltaPhiProducer: public BaseProducer {
 	public:
 		DeltaPhiProducer(TTreeReader& reader);//TODO reader needeed?
 
-		void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct *product, const bool& isSyst=false);
+		void BeginJob(TTree* tree, bool& isData);
 		void Produce(CutFlow& cutflow, Susy1LeptonProduct *product);
 		void EndJob(TFile* file);
 };

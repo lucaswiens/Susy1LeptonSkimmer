@@ -64,12 +64,10 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	cutflow.hist->GetYaxis()->SetName("Events");
 	cutflow.weight = 1;
 
-	//Product for passing newly calculated variables to each producer
-	Susy1LeptonProduct product;
 
 	//Begin jobs for all producers
 	for (std::shared_ptr<BaseProducer> producer: producers){
-		producer->BeginJob(outputTree, isData, &product);
+		producer->BeginJob(outputTree, isData);
 	}
 
 	//Progress bar at 0%
@@ -78,6 +76,8 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 
 	int nEvents = eventTree->GetEntries();
 	while(reader.Next()){
+		//Product for passing newly calculated variables to each producer
+		Susy1LeptonProduct product;
 		//Call each producer
 		for (unsigned int i = 0; i < producers.size(); i++){
 			producers[i]->Produce(cutflow, &product);

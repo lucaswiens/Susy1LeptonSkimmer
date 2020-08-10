@@ -7,10 +7,9 @@ TestProducer::TestProducer(const int& era, const float& ptCut, const float& etaC
 	etaCut(etaCut)
 	{}
 
-void TestProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *product, const bool& isSyst){
+void TestProducer::BeginJob(TTree* tree, bool &isData){
 	//Set data bool
 	this->isData = isData;
-	this->isSyst = isSyst;
 
 	//Initiliaze TTreeReaderValues then using NANO AOD
 	elePt = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_pt");

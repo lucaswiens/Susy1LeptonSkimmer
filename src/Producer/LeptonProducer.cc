@@ -12,10 +12,9 @@ LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& 
 	isoCut(isoCut)
 	{}
 
-void LeptonProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *product, const bool& isSyst){
+void LeptonProducer::BeginJob(TTree* tree, bool &isData){
 	//Set data bool
 	this->isData = isData;
-	this->isSyst = isSyst;
 
 	//Path to files containing Scale Factors TODO find correct files for 17,18
 	TString muonIdSFFileLocation        = TString("$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/leptonSF/Mu_ID.root");

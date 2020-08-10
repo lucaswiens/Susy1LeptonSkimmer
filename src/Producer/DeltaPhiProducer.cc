@@ -12,10 +12,9 @@ float DeltaPhiProducer::DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtE
 	return dPhi;
 }
 
-void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *product, const bool& isSyst){
+void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData){
 	//Set data bool
 	this->isData = isData;
-	this->isSyst = isSyst;
 
 	//Set TTreeReader for genpart and trigger obj from BaseProducer
 	SetCollection(this->isData);

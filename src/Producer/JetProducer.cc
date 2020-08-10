@@ -172,13 +172,13 @@ void JetProducer::SetGenParticles(const int& i, const float& pt, const float& et
 			}
 		}
 	}
-	if(index != -1) alreadySeen.push_back(index);
+	if (index != -1) alreadySeen.push_back(index);
 }
+*/
 
-void JetProducer::BeginJob(TTree* tree, bool &isData, Susy1LeptonProduct *product, const bool& isSyst){
+void JetProducer::BeginJob(TTree* tree, bool &isData){
 	//Set data bool
 	this->isData = isData;
-	this->isSyst = isSyst;
 
 	// Path to Correction files
 	//std::string filePath = "$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/jme/";

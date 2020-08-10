@@ -85,7 +85,7 @@ class BaseProducer {
 		virtual ~BaseProducer(){};
 		BaseProducer();
 		BaseProducer(TTreeReader* reader);
-		virtual void BeginJob(TTree* tree, bool& isData, Susy1LeptonProduct *product, const bool& isSyst=false) = 0;
+		virtual void BeginJob(TTree* tree, bool& isData) = 0;
 		virtual void Produce(CutFlow& cutflow, Susy1LeptonProduct *product) = 0;
 		virtual void EndJob(TFile* file) = 0;
 

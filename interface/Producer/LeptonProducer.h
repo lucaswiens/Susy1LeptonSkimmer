@@ -9,6 +9,13 @@ class LeptonProducer: public BaseProducer {
 		bool isData;
 		//bool isSignal // or maybe make a fastsim flag
 
+		//Scale Factor Files
+		TFile* muonIdSFFile;
+		TFile* muonIsolationSFFile;
+		TFile* muonTriggerSFFile;
+
+		TFile* electronGSFSFFile;
+		TFile* electronMVASFFile;
 		//Histograms containing scalefactors
 		TH2F* muonTriggerSFHist;
 		TH2F* muonIsolationSFHist;

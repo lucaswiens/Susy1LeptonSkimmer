@@ -23,12 +23,12 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData){
 	TString electronGSFSFFileLocation   = TString("$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/leptonSF/EGM2D_eleGSF.root");
 	TString electronMVASFFileLocation   = TString("$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/leptonSF/EGM2D_eleMVA90.root");
 
-	TFile* muonIdSFFile        = TFile::Open(muonIdSFFileLocation, "READ");
-	TFile* muonIsolationSFFile = TFile::Open(muonIsolationSFFileLocation, "READ");
-	TFile* muonTriggerSFFile   = TFile::Open(muonTriggerSFFileLocation, "READ");
+	muonIdSFFile        = TFile::Open(muonIdSFFileLocation, "READ");
+	muonIsolationSFFile = TFile::Open(muonIsolationSFFileLocation, "READ");
+	muonTriggerSFFile   = TFile::Open(muonTriggerSFFileLocation, "READ");
 
-	TFile* electronGSFSFFile = TFile::Open(electronGSFSFFileLocation, "READ");
-	TFile* electronMVASFFile = TFile::Open(electronMVASFFileLocation, "READ");
+	electronGSFSFFile = TFile::Open(electronGSFSFFileLocation, "READ");
+	electronMVASFFile = TFile::Open(electronMVASFFileLocation, "READ");
 
 	muonIdSFHist        = static_cast<TH2F*>(muonIdSFFile->Get("MC_NUM_MediumID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio"));
 	muonIsolationSFHist = static_cast<TH2F*>(muonIsolationSFFile->Get("LooseISO_MediumID_pt_eta/pt_abseta_ratio"));
@@ -166,4 +166,10 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 }
 
 void LeptonProducer::EndJob(TFile* file){
+	muonIdSFFile->Close();
+	muonIsolationSFFile->Close();
+	muonTriggerSFFile->Close();
+
+	electronGSFSFFile->Close();
+	electronMVASFFile->Close();
 }

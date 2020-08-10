@@ -12,9 +12,12 @@ NanoSkimmer::NanoSkimmer(const std::string &inFile, const bool &isData):
 	inFile(inFile),
 	isData(isData)
 	{
+		start = std::chrono::steady_clock::now();
+
 		this->outputTree = new TTree();
 		this->outputTree->SetName("Events");
-		start = std::chrono::steady_clock::now();
+		outputTree->SetAutoFlush(400000); // Flush tree to Disk to avoid memory leaks
+
 		std::cout << "Input file for analysis: " + inFile << std::endl;
 	}
 
@@ -50,7 +53,6 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	//TTreeReader preperation
 	TFile* inputFile = TFile::Open(inFile.c_str(), "READ");
 	TTree* eventTree = (TTree*)inputFile->Get("Events");
-	eventTree->SetAutoFlush(400000); // Flush tree to Disk to avoid memory leaks
 	TTreeReader reader(eventTree);
 
 	Configure(xSec, era, reader);
@@ -121,7 +123,7 @@ void NanoSkimmer::WriteOutput(const std::string &outFile){
 		delete cutflow.hist;
 	}
 
-	file->Write();
+	file->Write(0, TObject::kOverwrite);
 	file->Close();
 
 	end = std::chrono::steady_clock::now();

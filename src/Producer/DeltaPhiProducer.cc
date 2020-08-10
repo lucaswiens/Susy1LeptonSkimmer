@@ -24,7 +24,8 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData){
 	tree->Branch("LT", &LT);
 	tree->Branch("LP", &LP);
 	tree->Branch("DeltaPhi", &deltaPhi);
-	tree->Branch("dPhi", &deltaPhi);//TODO decide for a proper name
+	tree->Branch("deltaPhi", &deltaPhi);
+	tree->Branch("dPhi", &dPhi);
 	tree->Branch("WBosonMt", &wBosonMt);
 	//tree->Branch("Lepton", &);
 }
@@ -35,6 +36,7 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	LT = -999;
 	LP = -999;
 	deltaPhi = -999;
+	dPhi = -999;
 	wBosonMt = -999;
 
 	if(product->leptonPt != -999 && product->metPt != -999){
@@ -44,6 +46,7 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 		LT = product->leptonPt + product->metPt;
 		deltaPhi = DeltaPhi(leptonP4, wBosonP4);
+		dPhi = std::abs(deltaPhi);
 		LP = product->leptonPt / wBosonP4.Pt() * std::cos(deltaPhi);
 		wBosonMt = wBosonP4.Mt();
 

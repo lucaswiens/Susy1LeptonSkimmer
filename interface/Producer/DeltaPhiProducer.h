@@ -11,7 +11,7 @@ class DeltaPhiProducer: public BaseProducer {
 		bool isData;
 
 		//Vector for the output variables
-		float HT, LT, LP, deltaPhi, wBosonMt;
+		float HT, LT, LP, deltaPhi, dPhi, wBosonMt;
 		ROOT::Math::PtEtaPhiMVector leptonP4, metP4;
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);

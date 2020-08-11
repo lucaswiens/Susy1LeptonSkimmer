@@ -297,24 +297,43 @@ void JetProducer::BeginJob(TTree* tree, bool &isData){
 
 
 	//Set Branches of output tree
-	tree->Branch("nJet", &nJet);
 	tree->Branch("JetPt", &JetPt);
-	tree->Branch("JetPhi", &JetPhi);
 	tree->Branch("JetEta", &JetEta);
-	tree->Branch("JetRho", &JetRho);
+	tree->Branch("JetPhi", &JetPhi);
 	tree->Branch("JetMass", &JetMass);
+	tree->Branch("JetPtUp", &JetPtUp);
+	tree->Branch("JetEtaUp", &JetEtaUp);
+	tree->Branch("JetPhiUp", &JetPhiUp);
+	tree->Branch("JetMassUp", &JetMassUp);
+	tree->Branch("JetPtDown", &JetPtDown);
+	tree->Branch("JetEtaDown", &JetEtaDown);
+	tree->Branch("JetPhiDown", &JetPhiDown);
+	tree->Branch("JetMassDown", &JetMassDown);
 	tree->Branch("JetCSVBTag", &JetCSVBTag);
-	tree->Branch("METPt", &METPt);
-	tree->Branch("METPhi", &METPhi);
-	//tree->Branch("JetLooseBTag", &JetLooseBTag);
-	//tree->Branch("JetMediumBTag", &JetMediumBTag);
-	//tree->Branch("JetTightBTag", &JetTightBTag);
+	tree->Branch("JetLooseBTag", &JetLooseBTag);
+	tree->Branch("JetMediumBTag", &JetMediumBTag);
+	tree->Branch("JetTightBTag", &JetTightBTag);
 	tree->Branch("JetLooseCSVBTag", &JetLooseCSVBTag);
 	tree->Branch("JetMediumCSVBTag", &JetMediumCSVBTag);
 	tree->Branch("JetTightCSVBTag", &JetTightCSVBTag);
-	tree->Branch("nLooseCSVBTagJet", &nLooseCSVBTagJet);
-	tree->Branch("nMediumCSVBTagJet", &nMediumCSVBTagJet);
-	tree->Branch("nTightCSVBTagJet", &nTightCSVBTagJet);
+
+	tree->Branch("METPt ", &METPt );
+	tree->Branch("METPhi ", &METPhi );
+	tree->Branch("JetRho ", &JetRho );
+
+	tree->Branch("runNumber ", &runNumber );
+
+	tree->Branch("nJet ", &nJet );
+	tree->Branch("nFatJet ", &nFatJet );
+	tree->Branch("nLooseCSVBTagJet ", &nLooseCSVBTagJet );
+	tree->Branch("nMediumCSVBTagJet ", &nMediumCSVBTagJet );
+	tree->Branch("nTightCSVBTagJet ", &nTightCSVBTagJet );
+	tree->Branch("nLooseBTagJet ", &nLooseBTagJet );
+	tree->Branch("nMediumBTagJet ", &nMediumBTagJet );
+	tree->Branch("nTightBTagJet ", &nTightBTagJet );
+
+	tree->Branch("nJet30 ", &nJet30 );
+	tree->Branch("nMediumCSVBTagJet30 ", &nMediumCSVBTagJet30 );
 }
 
 void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
@@ -341,9 +360,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 	//Initialize all variables as -999
 	METPt = -999;
-	METEta = -999;
 	METPhi = -999;
-	METMass = -999;
 	JetRho = -999;
 
 	runNumber = -999;
@@ -358,8 +375,11 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	nMediumBTagJet = 0;
 	nTightBTagJet = 0;
 
+	nJet30 = 0;
+	nMediumCSVBTagJet30 = 0;
+
 	//float CSVBValue = 0, DeepBValue = 0;
-	float metPx = 0, metPy;
+	float metPx = 0, metPy, metPxUp, metPyUp, metPxDown, metPyDown;
 
 	nJet = *jetNumber->Get();
 	nFatJet = *fatJetNumber->Get();
@@ -373,6 +393,10 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	const float& metphi = *metPhi->Get();
 	metPx = metpt * std::cos(metphi);
 	metPy = metpt * std::sin(metphi);
+	metPxUp = metPx;
+	metPyUp = metPy;
+	metPxDown = metPx;
+	metPyDown = metPy;
 
 	for (unsigned int i = 0; i < nJet; i++){
 		//do jet correction, smearing etc.
@@ -383,7 +407,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 		std::map<char, float> smearFactor;
 		float correctionFactor = CorrectEnergy(pt, eta, *jetRho->Get(), jetArea->At(i), AK4);
-		float correctionFactorUp, correctionFactorDown;
+		float correctionFactorUp = 1.0, correctionFactorDown;
 
 		if (jecUnc[AK4] !=  nullptr){
 			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * pt);
@@ -392,8 +416,8 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * pt);
 			jetCorrectionUncertainty[AK4]->setJetEta(eta);
 			const float uncDown = jetCorrectionUncertainty[AK4]->getUncertainty(false);
-			//correctionFactorUp   = (1 + uncUp) * correctionFactor ;
-			//correctionFactorDown = (1 - uncDown) * correctionFactor ;
+			correctionFactorUp   = (1 + uncUp) * correctionFactor ;
+			correctionFactorDown = (1 - uncDown) * correctionFactor ;
 		}
 
 		if (isData){
@@ -404,6 +428,11 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 		const float& correctedPt = smearFactor['c'] * correctionFactor * pt;
 		const float& correctedMass = smearFactor['c'] * correctionFactor * mass;
+
+		const float& correctedPtUp = smearFactor['u'] * correctionFactorUp * pt;
+		const float& correctedMassUp = smearFactor['u'] * correctionFactorUp * mass;
+		const float& correctedPtDown = smearFactor['d'] * correctionFactorDown * pt;
+		const float& correctedMassDown = smearFactor['d'] * correctionFactorDown * mass;
 
 		if (correctedPt > ptCut && abs(eta) < etaCut){
 			//correctionFactor = CorrectEnergy(pt, eta, *jetRho->Get(), jetArea->At(i), AK4);
@@ -452,9 +481,20 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			JetEta.push_back(eta);
 			JetPhi.push_back(phi);
 			JetMass.push_back(correctedMass);
+
+			JetPtUp.push_back(correctedPtUp);
+			JetMassUp.push_back(correctedMassUp);
+			JetPtDown.push_back(correctedPtDown);
+			JetMassDown.push_back(correctedMassDown);
+
 			//JECCorrection.push_back(correctionFactor);
 			metPx += pt * std::cos(phi) - JetPt.back() * std::cos(phi);
 			metPy += pt * std::sin(phi) - JetPt.back() * std::sin(phi);
+
+			metPxUp += pt * std::cos(phi) - JetPtUp.back() * std::cos(phi);
+			metPyUp += pt * std::sin(phi) - JetPtUp.back() * std::sin(phi);
+			metPxDown += pt * std::cos(phi) - JetPtDown.back() * std::cos(phi);
+			metPyDown += pt * std::sin(phi) - JetPtDown.back() * std::sin(phi);
 		}
 	}
 
@@ -477,9 +517,20 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		JetMediumCSVBTag.erase(JetMediumCSVBTag.begin() + nearestJetIndex);
 		JetTightCSVBTag.erase(JetTightCSVBTag.begin() + nearestJetIndex);
 	}
-	for (bool btag : JetLooseCSVBTag){ if(btag) {nLooseCSVBTagJet++;}}
-	for (bool btag : JetMediumCSVBTag){ if(btag) {nMediumCSVBTagJet++;}}
-	for (bool btag : JetTightCSVBTag){ if(btag) {nTightCSVBTagJet++;}}
+
+	for (unsigned int i = 0; i < nJet; i++){
+		if(JetTightCSVBTag[i]){ nLooseCSVBTagJet++; nMediumCSVBTagJet++; nTightCSVBTagJet++;}
+		else if(JetMediumCSVBTag[i]){ nLooseCSVBTagJet++; nMediumCSVBTagJet++;}
+		else if(JetLooseCSVBTag[i]){ nLooseCSVBTagJet++;}
+
+		//Signal Region
+		if (JetPt[i] > 30){
+			nJet30++;
+			if (JetMediumCSVBTag[i]){
+				nMediumCSVBTagJet30++;
+			}
+		}
+	}
 
 	/* TODO Loop over fat jets, will be done later
 	for (unsigned int i = 0; i < nFatJet; i++){
@@ -515,6 +566,10 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	nJet = JetPt.size();
 	METPt = std::sqrt(std::pow(metPx, 2) + std::pow(metPy, 2));
 	METPhi = std::atan2(metPy, metPx);
+	METPtUp = std::sqrt(std::pow(metPxUp, 2) + std::pow(metPyUp, 2));
+	METPhiUp = std::atan2(metPyUp, metPxUp);
+	METPtDown = std::sqrt(std::pow(metPxDown, 2) + std::pow(metPyDown, 2));
+	METPhiDown = std::atan2(metPyDown, metPxDown);
 
 	//Sort Vectors according to JetPt, since the correction could have changed the order
 	std::vector<int> idx(nJet);
@@ -540,6 +595,14 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 	product->metPt = METPt;
 	product->metPhi = METPhi;
+
+
+	product->nLooseCSVBTagJet = nLooseCSVBTagJet;
+	product->nMediumCSVBTagJet = nMediumCSVBTagJet;
+	product->nTightCSVBTagJet = nTightCSVBTagJet;
+
+	product->nJet30 = nJet30;
+	product->nMediumCSVBTagJet30 = nMediumCSVBTagJet30;
 
 	if (nJet!=0){
 		std::string cutName("JetPt > 20, |JetEta| < 2.4");

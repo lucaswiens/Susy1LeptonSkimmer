@@ -49,9 +49,9 @@ class JetProducer: public BaseProducer {
 		//Vector for the output variables
 		std::vector<float> JetPt, JetEta, JetPhi, JetMass, JetCSVBTag, JetPtUp, JetEtaUp, JetPhiUp, JetMassUp, JetPtDown, JetEtaDown, JetPhiDown, JetMassDown;
 		std::vector<bool> JetLooseBTag, JetMediumBTag, JetTightBTag, JetLooseCSVBTag, JetMediumCSVBTag, JetTightCSVBTag;
-		float METPt, METEta, METPhi, METMass, JetRho;
+		float METPt, METPhi, JetRho, METPtUp, METPhiUp, METPtDown, METPhiDown;
 		int runNumber;
-		unsigned int nJet, nFatJet, nLooseCSVBTagJet, nMediumCSVBTagJet, nTightCSVBTagJet, nLooseBTagJet, nMediumBTagJet, nTightBTagJet;
+		unsigned int nJet, nFatJet, nLooseCSVBTagJet, nMediumCSVBTagJet, nTightCSVBTagJet, nLooseBTagJet, nMediumBTagJet, nTightBTagJet, nJet30, nMediumCSVBTagJet30;
 
 		//TTreeReader Values
 		std::unique_ptr<TTreeReaderValue<unsigned int>> jetNumber, fatJetNumber;

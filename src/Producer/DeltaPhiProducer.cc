@@ -27,6 +27,7 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData){
 	tree->Branch("deltaPhi", &deltaPhi);
 	tree->Branch("dPhi", &dPhi);
 	tree->Branch("WBosonMt", &wBosonMt);
+	tree->Branch("signalRegion", &signalRegion);
 	//tree->Branch("Lepton", &);
 }
 
@@ -38,6 +39,7 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	deltaPhi = -999;
 	dPhi = -999;
 	wBosonMt = -999;
+	signalRegion = -999;
 
 	if(product->leptonPt != -999 && product->metPt != -999){
 		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(product->leptonPt, product->leptonEta, product->leptonPhi, product->leptonMass);
@@ -55,6 +57,23 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 			HT += product->jetPt.at(i);
 		}
 
+		// 0-B SRs -- simplified dPhi
+		if (product->nMediumCSVBTagJet30 == 0){
+			if (LT < 250){signalRegion = 0;}
+			else if (LT > 250){signalRegion = dPhi > 0.75;}
+			// BLIND data
+			if (isData && product->nJet30 >= 5){
+				signalRegion = -signalRegion;
+			}
+		} else if (product->nJet30 < 99) {// Multi-B SRs
+			if (LT < 250){ signalRegion = 0;}
+			else if (LT < 350){ signalRegion = dPhi > 1.0;}
+			else if (LT < 600){ signalRegion = dPhi > 0.75;}
+			else if (LT > 600){ signalRegion = dPhi > 0.5;}
+
+			// BLIND data
+			if (isData && product->nJet >= 6){ signalRegion = -signalRegion;}
+		}
 	}
 
 	if (product->leptonPt != -999){

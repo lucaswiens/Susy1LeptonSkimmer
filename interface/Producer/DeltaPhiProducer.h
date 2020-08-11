@@ -12,6 +12,7 @@ class DeltaPhiProducer: public BaseProducer {
 
 		//Vector for the output variables
 		float HT, LT, LP, deltaPhi, dPhi, wBosonMt;
+		int signalRegion;
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
 

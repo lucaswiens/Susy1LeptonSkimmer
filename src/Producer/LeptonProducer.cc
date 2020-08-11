@@ -70,17 +70,23 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData){
 	SetCollection(this->isData);
 
 	//Set Branches of output tree
-	tree->Branch("nMuon", &nMuon);
-	tree->Branch("nElectron", &nElectron);
-	tree->Branch("nLepton", &nLepton);
+	tree->Branch("Pt", &Pt);
+	tree->Branch("Eta", &Eta);
+	tree->Branch("Phi", &Phi);
+	tree->Branch("Mass", &Mass);
+	tree->Branch("MiniPFRelIsoAll", &MiniPFRelIsoAll);
+	tree->Branch("ScaleFactor", &ScaleFactor);
 
-	tree->Branch("LeptonPt", &Pt);
-	tree->Branch("LeptonEta", &Eta);
-	tree->Branch("LeptonPhi", &Phi);
-	tree->Branch("LeptonMass", &Mass);
-	tree->Branch("LeptonMiniPFRelIsoAll", &MiniPFRelIsoAll);
-	tree->Branch("LeptonSF", &ScaleFactor);
+	tree->Branch("LooseId", &LooseId);
+	tree->Branch("MediumId", &MediumId);
+	tree->Branch("TightId", &TightId);
+	tree->Branch("IsPFCand", &IsPFCand);
+
+	tree->Branch("Charge", &Charge);
+	tree->Branch("PdgId", &PdgId);
 	//tree->Branch("Lepton", &);
+
+
 }
 
 void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
@@ -110,9 +116,6 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	nElectron = *electronNumber->Get();
 	nLepton = nMuon + nElectron;
 
-	// Create WeightCalculator class for easier acces to SF
-	WeightCalculator* wc;
-
 	if(nLepton == 1){
 		if (nMuon == 1){
 			const float& pt = muonPt->At(0);
@@ -130,10 +133,13 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 			if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand){
 				if(!isData){
+					// Create WeightCalculator class for easier acces to SF
+					WeightCalculator* wc = new WeightCalculator;
 					const float& idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
 					const float& isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
 					const float& triggerSF = wc->Get2DWeight(pt, eta, muonTriggerSFHist);
 					ScaleFactor = idSF * isolationSF * triggerSF;
+					delete wc;
 				}
 
 				Pt = pt; Eta = eta; Phi = phi; Mass = mass; MiniPFRelIsoAll = miniPFRelIsoAll, PdgId = pdgId;
@@ -156,9 +162,12 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 			if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut){
 				if(!isData){
+					// Create WeightCalculator class for easier acces to SF
+					WeightCalculator* wc = new WeightCalculator;
 					const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
 					const float& MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
 					ScaleFactor = GSFSF * MVASF;
+					delete wc;
 				}
 
 				Pt = pt; Eta = eta; Phi = phi; Mass = mass; MiniPFRelIsoAll = miniPFRelIsoAll, PdgId = pdgId;

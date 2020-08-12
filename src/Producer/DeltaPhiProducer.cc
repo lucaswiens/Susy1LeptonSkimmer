@@ -27,8 +27,9 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("deltaPhi", &deltaPhi);
 	tree->Branch("dPhi", &dPhi);
 	tree->Branch("WBosonMt", &wBosonMt);
-	tree->Branch("signalRegion", &signalRegion);
-	//tree->Branch("Lepton", &);
+	tree->Branch("signalRegion", &signalRegionCSV);
+	tree->Branch("signalRegionCSV", &signalRegionCSV);
+	tree->Branch("signalRegionDF", &signalRegionDF);
 }
 
 void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
@@ -39,7 +40,8 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	deltaPhi = -999;
 	dPhi = -999;
 	wBosonMt = -999;
-	signalRegion = -999;
+	signalRegionCSV = -999;
+	signalRegionDF = -999;
 
 	if(product->leptonPt != -999 && product->metPt != -999) {
 		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(product->leptonPt, product->leptonEta, product->leptonPhi, product->leptonMass);
@@ -57,22 +59,34 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			HT += product->jetPt.at(i);
 		}
 
-		// 0-B SRs -- simplified dPhi
-		if (product->nMediumCSVBTagJet30 == 0){
-			if (LT < 250){signalRegion = 0;}
-			else if (LT > 250){signalRegion = dPhi > 0.75;}
+		if (product->nMediumCSVBTagJet == 0) {// 0-B SRs -- simplified dPhi
+			if (LT < 250) {signalRegionCSV = 0;}
+			else if (LT > 250) {signalRegionCSV = dPhi > 0.75;}
 			// BLIND data
-			if (isData && product->nJet30 >= 5){
-				signalRegion = -signalRegion;
-			}
-		} else if (product->nJet30 < 99) {// Multi-B SRs
-			if (LT < 250){ signalRegion = 0;}
-			else if (LT < 350){ signalRegion = dPhi > 1.0;}
-			else if (LT < 600){ signalRegion = dPhi > 0.75;}
-			else if (LT > 600){ signalRegion = dPhi > 0.5;}
+			if (isData && product->nJet >= 5) { signalRegionCSV = -signalRegionCSV;}
+		} else if (product->nJet < 99) {// Multi-B SRs
+			if (LT < 250) { signalRegionCSV = 0;}
+			else if (LT < 350) { signalRegionCSV = dPhi > 1.0;}
+			else if (LT < 600) { signalRegionCSV = dPhi > 0.75;}
+			else if (LT > 600) { signalRegionCSV = dPhi > 0.5;}
 
 			// BLIND data
-			if (isData && product->nJet >= 6){ signalRegion = -signalRegion;}
+			if (isData && product->nJet >= 6) { signalRegionCSV = -signalRegionCSV;}
+		}
+
+		if (product->nMediumDFBTagJet == 0) {//0-B SRs -- simplified dPhi
+			if (LT < 250) {signalRegionDF = 0;}
+			else if (LT > 250) {signalRegionDF = dPhi > 0.75;}
+			// BLIND data
+			if (isData && product->nJet >= 5) { signalRegionDF = -signalRegionDF;}
+		} else if (product->nJet < 99) {// Multi-B SRs
+			if (LT < 250) { signalRegionDF = 0;}
+			else if (LT < 350) { signalRegionDF = dPhi > 1.0;}
+			else if (LT < 600) { signalRegionDF = dPhi > 0.75;}
+			else if (LT > 600) { signalRegionDF = dPhi > 0.5;}
+
+			// BLIND data
+			if (isData && product->nJet >= 6) { signalRegionDF = -signalRegionDF;}
 		}
 	}
 

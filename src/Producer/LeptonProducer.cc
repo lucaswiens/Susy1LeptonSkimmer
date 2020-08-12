@@ -44,6 +44,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	muonEta = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_eta");
 	muonPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_phi");
 	muonMass = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_mass");
+	muonCharge = std::make_unique<TTreeReaderArray<int>>(*reader, "Muon_charge");
 	muonDxy = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_dxy");
 	muonDz = std::make_unique<TTreeReaderArray<float>>(*reader, "Muon_dz");
 	muonPdgId = std::make_unique<TTreeReaderArray<int>>(*reader, "Muon_pdgId");
@@ -60,6 +61,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	electronEta = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_eta");
 	electronPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_phi");
 	electronMass = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_mass");
+	electronCharge = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_charge");
 	electronPdgId = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_pdgId");
 	electronMiniPFRelIsoAll = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_miniPFRelIso_all");
 	electronCutBased = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_cutBased");
@@ -70,23 +72,20 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	SetCollection(this->isData);
 
 	//Set Branches of output tree
-	tree->Branch("Pt", &Pt);
-	tree->Branch("Eta", &Eta);
-	tree->Branch("Phi", &Phi);
-	tree->Branch("Mass", &Mass);
-	tree->Branch("MiniPFRelIsoAll", &MiniPFRelIsoAll);
-	tree->Branch("ScaleFactor", &ScaleFactor);
+	tree->Branch("LeptonPt", &Pt);
+	tree->Branch("LeptonEta", &Eta);
+	tree->Branch("LeptonPhi", &Phi);
+	tree->Branch("LeptonMass", &Mass);
+	tree->Branch("LeptonMiniPFRelIsoAll", &MiniPFRelIsoAll);
+	tree->Branch("LeptonScaleFactor", &ScaleFactor);
 
-	tree->Branch("LooseId", &LooseId);
-	tree->Branch("MediumId", &MediumId);
-	tree->Branch("TightId", &TightId);
-	tree->Branch("IsPFCand", &IsPFCand);
+	tree->Branch("LeptonLooseId", &LooseId);
+	tree->Branch("LeptonMediumId", &MediumId);
+	tree->Branch("LeptonTightId", &TightId);
+	tree->Branch("LeptonIsPFCand", &IsPFCand);
 
-	tree->Branch("Charge", &Charge);
-	tree->Branch("PdgId", &PdgId);
-	//tree->Branch("Lepton", &);
-
-
+	tree->Branch("LeptonCharge", &Charge);
+	tree->Branch("LeptonPdgId", &PdgId);
 }
 
 void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
@@ -122,6 +121,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			const float& eta = muonEta->At(0);
 			const float& phi = muonPhi->At(0);
 			const float& mass = muonMass->At(0);
+			const float& charge = muonCharge->At(0);
 			const float& dxy = muonDxy->At(0);
 			const float& dz = muonDz->At(0);
 			const float& sip3d = muonSip3d->At(0);
@@ -171,7 +171,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					delete wc;
 				}
 
-				Pt = pt; Eta = eta; Phi = phi; Mass = mass; MiniPFRelIsoAll = miniPFRelIsoAll, PdgId = pdgId;
+				Pt = pt; Eta = eta; Phi = phi; Mass = mass; Charge = charge; MiniPFRelIsoAll = miniPFRelIsoAll; PdgId = pdgId;
 				CutBased = electronCutBased->At(0);
 			}
 		}

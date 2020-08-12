@@ -199,23 +199,23 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	2018: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
 	TODO: Just use DeepCSV?
 	*/
-	bTag = {
+	deepFlavourBTag = {
 		{2016, {
-				{'l', 0.5426},
-				{'m', 0.8484},
-				{'t', 0.9535}
+				{'l', 0.0614},
+				{'m', 0.3093},
+				{'t', 0.7221}
 			}
 		},
 		{2017, {
-				{'l', 0.5803},
-				{'m', 0.8838},
-				{'t', 0.9693}
+				{'l', 0.0521},
+				{'m', 0.3033},
+				{'t', 0.7489}
 			}
 		},
 		{2018, {//TODO Twiki only gave deepCSV values
-				{'l', 0},
-				{'m', 0},
-				{'t', 0}
+				{'l', 0.0494},
+				{'m', 0.2770},
+				{'t', 0.7264}
 			}
 		}
 	};
@@ -248,7 +248,9 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	jetEta = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_eta");
 	jetMass = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_mass");
 	jetArea = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_area");
+	jetRawFactor = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_rawFactor");
 	jetCSV = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_btagDeepB");
+	jetDF = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_btagDeepFlavB");
 	jetRho = std::make_unique<TTreeReaderValue<float>>(*reader, "fixedGridRhoFastjetAll");
 	metPt = std::make_unique<TTreeReaderValue<float>>(*reader, "MET_pt");
 	metPhi = std::make_unique<TTreeReaderValue<float>>(*reader, "MET_phi");
@@ -302,18 +304,20 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("JetEta", &JetEta);
 	tree->Branch("JetPhi", &JetPhi);
 	tree->Branch("JetMass", &JetMass);
-	tree->Branch("JetPtUp", &JetPtUp);
-	tree->Branch("JetEtaUp", &JetEtaUp);
-	tree->Branch("JetPhiUp", &JetPhiUp);
-	tree->Branch("JetMassUp", &JetMassUp);
-	tree->Branch("JetPtDown", &JetPtDown);
-	tree->Branch("JetEtaDown", &JetEtaDown);
-	tree->Branch("JetPhiDown", &JetPhiDown);
-	tree->Branch("JetMassDown", &JetMassDown);
+	tree->Branch("JetRawFactor", &JetRawFactor);
+	tree->Branch("JetPt_jerUp", &JetPt_jerUp);
+	tree->Branch("JetMass_jerUp", &JetMass_jerUp);
+	tree->Branch("JetPt_jerDown", &JetPt_jerDown);
+	tree->Branch("JetMass_jerDown", &JetMass_jerDown);
+	tree->Branch("JetPt_jecUp", &JetPt_jecUp);
+	tree->Branch("JetMass_jecUp", &JetMass_jecUp);
+	tree->Branch("JetPt_jecDown", &JetPt_jecDown);
+	tree->Branch("JetMass_jecDown", &JetMass_jecDown);
 	tree->Branch("JetCSVBTag", &JetCSVBTag);
-	tree->Branch("JetLooseBTag", &JetLooseBTag);
-	tree->Branch("JetMediumBTag", &JetMediumBTag);
-	tree->Branch("JetTightBTag", &JetTightBTag);
+	tree->Branch("JetDFBTag", &JetDFBTag);
+	tree->Branch("JetLooseDFBTag", &JetLooseDFBTag);
+	tree->Branch("JetMediumDFBTag", &JetMediumDFBTag);
+	tree->Branch("JetTightDFBTag", &JetTightDFBTag);
 	tree->Branch("JetLooseCSVBTag", &JetLooseCSVBTag);
 	tree->Branch("JetMediumCSVBTag", &JetMediumCSVBTag);
 	tree->Branch("JetTightCSVBTag", &JetTightCSVBTag);
@@ -326,35 +330,34 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 
 	tree->Branch("nJet ", &nJet );
 	tree->Branch("nFatJet ", &nFatJet );
+	tree->Branch("nLooseDFBTagJet ", &nLooseDFBTagJet );
+	tree->Branch("nMediumDFBTagJet ", &nMediumDFBTagJet );
+	tree->Branch("nTightDFBTagJet ", &nTightDFBTagJet );
 	tree->Branch("nLooseCSVBTagJet ", &nLooseCSVBTagJet );
 	tree->Branch("nMediumCSVBTagJet ", &nMediumCSVBTagJet );
 	tree->Branch("nTightCSVBTagJet ", &nTightCSVBTagJet );
-	tree->Branch("nLooseBTagJet ", &nLooseBTagJet );
-	tree->Branch("nMediumBTagJet ", &nMediumBTagJet );
-	tree->Branch("nTightBTagJet ", &nTightBTagJet );
-
-	tree->Branch("nJet30 ", &nJet30 );
-	tree->Branch("nMediumCSVBTagJet30 ", &nMediumCSVBTagJet30 );
 }
 
-void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
+void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	// clear vectors for each event, otherwise this creates a memory leak
 	JetPt.clear();
 	JetEta.clear();
 	JetPhi.clear();
 	JetMass.clear();
-	JetPtUp.clear();
-	JetEtaUp.clear();
-	JetPhiUp.clear();
-	JetMassUp.clear();
-	JetPtDown.clear();
-	JetEtaDown.clear();
-	JetPhiDown.clear();
-	JetMassDown.clear();
+	JetRawFactor.clear();
+	JetPt_jerUp.clear();
+	JetMass_jerUp.clear();
+	JetPt_jerDown.clear();
+	JetMass_jerDown.clear();
+	JetPt_jecUp.clear();
+	JetMass_jecUp.clear();
+	JetPt_jecDown.clear();
+	JetMass_jecDown.clear();
 	JetCSVBTag.clear();
-	JetLooseBTag.clear();
-	JetMediumBTag.clear();
-	JetTightBTag.clear();
+	JetDFBTag.clear();
+	JetLooseDFBTag.clear();
+	JetMediumDFBTag.clear();
+	JetTightDFBTag.clear();
 	JetLooseCSVBTag.clear();
 	JetMediumCSVBTag.clear();
 	JetTightCSVBTag.clear();
@@ -372,12 +375,9 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	nLooseCSVBTagJet = 0;
 	nMediumCSVBTagJet = 0;
 	nTightCSVBTagJet = 0;
-	nLooseBTagJet = 0;
-	nMediumBTagJet = 0;
-	nTightBTagJet = 0;
-
-	nJet30 = 0;
-	nMediumCSVBTagJet30 = 0;
+	nLooseDFBTagJet = 0;
+	nMediumDFBTagJet = 0;
+	nTightDFBTagJet = 0;
 
 	//float CSVBValue = 0, DeepBValue = 0;
 	float metPx = 0, metPy, metPxUp, metPyUp, metPxDown, metPyDown;
@@ -386,7 +386,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	nFatJet = *fatJetNumber->Get();
 	runNumber = *run->Get();
 
-	for (const JetType& type: {AK4, AK8}){
+	for (const JetType& type : {AK4, AK8}) {
 			SetCorrector(type, runNumber);
 	}
 
@@ -618,6 +618,9 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		SortByIndex<std::vector<bool>>(JetLooseCSVBTag, idx);
 		SortByIndex<std::vector<bool>>(JetMediumCSVBTag, idx);
 		SortByIndex<std::vector<bool>>(JetTightCSVBTag, idx);
+		SortByIndex<std::vector<bool>>(JetLooseDFBTag, idx);
+		SortByIndex<std::vector<bool>>(JetMediumDFBTag, idx);
+		SortByIndex<std::vector<bool>>(JetTightDFBTag, idx);
 	}
 
 	//Store values in product to calculate high level variables

@@ -40,27 +40,27 @@ class JetProducer : public BaseProducer {
 		std::map<int, std::string> jmePtReso, jmeSF, jecUnc;
 
 		// Btag Map
-		std::map<int, std::map<char, float>> bTag, deepCSVBTag;
+		std::map<int, std::map<char, float>> deepFlavourBTag, deepCSVBTag;
 
 		//Cut Variables
 		int era;
 		float ptCut, etaCut, deltaRCut;
 
 		//Vector for the output variables
-		std::vector<float> JetPt, JetEta, JetPhi, JetMass, JetCSVBTag, JetPtUp, JetEtaUp, JetPhiUp, JetMassUp, JetPtDown, JetEtaDown, JetPhiDown, JetMassDown;
-		std::vector<bool> JetLooseBTag, JetMediumBTag, JetTightBTag, JetLooseCSVBTag, JetMediumCSVBTag, JetTightCSVBTag;
-		float METPt, METPhi, JetRho, METPtUp, METPhiUp, METPtDown, METPhiDown;
+		std::vector<float> JetPt, JetEta, JetPhi, JetMass, JetRawPt, JetRawMass, JetRawFactor, JetCSVBTag, JetDFBTag, JetPt_jerUp, JetMass_jerUp, JetPt_jerDown, JetMass_jerDown, JetPt_jecUp, JetMass_jecUp, JetPt_jecDown, JetMass_jecDown;
+		std::vector<bool> JetLooseDFBTag, JetMediumDFBTag, JetTightDFBTag, JetLooseCSVBTag, JetMediumCSVBTag, JetTightCSVBTag;
+		float METPt, METPhi, JetRho, METPt_jerUp, METPhi_jerUp, METPt_jerDown, METPhi_jerDown, METPt_jecUp, METPhi_jecUp, METPt_jecDown, METPhi_jecDown;
 		int runNumber;
-		unsigned int nJet, nFatJet, nLooseCSVBTagJet, nMediumCSVBTagJet, nTightCSVBTagJet, nLooseBTagJet, nMediumBTagJet, nTightBTagJet, nJet30, nMediumCSVBTagJet30;
+		unsigned int nJet, nFatJet, nLooseDFBTagJet, nMediumDFBTagJet, nTightDFBTagJet, nLooseCSVBTagJet, nMediumCSVBTagJet, nTightCSVBTagJet;
 
 		//TTreeReader Values
 		std::unique_ptr<TTreeReaderValue<unsigned int>> jetNumber, fatJetNumber;
 
-		std::unique_ptr<TTreeReaderArray<float>> fatJetPt, fatJetEta, fatJetPhi, fatJetMass, fatJetArea, fatJetCSV;
+		std::unique_ptr<TTreeReaderArray<float>> fatJetPt, fatJetEta, fatJetPhi, fatJetMass, fatJetArea, fatJetCSV, fatJetDF;
 		std::unique_ptr<TTreeReaderArray<float>> fatJetTau1, fatJetTau2, fatJetTau3;
 
 		std::unique_ptr<TTreeReaderArray<int>> jetGenIdx, jetFlavour;
-		std::unique_ptr<TTreeReaderArray<float>> jetMass, jetPt, jetEta, jetPhi, jetArea, jetCSV;
+		std::unique_ptr<TTreeReaderArray<float>> jetMass, jetPt, jetEta, jetPhi, jetArea, jetRawFactor, jetCSV, jetDF;
 
 		std::unique_ptr<TTreeReaderArray<float>> genJetPt, genJetEta, genJetPhi, genJetMass;
 		std::unique_ptr<TTreeReaderArray<float>> genFatJetPt, genFatJetEta, genFatJetPhi, genFatJetMass;

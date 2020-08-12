@@ -15,7 +15,7 @@
 
 //typedef LorentzVector<PtEtaPhiM4D<double> > ROOT::Math::PtEtaPhiMVector
 
-class JetProducer: public BaseProducer {
+class JetProducer : public BaseProducer {
 
 	enum JetType {SUBAK4, AK4, AK8, PF, VTX};
 

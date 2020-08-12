@@ -7,7 +7,7 @@ TestProducer::TestProducer(const int& era, const float& ptCut, const float& etaC
 	etaCut(etaCut)
 	{}
 
-void TestProducer::BeginJob(TTree* tree, bool &isData){
+void TestProducer::BeginJob(TTree* tree, bool &isData) {
 	//Set data bool
 	this->isData = isData;
 
@@ -30,26 +30,26 @@ void TestProducer::BeginJob(TTree* tree, bool &isData){
 	//Set Branches of output tree
 	tree->Branch("Electron_Size", &nElectrons);
 
-	for(std::pair<const std::string, std::vector<float>&>& var: floatVar){
+	for(std::pair<const std::string, std::vector<float>&>& var : floatVar) {
 		tree->Branch(("Electron_" + var.first).c_str(), &var.second);
 	}
 }
 
-void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product){
+void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product) {
 	//Clear variables vector
-	for(std::pair<const std::string, std::vector<float>&>& var: floatVar){
+	for(std::pair<const std::string, std::vector<float>&>& var : floatVar) {
 		var.second.clear();
 	}
 
 	const int& eleSize = elePt->GetSize();
 
 	//Loop over all electrons
-	for(int i = 0; i < eleSize; i++){
+	for(int i = 0; i < eleSize; i++) {
 		const float& pt = elePt->At(i);
 		const float& eta = eleEta->At(i);
 		const float& phi = elePhi->At(i);
 
-		if(pt > ptCut && abs(eta) < etaCut){
+		if(pt > ptCut && abs(eta) < etaCut) {
 			//Electron four momentum components
 			Pt.push_back(pt);
 			Eta.push_back(eta);
@@ -59,8 +59,8 @@ void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product){
 
 	nElectrons = Pt.size();
 
-	if(cutflow.nMinElectron <= Pt.size()){
-		if(cutflow.nMinElectron!=0 and cutflow.passed){
+	if(cutflow.nMinElectron <= Pt.size()) {
+		if(cutflow.nMinElectron!=0 and cutflow.passed) {
 			std::string cutName("N_{e} >= " + std::to_string(cutflow.nMinElectron) + " (no iso/ID req)");
 			cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 		}
@@ -69,5 +69,5 @@ void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product){
 	}
 }
 
-void TestProducer::EndJob(TFile* file){
+void TestProducer::EndJob(TFile* file) {
 }

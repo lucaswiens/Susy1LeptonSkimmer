@@ -5,14 +5,14 @@ DeltaPhiProducer::DeltaPhiProducer(TTreeReader& reader):
 	{}
 
 
-float DeltaPhiProducer::DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2){
+float DeltaPhiProducer::DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2) {
 	float dPhi = v1.Phi() - v2.Phi();
 	while (dPhi >= TMath::Pi()) dPhi -= TMath::TwoPi();
 	while (dPhi < -TMath::Pi()) dPhi += TMath::TwoPi();
 	return dPhi;
 }
 
-void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData){
+void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 	//Set data bool
 	this->isData = isData;
 
@@ -31,7 +31,7 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData){
 	//tree->Branch("Lepton", &);
 }
 
-void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
+void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	HT = -999;
 	LT = -999;
@@ -41,7 +41,7 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	wBosonMt = -999;
 	signalRegion = -999;
 
-	if(product->leptonPt != -999 && product->metPt != -999){
+	if(product->leptonPt != -999 && product->metPt != -999) {
 		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(product->leptonPt, product->leptonEta, product->leptonPhi, product->leptonMass);
 		ROOT::Math::PtEtaPhiMVector metP4 = ROOT::Math::PtEtaPhiMVector(product->metPt, 0, product->metPhi, 0);
 		ROOT::Math::PtEtaPhiMVector wBosonP4 = leptonP4 + metP4;
@@ -53,7 +53,7 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		wBosonMt = wBosonP4.Mt();
 
 		HT = 0;
-		for (unsigned int i = 0; i < product->nJet; i++){
+		for (unsigned int i = 0; i < product->nJet; i++) {
 			HT += product->jetPt.at(i);
 		}
 
@@ -76,7 +76,7 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 		}
 	}
 
-	if (product->leptonPt != -999){
+	if (product->leptonPt != -999) {
 		std::string cutName("DeltaPhi Calculated!");
 		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 	} else {
@@ -84,5 +84,5 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	} // This should probably check if both the lepton producer and the jet producer were successful
 }
 
-void DeltaPhiProducer::EndJob(TFile* file){
+void DeltaPhiProducer::EndJob(TFile* file) {
 }

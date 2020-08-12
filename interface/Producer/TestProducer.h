@@ -3,7 +3,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 
-class TestProducer: public BaseProducer {
+class TestProducer : public BaseProducer {
 	/*
 		Test Producer which can also be used as a template for writing a new Producer
 	*/

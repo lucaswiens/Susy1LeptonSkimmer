@@ -3,7 +3,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 
-class LeptonProducer: public BaseProducer {
+class LeptonProducer : public BaseProducer {
 	private:
 		//Check if it is data or MC
 		bool isData;

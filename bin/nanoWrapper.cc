@@ -1,6 +1,5 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/NanoSkimmer.h>
 
-#include <vector>
 #include <string>
 
 std::vector<std::string> SplitString(const std::string& splitString, const std::string& delimeter){
@@ -12,11 +11,7 @@ std::vector<std::string> SplitString(const std::string& splitString, const std::
 		splittedString.push_back(string);
 	}
 
-	return splittedString;
-}
-
-
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
 	//Extract informations of command line
 	std::string fileName = std::string(argv[1]);
 	bool isData = std::string(argv[2]) == "True" ? true : false;

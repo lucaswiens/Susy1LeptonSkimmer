@@ -6,7 +6,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 //#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TestProducer.h>
 
-NanoSkimmer::NanoSkimmer(){}
+NanoSkimmer::NanoSkimmer() {}
 
 NanoSkimmer::NanoSkimmer(const std::string &inFile, const bool &isData):
 	inFile(inFile),
@@ -21,14 +21,14 @@ NanoSkimmer::NanoSkimmer(const std::string &inFile, const bool &isData):
 		std::cout << "Input file for analysis: " + inFile << std::endl;
 	}
 
-void NanoSkimmer::ProgressBar(const int &progress){
+void NanoSkimmer::ProgressBar(const int &progress) {
 	std::string progressBar = "[";
 
-	for (int i = 0; i < progress; i++){
+	for (int i = 0; i < progress; i++) {
 		if (i%2 == 0) progressBar += "#";
 	}
 
-	for (int i = 0; i < 100 - progress; i++){
+	for (int i = 0; i < 100 - progress; i++) {
 		if (i%2 == 0) progressBar += " ";
 	}
 
@@ -39,7 +39,7 @@ void NanoSkimmer::ProgressBar(const int &progress){
 
 }
 
-void NanoSkimmer::Configure(const float &xSec, const int &era, TTreeReader& reader){
+void NanoSkimmer::Configure(const float &xSec, const int &era, TTreeReader& reader) {
 	producers = {
 		//std::shared_ptr<TestProducer>(new TestProducer(2017, 20., 2.4, reader)),
 		std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
@@ -48,7 +48,7 @@ void NanoSkimmer::Configure(const float &xSec, const int &era, TTreeReader& read
 	};
 }
 
-void NanoSkimmer::EventLoop(const float &xSec, const int &era){
+void NanoSkimmer::EventLoop(const float &xSec, const int &era) {
 
 	//TTreeReader preperation
 	TFile* inputFile = TFile::Open(inFile.c_str(), "READ");
@@ -68,7 +68,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 
 
 	//Begin jobs for all producers
-	for (std::shared_ptr<BaseProducer> producer: producers){
+	for (std::shared_ptr<BaseProducer> producer: producers) {
 		producer->BeginJob(outputTree, isData);
 	}
 
@@ -77,26 +77,26 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	ProgressBar(0.);
 
 	int nEvents = eventTree->GetEntries();
-	while(reader.Next()){
+	while(reader.Next()) {
 		//Product for passing newly calculated variables to each producer
 		Susy1LeptonProduct product;
 		//Call each producer
-		for (unsigned int i = 0; i < producers.size(); i++){
+		for (unsigned int i = 0; i < producers.size(); i++) {
 			producers[i]->Produce(cutflow, &product);
 
 			//If the cutflow fails for one producer, reject the event
-			if (!cutflow.passed){ break;}
+			if (!cutflow.passed) { break;}
 		}
 
 		//Check individual for each channel, if event should be filled
-		if (cutflow.passed){
+		if (cutflow.passed) {
 			outputTree->Fill();
 		}
 		cutflow.passed = true;
 
 		//progress bar
 		processed++;
-		if (processed % 10000 == 0){
+		if (processed % 10000 == 0) {
 			//int progress = 100*(float)processed/eventTree->GetEntries();
 			int progress = 100 * (float) processed / nEvents;
 			ProgressBar(progress);
@@ -109,16 +109,16 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era){
 	std::cout << outputTree->GetName() << " analysis: Selected " << outputTree->GetEntries() << " events of " << eventTree->GetEntries() << " (" << 100*(float)outputTree->GetEntries()/eventTree->GetEntries() << "%)" << std::endl;
 }
 
-void NanoSkimmer::WriteOutput(const std::string &outFile){
+void NanoSkimmer::WriteOutput(const std::string &outFile) {
 	TFile* file = TFile::Open(outFile.c_str(), "RECREATE");
 	outputTree->Write();
 
 	//End jobs for all producers
-	for (unsigned int i = 0; i < producers.size(); i++){
+	for (unsigned int i = 0; i < producers.size(); i++) {
 		producers[i]->EndJob(file);
 	}
 
-	for (CutFlow& cutflow: cutflows){
+	for (CutFlow& cutflow: cutflows) {
 		cutflow.hist->Write();
 		delete cutflow.hist;
 	}

@@ -12,7 +12,7 @@ LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& 
 	isoCut(isoCut)
 	{}
 
-void LeptonProducer::BeginJob(TTree* tree, bool &isData){
+void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	//Set data bool
 	this->isData = isData;
 
@@ -89,7 +89,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData){
 
 }
 
-void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
+void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	Pt = -999;
 	Eta = -999;
@@ -131,8 +131,8 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 
 			const int& pdgId = muonPdgId->At(0);
 
-			if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand){
-				if(!isData){
+			if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand) {
+				if(!isData) {
 					// Create WeightCalculator class for easier acces to SF
 					WeightCalculator* wc = new WeightCalculator;
 					const float& idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
@@ -142,26 +142,27 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 					delete wc;
 				}
 
-				Pt = pt; Eta = eta; Phi = phi; Mass = mass; MiniPFRelIsoAll = miniPFRelIsoAll, PdgId = pdgId;
+				Pt = pt; Eta = eta; Phi = phi; Mass = mass; Charge = charge; MiniPFRelIsoAll = miniPFRelIsoAll; PdgId = pdgId;
 				const bool& looseId = muonLooseId->At(0);
 				const bool& mediumId = muonMediumId->At(0);
 				const bool& tightId = muonTightId->At(0);
-				if(tightId){ CutBased = 4;}
-				else if (mediumId){ CutBased = 3;}
-				else if (looseId){ CutBased = 2;}
+				if(tightId) { CutBased = 4;}
+				else if (mediumId) { CutBased = 3;}
+				else if (looseId) { CutBased = 2;}
 				else { CutBased = 1;}
 			}
-		} else if (nElectron == 1){
+		} else if (nElectron == 1) {
 			const float& pt = electronPt->At(0);
 			const float& eta = electronEta->At(0);
 			const float& phi = electronPhi->At(0);
 			const float& mass = electronMass->At(0);
+			const float& charge = muonCharge->At(0);
 			const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(0);
 
 			const int & pdgId = electronPdgId->At(0);
 
-			if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut){
-				if(!isData){
+			if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut) {
+				if(!isData) {
 					// Create WeightCalculator class for easier acces to SF
 					WeightCalculator* wc = new WeightCalculator;
 					const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
@@ -181,7 +182,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	product->leptonEta = Eta;
 	product->leptonMass = Mass;
 
-	if (Pt != -999){
+	if (Pt != -999) {
 		std::string cutName("N_{#ell} = 1 (no ID req and Iso < 0.4)");
 		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 	} else {
@@ -189,7 +190,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product){
 	}
 }
 
-void LeptonProducer::EndJob(TFile* file){
+void LeptonProducer::EndJob(TFile* file) {
 	muonIdSFFile->Close();
 	muonIsolationSFFile->Close();
 	muonTriggerSFFile->Close();

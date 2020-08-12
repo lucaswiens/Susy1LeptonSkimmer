@@ -5,14 +5,14 @@
 
 #include <TMath.h>
 
-class DeltaPhiProducer: public BaseProducer {
+class DeltaPhiProducer : public BaseProducer {
 	private:
 		//Check if it is data or MC
 		bool isData;
 
 		//Vector for the output variables
 		float HT, LT, LP, deltaPhi, dPhi, wBosonMt;
-		int signalRegion;
+		int signalRegionCSV, signalRegionDF;
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
 

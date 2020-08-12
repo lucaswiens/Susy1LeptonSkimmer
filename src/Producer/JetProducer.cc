@@ -471,6 +471,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			}
 
 			const float& dfBTagValue = jetDF->At(i);
+			JetDFBTag.push_back(dfBTagValue);
 			if (dfBTagValue > deepFlavourBTag[era]['t']) {
 				JetLooseDFBTag.push_back(true);
 				JetMediumDFBTag.push_back(true);

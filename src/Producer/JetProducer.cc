@@ -380,7 +380,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	nTightDFBTagJet = 0;
 
 	//float CSVBValue = 0, DeepBValue = 0;
-	float metPx = 0, metPy, metPxUp, metPyUp, metPxDown, metPyDown;
+	float metPx = 0, metPy, metPx_jerUp, metPy_jerUp, metPx_jerDown, metPy_jerDown, metPx_jecUp, metPy_jecUp, metPx_jecDown, metPy_jecDown;;
 
 	nJet = *jetNumber->Get();
 	nFatJet = *fatJetNumber->Get();
@@ -394,10 +394,16 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	const float& metphi = *metPhi->Get();
 	metPx = metpt * std::cos(metphi);
 	metPy = metpt * std::sin(metphi);
-	metPxUp = metPx;
-	metPyUp = metPy;
-	metPxDown = metPx;
-	metPyDown = metPy;
+
+	metPx_jerUp = metPx;
+	metPy_jerUp = metPy;
+	metPx_jerDown = metPx;
+	metPy_jerDown = metPy;
+
+	metPx_jecUp = metPx;
+	metPy_jecUp = metPy;
+	metPx_jecDown = metPx;
+	metPy_jecDown = metPy;
 
 	for (unsigned int i = 0; i < nJet; i++) {
 		//do jet correction, smearing etc.
@@ -405,16 +411,19 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		const float& phi = jetPhi->At(i);
 		const float& eta = jetEta->At(i);
 		const float& mass = jetMass->At(i);
+		const float& rawFactor = jetRawFactor->At(i);
+		const float& rawPt = pt * (1 - rawFactor);
+		const float& rawMass = mass * (1 - rawFactor);
 
 		std::map<char, float> smearFactor;
-		float correctionFactor = CorrectEnergy(pt, eta, *jetRho->Get(), jetArea->At(i), AK4);
+		float correctionFactor = CorrectEnergy(rawPt, eta, *jetRho->Get(), jetArea->At(i), AK4);
 		float correctionFactorUp = 1.0, correctionFactorDown;
 
-		if (jecUnc[AK4] !=  nullptr){
-			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * pt);
+		if (jecUnc[AK4] !=  nullptr) {
+			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * rawPt);
 			jetCorrectionUncertainty[AK4]->setJetEta(eta);
 			const float uncUp = jetCorrectionUncertainty[AK4]->getUncertainty(true);
-			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * pt);
+			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * rawPt);
 			jetCorrectionUncertainty[AK4]->setJetEta(eta);
 			const float uncDown = jetCorrectionUncertainty[AK4]->getUncertainty(false);
 			correctionFactorUp   = (1 + uncUp) * correctionFactor ;
@@ -424,39 +433,21 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		if (isData) {
 			smearFactor = {{'c', 1.0}, {'u', 1.0}, {'d', 1.0}};
 		} else {
-			smearFactor = JetProducer::SmearEnergy(pt, eta, phi, *jetRho->Get(), jetArea->At(i), AK4);
+			smearFactor = JetProducer::SmearEnergy(rawPt, eta, phi, *jetRho->Get(), jetArea->At(i), AK4);
 		}
 
-		const float& correctedPt = smearFactor['c'] * correctionFactor * pt;
-		const float& correctedMass = smearFactor['c'] * correctionFactor * mass;
+		const float& correctedPt = smearFactor['c'] * correctionFactor * rawPt;
+		const float& correctedMass = smearFactor['c'] * correctionFactor * rawMass;
 
-		const float& correctedPtUp = smearFactor['u'] * correctionFactorUp * pt;
-		const float& correctedMassUp = smearFactor['u'] * correctionFactorUp * mass;
-		const float& correctedPtDown = smearFactor['d'] * correctionFactorDown * pt;
-		const float& correctedMassDown = smearFactor['d'] * correctionFactorDown * mass;
+		const float& correctedPt_jerUp = smearFactor['u'] * correctionFactor * rawPt;
+		const float& correctedMass_jerUp = smearFactor['u'] * correctionFactor * rawMass;
+		const float& correctedPt_jerDown = smearFactor['d'] * correctionFactor * rawPt;
+		const float& correctedMass_jerDown = smearFactor['d'] * correctionFactor * rawMass;
 
-		if (correctedPt > ptCut && abs(eta) < etaCut){
-			//correctionFactor = CorrectEnergy(pt, eta, *jetRho->Get(), jetArea->At(i), AK4);
-			/*
-			const float& bTagValue = jet->At(i);
-			if (BTagValue > bTag[era]['l']){
-				JetLooseBTag.push_back(true);
-				JetMediumBTag.push_back(true);
-				JetTightBTag.push_back(true);
-			} else if (bTagValue > bTag[era]['m']) {
-				JetLooseBTag.push_back(false);
-				JetMediumBTag.push_back(true);
-				JetTightBTag.push_back(true);
-			} else if (bTagValue > bTag[era]['t']) {
-				JetLooseBTag.push_back(false);
-				JetMediumBTag.push_back(false);
-				JetTightBTag.push_back(true);
-			} else {
-				JetLooseBTag.push_back(false);
-				JetMediumBTag.push_back(false);
-				JetTightBTag.push_back(false);
-			}
-			*/
+		const float& correctedPt_jecUp = smearFactor['c'] * correctionFactorUp * rawPt;
+		const float& correctedMass_jecUp = smearFactor['c'] * correctionFactorUp * rawMass;
+		const float& correctedPt_jecDown = smearFactor['c'] * correctionFactorDown * rawPt;
+		const float& correctedMass_jecDown = smearFactor['c'] * correctionFactorDown * rawMass;
 
 		if (correctedPt > ptCut && abs(eta) < etaCut) {
 			const float& csvBTagValue = jetCSV->At(i);
@@ -550,60 +541,34 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		JetLooseCSVBTag.erase(JetLooseCSVBTag.begin() + nearestJetIndex);
 		JetMediumCSVBTag.erase(JetMediumCSVBTag.begin() + nearestJetIndex);
 		JetTightCSVBTag.erase(JetTightCSVBTag.begin() + nearestJetIndex);
+		JetLooseDFBTag.erase(JetLooseDFBTag.begin() + nearestJetIndex);
+		JetMediumDFBTag.erase(JetMediumDFBTag.begin() + nearestJetIndex);
+		JetTightDFBTag.erase(JetTightDFBTag.begin() + nearestJetIndex);
 	}
 
-	for (unsigned int i = 0; i < nJet; i++){
-		if(JetTightCSVBTag[i]){ nLooseCSVBTagJet++; nMediumCSVBTagJet++; nTightCSVBTagJet++;}
-		else if(JetMediumCSVBTag[i]){ nLooseCSVBTagJet++; nMediumCSVBTagJet++;}
-		else if(JetLooseCSVBTag[i]){ nLooseCSVBTagJet++;}
+	for (unsigned int i = 0; i < nJet; i++) {
+		if (JetTightCSVBTag[i]) { nLooseCSVBTagJet++; nMediumCSVBTagJet++; nTightCSVBTagJet++;}
+		else if (JetMediumCSVBTag[i]) { nLooseCSVBTagJet++; nMediumCSVBTagJet++;}
+		else if (JetLooseCSVBTag[i]) { nLooseCSVBTagJet++;}
 
-		//Signal Region
-		if (JetPt[i] > 30){
-			nJet30++;
-			if (JetMediumCSVBTag[i]){
-				nMediumCSVBTagJet30++;
-			}
-		}
+		if (JetTightDFBTag[i]) { nLooseDFBTagJet++; nMediumDFBTagJet++; nTightDFBTagJet++;}
+		else if (JetMediumDFBTag[i]) { nLooseDFBTagJet++; nMediumDFBTagJet++;}
+		else if (JetLooseDFBTag[i]) { nLooseDFBTagJet++;}
 	}
-
-	/* TODO Loop over fat jets, will be done later
-	for (unsigned int i = 0; i < nFatJet; i++){
-		//JER smearing
-
-		float fatPt = fatJetPt->At(i);
-		const float fatEta = fatJetEta->At(i);
-		const float fatPhi = fatJetPhi->At(i);
-		const float fatMass = fatJetMass->At(i);
-
-		std::map<char, float> smearFactor;
-		float correctionFactor = CorrectEnergy(fatPt, fatEta, *jetRho->Get(), fatJetArea->At(i), AK4);
-		float correctionFactorUp, correctionFactorDown;
-
-		if (isData){
-			smearFactor = {{'c', 1.0}, {'u', 1.0}, {'d', 1.0}};
-		} else {
-			smearFactor = JetProducer::SmearEnergy(fatPt, fatEta, fatPhi, *jetRho->Get(), fatJetArea->At(i), AK4);
-		}
-
-		//Get jet uncertainty
-		if (jecUnc[AK8] !=  nullptr){
-			jetCorrectionUncertainty[AK8]->setJetPt(correctionFactor * fatPt);
-			jetCorrectionUncertainty[AK8]->setJetEta(fatEta);
-			const float uncUp = jetCorrectionUncertainty[AK4]->getUncertainty(true);
-			const float uncDown = jetCorrectionUncertainty[AK4]->getUncertainty(false);
-			correctionFactorUp   = (1 + uncUp) * correctionFactor ;
-			correctionFactorDown = (1 - uncDown) * correctionFactor ;
-		}
-	}
-	*/
 
 	nJet = JetPt.size();
 	METPt = std::sqrt(std::pow(metPx, 2) + std::pow(metPy, 2));
 	METPhi = std::atan2(metPy, metPx);
-	METPtUp = std::sqrt(std::pow(metPxUp, 2) + std::pow(metPyUp, 2));
-	METPhiUp = std::atan2(metPyUp, metPxUp);
-	METPtDown = std::sqrt(std::pow(metPxDown, 2) + std::pow(metPyDown, 2));
-	METPhiDown = std::atan2(metPyDown, metPxDown);
+
+	METPt_jerUp = std::sqrt(std::pow(metPx_jerUp, 2) + std::pow(metPy_jerUp, 2));
+	METPhi_jerUp = std::atan2(metPy_jerUp, metPx_jerUp);
+	METPt_jerDown = std::sqrt(std::pow(metPx_jerDown, 2) + std::pow(metPy_jerDown, 2));
+	METPhi_jerDown = std::atan2(metPy_jerDown, metPx_jerDown);
+
+	METPt_jecUp = std::sqrt(std::pow(metPx_jecUp, 2) + std::pow(metPy_jecUp, 2));
+	METPhi_jecUp = std::atan2(metPy_jecUp, metPx_jecUp);
+	METPt_jecDown = std::sqrt(std::pow(metPx_jecDown, 2) + std::pow(metPy_jecDown, 2));
+	METPhi_jecDown = std::atan2(metPy_jecDown, metPx_jecDown);
 
 	//Sort Vectors according to JetPt, since the correction could have changed the order
 	std::vector<int> idx(nJet);

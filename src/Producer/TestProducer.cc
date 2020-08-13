@@ -49,7 +49,7 @@ void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product) {
 		const float& eta = eleEta->At(i);
 		const float& phi = elePhi->At(i);
 
-		if(pt > ptCut && abs(eta) < etaCut) {
+		if (pt > ptCut && abs(eta) < etaCut) {
 			//Electron four momentum components
 			Pt.push_back(pt);
 			Eta.push_back(eta);
@@ -59,8 +59,8 @@ void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product) {
 
 	nElectrons = Pt.size();
 
-	if(cutflow.nMinElectron <= Pt.size()) {
-		if(cutflow.nMinElectron!=0 and cutflow.passed) {
+	if (cutflow.nMinElectron <= Pt.size()) {
+		if (cutflow.nMinElectron!=0 and cutflow.passed) {
 			std::string cutName("N_{e} >= " + std::to_string(cutflow.nMinElectron) + " (no iso/ID req)");
 			cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 		}

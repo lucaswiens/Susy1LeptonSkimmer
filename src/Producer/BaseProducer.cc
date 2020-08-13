@@ -8,7 +8,7 @@ float BaseProducer::DeltaR(const float& eta1, const float& phi1, const float& et
 }
 
 void BaseProducer::SetCollection(bool &isData) {
-	if(!isData) {
+	if (!isData) {
 		genPt = std::make_unique<TTreeReaderArray<float>>(*reader, "GenPart_pt");
 		genEta = std::make_unique<TTreeReaderArray<float>>(*reader, "GenPart_eta");
 		genPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "GenPart_phi");
@@ -50,7 +50,7 @@ std::tuple<int, int, int> BaseProducer::SetGenParticles(const float& pt, const f
 	bool isgenMatched = genIndex[pdgID] != -1;
 
 	//Check if gen matched particle exist
-	if(isgenMatched) {
+	if (isgenMatched) {
 		int index=0, motherIdx=0;
 
 		index = FirstCopy(genIndex[pdgID], pdgID);

@@ -43,7 +43,7 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	signalRegionCSV = -999;
 	signalRegionDF = -999;
 
-	if(product->leptonPt != -999 && product->metPt != -999) {
+	if (product->leptonPt != -999 && product->metPt != -999) {
 		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(product->leptonPt, product->leptonEta, product->leptonPhi, product->leptonMass);
 		ROOT::Math::PtEtaPhiMVector metP4 = ROOT::Math::PtEtaPhiMVector(product->metPt, 0, product->metPhi, 0);
 		ROOT::Math::PtEtaPhiMVector wBosonP4 = leptonP4 + metP4;

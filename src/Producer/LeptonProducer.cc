@@ -115,7 +115,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	nElectron = *electronNumber->Get();
 	nLepton = nMuon + nElectron;
 
-	if(nLepton == 1) {
+	if (nLepton == 1) {
 		if (nMuon == 1) {
 			const float& pt = muonPt->At(0);
 			const float& eta = muonEta->At(0);
@@ -131,8 +131,8 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 			const int& pdgId = muonPdgId->At(0);
 
-			if(pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand) {
-				if(!isData) {
+			if (pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand) {
+				if (!isData) {
 					// Create WeightCalculator class for easier acces to SF
 					WeightCalculator* wc = new WeightCalculator;
 					const float& idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
@@ -146,7 +146,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 				const bool& looseId = muonLooseId->At(0);
 				const bool& mediumId = muonMediumId->At(0);
 				const bool& tightId = muonTightId->At(0);
-				if(tightId) { CutBased = 4;}
+				if (tightId) { CutBased = 4;}
 				else if (mediumId) { CutBased = 3;}
 				else if (looseId) { CutBased = 2;}
 				else { CutBased = 1;}
@@ -161,8 +161,8 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 			const int & pdgId = electronPdgId->At(0);
 
-			if(pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut) {
-				if(!isData) {
+			if (pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut) {
+				if (!isData) {
 					// Create WeightCalculator class for easier acces to SF
 					WeightCalculator* wc = new WeightCalculator;
 					const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);

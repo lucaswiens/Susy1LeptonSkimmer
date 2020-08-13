@@ -9,12 +9,6 @@
 #include <CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h>
 #include <CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h>
 
-//#include <DataFormats/PatCandidates/interface/Jet.h>
-//#include <DataFormats/PatCandidates/interface/MET.h>
-//#include <DataFormats/JetReco/interface/GenJet.h>
-
-//typedef LorentzVector<PtEtaPhiM4D<double> > ROOT::Math::PtEtaPhiMVector
-
 class JetProducer : public BaseProducer {
 
 	enum JetType {SUBAK4, AK4, AK8, PF, VTX};

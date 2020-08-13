@@ -124,8 +124,7 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	this->isData = isData;
 
 	// Path to Correction files
-	//std::string filePath = "$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/jme/";
-	std::string filePath = "/nfs/dust/cms/user/wiens/CMSSW/CMSSW_10_6_8/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/jme/";
+	std::string filePath = std::string(std::getenv("CMSSW_BASE")) + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/jme/";
 	jecMC = {
 		{2016, {filePath + "Summer16/Summer16_07Aug2017_V11_MC_L1FastJet_&PFchs.txt",
 			filePath + "Summer16/Summer16_07Aug2017_V11_MC_L2Relative_&PFchs.txt",
@@ -190,14 +189,13 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 			filePath + "Autumn18/Autumn18_FastSimV1_MC_L2Relative_&PFchs.txt",
 			filePath + "Autumn18/Autumn18_FastSimV1_MC_L3Absolute_&PFchs.txt"}
 		}
-	};// TODO also do uncertainties for this
+	};// TODO also do uncertainties for FastSim
 
 	/*
 	BTag Working Points
 	2016: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
 	2017: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
 	2018: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
-	TODO: Just use DeepCSV?
 	*/
 	deepFlavourBTag = {
 		{2016, {
@@ -212,7 +210,7 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 				{'t', 0.7489}
 			}
 		},
-		{2018, {//TODO Twiki only gave deepCSV values
+		{2018, {
 				{'l', 0.0494},
 				{'m', 0.2770},
 				{'t', 0.7264}
@@ -380,14 +378,14 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	nTightDFBTagJet = 0;
 
 	//float CSVBValue = 0, DeepBValue = 0;
-	float metPx = 0, metPy, metPx_jerUp, metPy_jerUp, metPx_jerDown, metPy_jerDown, metPx_jecUp, metPy_jecUp, metPx_jecDown, metPy_jecDown;;
+	float metPx = 0, metPy, metPx_jerUp, metPy_jerUp, metPx_jerDown, metPy_jerDown, metPx_jecUp, metPy_jecUp, metPx_jecDown, metPy_jecDown;
 
 	nJet = *jetNumber->Get();
 	nFatJet = *fatJetNumber->Get();
 	runNumber = *run->Get();
 
 	for (const JetType& type : {AK4, AK8}) {
-			SetCorrector(type, runNumber);
+		SetCorrector(type, runNumber);
 	}
 
 	const float& metpt = *metPt->Get();
@@ -640,8 +638,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	*/
 
 	/* TODO
-		->Store Systematics properly, also check what jetmethelperrun2 is doing
-		->Proper runNumber of the datasets, maybe there is als a smarter way.. On could just parse the runPeriod as an argument to the wrapper
+		->Proper runNumber of the datasets, maybe there is als a smarter way.. On could just parse the runPeriod as an argument to the wrapper or us a function that gets it from the filename
 		->FatJet Loop
 	*/
 

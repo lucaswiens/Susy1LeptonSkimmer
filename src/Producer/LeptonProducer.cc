@@ -115,8 +115,8 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	nElectron = *electronNumber->Get();
 	nLepton = nMuon + nElectron;
 
-	if(nLepton == 1){
-		if (nMuon == 1){
+	if(nLepton == 1) {
+		if (nMuon == 1) {
 			const float& pt = muonPt->At(0);
 			const float& eta = muonEta->At(0);
 			const float& phi = muonPhi->At(0);

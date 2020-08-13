@@ -13,12 +13,19 @@ int main(int argc, char* argv[]) {
 	int era = std::stoi(std::string(argv[3]));
 	std::string outName = std::string(argv[4]);
 
+	int nMaxEvents;
+	if(argc == 6) {
+		nMaxEvents = std::stoi(std::string(argv[5]));
+	} else {
+		nMaxEvents = -999;
+	}
+
 	std::vector<std::string> splitFileName = SplitString(fileName, "/");
 	std::string sampleName = splitFileName.back();
 	float xSec = CrossSection(sampleName);
 
 	NanoSkimmer skimmer(fileName, isData);
-	skimmer.EventLoop(xSec, era);
+	skimmer.EventLoop(xSec, era, nMaxEvents);
 	skimmer.WriteOutput(outName);
 }
 

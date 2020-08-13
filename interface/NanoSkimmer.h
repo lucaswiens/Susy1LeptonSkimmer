@@ -39,6 +39,6 @@ class NanoSkimmer{
 	public:
 		NanoSkimmer();
 		NanoSkimmer(const std::string &inFile, const bool &isData);
-		void EventLoop(const float &xSec = 1., const int &era = 2016);
+		void EventLoop(const float &xSec = 1., const int &era = 2016, const int &nMaxEvents = -999);
 		void WriteOutput(const std::string &outFile);
 };

@@ -24,12 +24,15 @@ NanoSkimmer::NanoSkimmer(const std::string &inFile, const bool &isData):
 void NanoSkimmer::ProgressBar(const int &progress) {
 	std::string progressBar = "[";
 
-	for (int i = 0; i < progress; i++) {
-		if (i%2 == 0) progressBar += "#";
+	for (int i = 0; i < progress - 1; i++) {
+		progressBar += "·";
 	}
+	if (progress == 100) { progressBar += "·";}
+	else if (progress % 2 == 0) { progressBar += "c";}
+	else { progressBar += "C";}
 
 	for (int i = 0; i < 100 - progress; i++) {
-		if (i%2 == 0) progressBar += " ";
+		progressBar += "•";
 	}
 
 	progressBar = progressBar + "] " + std::to_string(progress) + "% of Events processed";
@@ -48,7 +51,7 @@ void NanoSkimmer::Configure(const float &xSec, const int &era, TTreeReader& read
 	};
 }
 
-void NanoSkimmer::EventLoop(const float &xSec, const int &era) {
+void NanoSkimmer::EventLoop(const float &xSec, const int &era, const int &nMaxEvents) {
 
 	//TTreeReader preperation
 	TFile* inputFile = TFile::Open(inFile.c_str(), "READ");
@@ -75,9 +78,16 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era) {
 	//Progress bar at 0%
 	int processed = 0;
 	ProgressBar(0.);
+	int nProcessedEvents = 0;
+	int stepSize;
+	if (nMaxEvents > 0) { stepSize = 25;}
+	else {stepSize = 10000;}
 
 	int nEvents = eventTree->GetEntries();
 	while(reader.Next()) {
+		//Stop Events Loop after nMaxEvents
+		if (nMaxEvents > 0 && nProcessedEvents >= nMaxEvents){break;}
+		nProcessedEvents++;
 		//Product for passing newly calculated variables to each producer
 		Susy1LeptonProduct product;
 		//Call each producer
@@ -96,9 +106,10 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era) {
 
 		//progress bar
 		processed++;
-		if (processed % 10000 == 0) {
-			//int progress = 100*(float)processed/eventTree->GetEntries();
-			int progress = 100 * (float) processed / nEvents;
+		if (processed % stepSize == 0) {
+			int progress;
+			if (nMaxEvents > 0) { progress = 100 * (float) processed / nMaxEvents;}
+			else { progress = 100 * (float) processed / nEvents;}
 			ProgressBar(progress);
 		}
 	}
@@ -106,7 +117,11 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era) {
 	ProgressBar(100);
 
 	//Print stats
-	std::cout << outputTree->GetName() << " analysis: Selected " << outputTree->GetEntries() << " events of " << eventTree->GetEntries() << " (" << 100*(float)outputTree->GetEntries()/eventTree->GetEntries() << "%)" << std::endl;
+	if (nMaxEvents>0){
+		std::cout << outputTree->GetName() << " analysis: Selected " << outputTree->GetEntries() << " events of " << nMaxEvents << " (" << 100*(float)outputTree->GetEntries()/nMaxEvents << "%)" << std::endl;
+	} else {
+		std::cout << outputTree->GetName() << " analysis: Selected " << outputTree->GetEntries() << " events of " << eventTree->GetEntries() << " (" << 100*(float)outputTree->GetEntries()/eventTree->GetEntries() << "%)" << std::endl;
+	}
 }
 
 void NanoSkimmer::WriteOutput(const std::string &outFile) {

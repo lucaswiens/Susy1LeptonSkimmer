@@ -30,21 +30,21 @@ void TestProducer::BeginJob(TTree* tree, bool &isData) {
 	//Set Branches of output tree
 	tree->Branch("Electron_Size", &nElectrons);
 
-	for(std::pair<const std::string, std::vector<float>&>& var : floatVar) {
+	for (std::pair<const std::string, std::vector<float>&>& var : floatVar) {
 		tree->Branch(("Electron_" + var.first).c_str(), &var.second);
 	}
 }
 
 void TestProducer::Produce(CutFlow cutflow, Susy1LeptonProduct *product) {
 	//Clear variables vector
-	for(std::pair<const std::string, std::vector<float>&>& var : floatVar) {
+	for (std::pair<const std::string, std::vector<float>&>& var : floatVar) {
 		var.second.clear();
 	}
 
 	const int& eleSize = elePt->GetSize();
 
 	//Loop over all electrons
-	for(int i = 0; i < eleSize; i++) {
+	for (int i = 0; i < eleSize; i++) {
 		const float& pt = elePt->At(i);
 		const float& eta = eleEta->At(i);
 		const float& phi = elePhi->At(i);

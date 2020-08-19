@@ -43,24 +43,24 @@ void PileUpWeightProducer::BeginJob(TTree* tree, bool &isData) {
 		//Initiliaze TTreeReaderValues
 		pvNumber = std::make_unique<TTreeReaderValue<float>>(*reader, "Pileup_nTrueInt");
 
-		//Set TTreeReader for genpart and trigger obj from BaseProducer
-		SetCollection(this->isData);
-
 		//Set Branches of output tree
 		tree->Branch("PileUpWeight", &weight);
 		tree->Branch("PileUpWeightPlus", &weightPlus);
 		tree->Branch("PileUpWeightMinus", &weightMinus);
 	}
+
+	//Set TTreeReader for genpart and trigger obj from BaseProducer
+	SetCollection(this->isData);
 }
 
 void PileUpWeightProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
-	if (!isData) {
-		nPV = -999;
-		weight = -999;
-		weightPlus = -999;
-		weightMinus = -999;
+	nPV = -999;
+	weight = -999;
+	weightPlus = -999;
+	weightMinus = -999;
 
+	if (!isData) {
 		nPV = *pvNumber->Get();
 		weight = 1; weightPlus = 1; weightMinus = 1;
 		weight = wc->GetWeight(nPV, pileupRatio);
@@ -73,5 +73,7 @@ void PileUpWeightProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product
 }
 
 void PileUpWeightProducer::EndJob(TFile* file) {
-	delete wc;
+	if (!isData) {
+		delete wc;
+	}
 }

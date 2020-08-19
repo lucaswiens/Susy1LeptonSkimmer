@@ -38,24 +38,28 @@ class BaseProducer {
 		//File path for SF etc.
 		std::string filePath = std::string(std::getenv("CMSSW_BASE")) + "/src/Susy1LeptonAnalsis/Susy1LeptonSkimmer/data/";
 
-		std::map<int, std::map<std::string, std::pair<int, int>>> runEras = {
+		std::map<int, std::map<char, std::string>> runEras = {
 			{2016,	{
-					{"BCD", {297046, 299329}},
-					{"EF", {302030, 304797}},
-					{"GH", {305040, 306462}}
+					{'B', "BCD"},
+					{'C', "BCD"},
+					{'D', "BCD"},
+					{'E', "EF"},
+					{'F', "GH"}
 				}
 			},
 			{2017,	{
-					{"B", {297046, 299329}},
-					{"C", {299368, 302029}},
-					{"DE", {302030, 304797}},
-					{"F", {305040, 306462}}
+					{'B', "B"},
+					{'C', "C"},
+					{'D', "DE"},
+					{'E', "DE"},
+					{'F', "F"}
 				}
 			},
 			{2018,	{
-					{"A", {297046, 299329}},
-					{"B", {297046, 299329}},
-					{"CD", {299368, 302029}}
+					{'A', "A"},
+					{'B', "B"},
+					{'C', "CD"},
+					{'D', "CD"}
 				}
 			}
 		};

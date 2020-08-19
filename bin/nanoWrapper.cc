@@ -12,10 +12,15 @@ int main(int argc, char* argv[]) {
 	bool isData = std::string(argv[2]) == "True" ? true : false;
 	int era = std::stoi(std::string(argv[3]));
 	std::string outName = std::string(argv[4]);
+	char runPeriod; //If it is MC, then runPeriod does not matter
+
+	if (isData) {
+		runPeriod = (char)*argv[5];
+	}
 
 	int nMaxEvents;
-	if(argc == 6) {
-		nMaxEvents = std::stoi(std::string(argv[5]));
+	if(argc == 7) {
+		nMaxEvents = std::stoi(std::string(argv[6]));
 	} else {
 		nMaxEvents = -999;
 	}
@@ -25,7 +30,7 @@ int main(int argc, char* argv[]) {
 	float xSec = CrossSection(sampleName);
 
 	NanoSkimmer skimmer(fileName, isData);
-	skimmer.EventLoop(xSec, era, nMaxEvents);
+	skimmer.EventLoop(xSec, era, runPeriod, nMaxEvents);
 	skimmer.WriteOutput(outName);
 }
 

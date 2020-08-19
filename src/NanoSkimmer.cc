@@ -42,23 +42,23 @@ void NanoSkimmer::ProgressBar(const int &progress) {
 
 }
 
-void NanoSkimmer::Configure(const float &xSec, const int &era, TTreeReader& reader) {
+void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPeriod, TTreeReader& reader) {
 	producers = {
 		//std::shared_ptr<TestProducer>(new TestProducer(2017, 20., 2.4, reader)),
 		std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
-		std::shared_ptr<JetProducer>(new JetProducer(era, 20, 2.4, 0.4, reader)),
+		std::shared_ptr<JetProducer>(new JetProducer(era, 20, 2.4, 0.4, runPeriod, reader)),
 		std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(reader)),
 	};
 }
 
-void NanoSkimmer::EventLoop(const float &xSec, const int &era, const int &nMaxEvents) {
+void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPeriod, const int &nMaxEvents) {
 
 	//TTreeReader preperation
 	TFile* inputFile = TFile::Open(inFile.c_str(), "READ");
 	TTree* eventTree = (TTree*)inputFile->Get("Events");
 	TTreeReader reader(eventTree);
 
-	Configure(xSec, era, reader);
+	Configure(xSec, era, runPeriod, reader);
 
 	//Create cutflow histograms
 	CutFlow cutflow;

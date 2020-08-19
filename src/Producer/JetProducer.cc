@@ -1,5 +1,4 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/JetProducer.h>
-#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
 #include <Math/LorentzVector.h>
 #include <Math/PtEtaPhiM4D.h>
@@ -7,8 +6,9 @@
 #include <cmath>
 #include <random>
 
-JetProducer::JetProducer(const int& era, const float& ptCut, const float& etaCut, const float& deltaRCut, TTreeReader& reader):
+JetProducer::JetProducer(const int& era, const float& ptCut, const float& etaCut, const float& deltaRCut, const char& runPeriod, TTreeReader& reader):
 	BaseProducer(&reader),
+	runPeriod(runPeriod),
 	era(era),
 	ptCut(ptCut),
 	etaCut(etaCut),
@@ -25,16 +25,12 @@ void JetProducer::SortByIndex(T& var, std::vector<int> idx) {
 	var = std::move(tmp);
 }
 
-void JetProducer::SetCorrector(const JetType& type, const int& runNumber) {
+void JetProducer::SetCorrector(const JetType& type, const char& runPeriod) {
 	std::vector<JetCorrectorParameters> corrVec;
 
 	for (std::string fileName : isData? jecData[era] : jecMC[era]) {
 		if (fileName.find("@") != std::string::npos) {
-			for (std::pair<std::string, std::pair<int, int>> eraNames : runEras[era]) {
-				if (eraNames.second.first <= runNumber and runNumber <= eraNames.second.second) {
-					fileName.replace(fileName.find("@"), 1, eraNames.first);
-				}
-			}
+			fileName.replace(fileName.find("@"), 1, runEras[era][runPeriod]);
 		}
 
 		fileName.replace(fileName.find("&"), 1, type == AK4 ? "AK4" : "AK8");
@@ -124,77 +120,78 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	this->isData = isData;
 
 	// Path to Correction files
-	std::string filePath = std::string(std::getenv("CMSSW_BASE")) + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/jme/";
+	std::string cmsswBase = std::string(std::getenv("CMSSW_BASE"));
+	std::string jmeFilePath = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/jme/";
 	jecMC = {
-		{2016, {filePath + "Summer16/Summer16_07Aug2017_V11_MC_L1FastJet_&PFchs.txt",
-			filePath + "Summer16/Summer16_07Aug2017_V11_MC_L2Relative_&PFchs.txt",
-			filePath + "Summer16/Summer16_07Aug2017_V11_MC_L3Absolute_&PFchs.txt"}
+		{2016, {jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L2Relative_&PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L3Absolute_&PFchs.txt"}
 		},
-		{2017, {filePath + "Fall17/Fall17_17Nov2017_V32_MC_L1FastJet_&PFchs.txt",
-			filePath + "Fall17/Fall17_17Nov2017_V32_MC_L2Relative_&PFchs.txt",
-			filePath + "Fall17/Fall17_17Nov2017_V32_MC_L3Absolute_&PFchs.txt"}
+		{2017, {jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L2Relative_&PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L3Absolute_&PFchs.txt"}
 		},
-		{2018, {filePath + "Autumn18/Autumn18_V19_MC_L1FastJet_&PFchs.txt",
-			filePath + "Autumn18/Autumn18_V19_MC_L2Relative_&PFchs.txt",
-			filePath + "Autumn18/Autumn18_V19_MC_L3Absolute_&PFchs.txt"}
+		{2018, {jmeFilePath + "Autumn18/Autumn18_V19_MC_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_V19_MC_L2Relative_&PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_V19_MC_L3Absolute_&PFchs.txt"}
 		},
 	};
 
 	jecData = {
-		{2016, {filePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L1FastJet_&PFchs.txt",
-			filePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2Relative_&PFchs.txt",
-			filePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L3Absolute_&PFchs.txt",
-			filePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2L3Residual_&PFchs.txt"}
+		{2016, {jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2Relative_&PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L3Absolute_&PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2L3Residual_&PFchs.txt"}
 		},
-		{2017, {filePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L1FastJet_&PFchs.txt",
-			filePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2Relative_&PFchs.txt",
-			filePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L3Absolute_&PFchs.txt",
-			filePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2L3Residual_&PFchs.txt"}
+		{2017, {jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2Relative_&PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L3Absolute_&PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2L3Residual_&PFchs.txt"}
 		},
-		{2018, {filePath + "Autumn18/Autumn18_Run@_V9_DATA_L1FastJet_&PFchs.txt",
-			filePath + "Autumn18/Autumn18_Run@_V9_DATA_L2Relative_&PFchs.txt",
-			filePath + "Autumn18/Autumn18_Run@_V9_DATA_L3Absolute_&PFchs.txt",
-			filePath + "Autumn18/Autumn18_Run@_V9_DATA_L2L3Residual_&PFchs.txt"}
+		{2018, {jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L2Relative_&PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L3Absolute_&PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L2L3Residual_&PFchs.txt"}
 		}
 	};
 
 	jecUnc = {
-		{2016, filePath + "Summer16/Summer16_07Aug2017_V11_MC_UncertaintySources_&PFchs.txt"},
-		{2017, filePath + "Fall17/Fall17_17Nov2017_V32_MC_UncertaintySources_&PFchs.txt"},
-		{2018, filePath + "Autumn18/Autumn18_V19_MC_UncertaintySources_&PFchs.txt"},
+		{2016, jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_UncertaintySources_&PFchs.txt"},
+		{2017, jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_UncertaintySources_&PFchs.txt"},
+		{2018, jmeFilePath + "Autumn18/Autumn18_V19_MC_UncertaintySources_&PFchs.txt"},
 	};
 
 	jmeSF = {
-		{2016, filePath + "Summer16/Summer16_25nsV1_MC_SF_&PFchs.txt"},
-		{2017, filePath + "Fall17/Fall17_V3_MC_SF_&PFchs.txt"},
-		{2018, filePath + "Autumn18/Autumn18_V7_MC_SF_&PFchs.txt"},
+		{2016, jmeFilePath + "Summer16/Summer16_25nsV1_MC_SF_&PFchs.txt"},
+		{2017, jmeFilePath + "Fall17/Fall17_V3_MC_SF_&PFchs.txt"},
+		{2018, jmeFilePath + "Autumn18/Autumn18_V7_MC_SF_&PFchs.txt"},
 	};
 
 	jmePtReso = {
-		{2016, filePath + "Summer16/Summer16_25nsV1_MC_PtResolution_&PFchs.txt"},
-		{2017, filePath + "Fall17/Fall17_V3_MC_PtResolution_&PFchs.txt"},
-		{2018, filePath + "Autumn18/Autumn18_V7_MC_PtResolution_&PFchs.txt"},
+		{2016, jmeFilePath + "Summer16/Summer16_25nsV1_MC_PtResolution_&PFchs.txt"},
+		{2017, jmeFilePath + "Fall17/Fall17_V3_MC_PtResolution_&PFchs.txt"},
+		{2018, jmeFilePath + "Autumn18/Autumn18_V7_MC_PtResolution_&PFchs.txt"},
 	};
 
 	jecFastSim = {
-		{2016, {filePath + "Summer16/Summer16_FastSimV1_MC_L1FastJet_&PFchs.txt",
-			filePath + "Summer16/Summer16_FastSimV1_MC_L2Relative_&PFchs.txt",
-			filePath + "Summer16/Summer16_FastSimV1_MC_L3Absolute_&PFchs.txt"}
+		{2016, {jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L2Relative_&PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L3Absolute_&PFchs.txt"}
 		},
-		{2017, {filePath + "Fall17/Fall17_FastSimV1_MC_L1FastJet_&PFchs.txt",
-			filePath + "Fall17/Fall17_FastSimV1_MC_L2Relative_&PFchs.txt",
-			filePath + "Fall17/Fall17_FastSimV1_MC_L3Absolute_&PFchs.txt"}
+		{2017, {jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L2Relative_&PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L3Absolute_&PFchs.txt"}
 		},
-		{2018, {filePath + "Autumn18/Autumn18_FastSimV1_MC_L1FastJet_&PFchs.txt",
-			filePath + "Autumn18/Autumn18_FastSimV1_MC_L2Relative_&PFchs.txt",
-			filePath + "Autumn18/Autumn18_FastSimV1_MC_L3Absolute_&PFchs.txt"}
+		{2018, {jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L1FastJet_&PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L2Relative_&PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L3Absolute_&PFchs.txt"}
 		}
 	};// TODO also do uncertainties for FastSim
 
 	/*
 	BTag Working Points
 	2016: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
-	2017: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
++	2017: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
 	2018: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
 	*/
 	deepFlavourBTag = {
@@ -237,6 +234,27 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 			}
 		}
 	};
+
+	//BTag Scale Factor Files
+	std::string btagSFFilePath = cmsswBase + "/src/PhysicsTools/NanoAODTools/data/btagSF/";
+	deepCSVTagSFFile = {
+		{2016, "DeepCSV_2016LegacySF_V1.csv"},
+		{2017, "DeepCSV_94XSF_V4_B_F.csv"},
+		{2018, "DeepCSV_102XSF_V1.csv"},
+	};
+
+	deepFlavourTagSFFile = {
+		{2016, "DeepJet_2016LegacySF_V1.csv"},
+		{2017, "DeepFlavour_94XSF_V3_B_F.csv"},
+		{2018, "DeepJet_102XSF_V1.csv"},
+	};
+
+	if(!isData){
+		bTagReader = {
+			{"deepcsv", new BTagCSVReader(btagSFFilePath + deepCSVTagSFFile[era])},
+			{"deepflavour", new BTagCSVReader(btagSFFilePath + deepFlavourTagSFFile[era])},
+		};
+	}
 
 	//Set TTreeReader for genpart and trigger obj from BaseProducer
 	SetCollection(this->isData);
@@ -319,21 +337,36 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("JetLooseCSVBTag", &JetLooseCSVBTag);
 	tree->Branch("JetMediumCSVBTag", &JetMediumCSVBTag);
 	tree->Branch("JetTightCSVBTag", &JetTightCSVBTag);
+	tree->Branch("JetLooseDFBTagSF", &JetLooseDFBTagSF);
+	tree->Branch("JetMediumDFBTagSF", &JetMediumDFBTagSF);
+	tree->Branch("JetTightDFBTagSF", &JetTightDFBTagSF);
+	tree->Branch("JetLooseCSVBTagSF", &JetLooseCSVBTagSF);
+	tree->Branch("JetMediumCSVBTagSF", &JetMediumCSVBTagSF);
+	tree->Branch("JetTightCSVBTagSF", &JetTightCSVBTagSF);
+	tree->Branch("JetLooseDFBTagSFUp", &JetLooseDFBTagSFUp);
+	tree->Branch("JetMediumDFBTagSFUp", &JetMediumDFBTagSFUp);
+	tree->Branch("JetTightDFBTagSFUp", &JetTightDFBTagSFUp);
+	tree->Branch("JetLooseCSVBTagSFUp", &JetLooseCSVBTagSFUp);
+	tree->Branch("JetMediumCSVBTagSFUp", &JetMediumCSVBTagSFUp);
+	tree->Branch("JetTightCSVBTagSFUp", &JetTightCSVBTagSFUp);
+	tree->Branch("JetLooseDFBTagSFDown", &JetLooseDFBTagSFDown);
+	tree->Branch("JetMediumDFBTagSFDown", &JetMediumDFBTagSFDown);
+	tree->Branch("JetTightDFBTagSFDown", &JetTightDFBTagSFDown);
+	tree->Branch("JetLooseCSVBTagSFDown", &JetLooseCSVBTagSFDown);
+	tree->Branch("JetMediumCSVBTagSFDown", &JetMediumCSVBTagSFDown);
+	tree->Branch("JetTightCSVBTagSFDown", &JetTightCSVBTagSFDown);
 
-	tree->Branch("METPt ", &METPt );
-	tree->Branch("METPhi ", &METPhi );
-	tree->Branch("JetRho ", &JetRho );
+	tree->Branch("METPt", &METPt);
+	tree->Branch("METPhi", &METPhi);
 
-	tree->Branch("runNumber ", &runNumber );
-
-	tree->Branch("nJet ", &nJet );
-	tree->Branch("nFatJet ", &nFatJet );
-	tree->Branch("nLooseDFBTagJet ", &nLooseDFBTagJet );
-	tree->Branch("nMediumDFBTagJet ", &nMediumDFBTagJet );
-	tree->Branch("nTightDFBTagJet ", &nTightDFBTagJet );
-	tree->Branch("nLooseCSVBTagJet ", &nLooseCSVBTagJet );
-	tree->Branch("nMediumCSVBTagJet ", &nMediumCSVBTagJet );
-	tree->Branch("nTightCSVBTagJet ", &nTightCSVBTagJet );
+	tree->Branch("nJet", &nJet);
+	tree->Branch("nFatJet", &nFatJet);
+	tree->Branch("nLooseDFBTagJet", &nLooseDFBTagJet);
+	tree->Branch("nMediumDFBTagJet", &nMediumDFBTagJet);
+	tree->Branch("nTightDFBTagJet", &nTightDFBTagJet);
+	tree->Branch("nLooseCSVBTagJet", &nLooseCSVBTagJet);
+	tree->Branch("nMediumCSVBTagJet", &nMediumCSVBTagJet);
+	tree->Branch("nTightCSVBTagJet ", &nTightCSVBTagJet);
 }
 
 void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
@@ -359,13 +392,29 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	JetLooseCSVBTag.clear();
 	JetMediumCSVBTag.clear();
 	JetTightCSVBTag.clear();
+	JetLooseDFBTagSF.clear();
+	JetMediumDFBTagSF.clear();
+	JetTightDFBTagSF.clear();
+	JetLooseCSVBTagSF.clear();
+	JetMediumCSVBTagSF.clear();
+	JetTightCSVBTagSF.clear();
+	JetLooseDFBTagSFUp.clear();
+	JetMediumDFBTagSFUp.clear();
+	JetTightDFBTagSFUp.clear();
+	JetLooseCSVBTagSFUp.clear();
+	JetMediumCSVBTagSFUp.clear();
+	JetTightCSVBTagSFUp.clear();
+	JetLooseDFBTagSFDown.clear();
+	JetMediumDFBTagSFDown.clear();
+	JetTightDFBTagSFDown.clear();
+	JetLooseCSVBTagSFDown.clear();
+	JetMediumCSVBTagSFDown.clear();
+	JetTightCSVBTagSFDown.clear();
 
 	//Initialize all variables as -999
 	METPt = -999;
 	METPhi = -999;
 	JetRho = -999;
-
-	runNumber = -999;
 
 	//unsigned int
 	nJet = 0;
@@ -378,14 +427,13 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	nTightDFBTagJet = 0;
 
 	//float CSVBValue = 0, DeepBValue = 0;
-	float metPx = 0, metPy, metPx_jerUp, metPy_jerUp, metPx_jerDown, metPy_jerDown, metPx_jecUp, metPy_jecUp, metPx_jecDown, metPy_jecDown;
+	float metPx = 0, metPy = 0, metPx_jerUp = 0, metPy_jerUp = 0, metPx_jerDown = 0, metPy_jerDown = 0, metPx_jecUp = 0, metPy_jecUp = 0, metPx_jecDown = 0, metPy_jecDown = 0;
 
 	nJet = *jetNumber->Get();
 	nFatJet = *fatJetNumber->Get();
-	runNumber = *run->Get();
 
 	for (const JetType& type : {AK4, AK8}) {
-		SetCorrector(type, runNumber);
+		SetCorrector(type, runPeriod);
 	}
 
 	const float& metpt = *metPt->Get();
@@ -415,7 +463,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 		std::map<char, float> smearFactor;
 		float correctionFactor = CorrectEnergy(rawPt, eta, *jetRho->Get(), jetArea->At(i), AK4);
-		float correctionFactorUp = 1.0, correctionFactorDown;
+		float correctionFactorUp = 1, correctionFactorDown = 1;
 
 		if (jecUnc[AK4] !=  nullptr) {
 			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * rawPt);
@@ -429,7 +477,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		}
 
 		if (isData) {
-			smearFactor = {{'c', 1.0}, {'u', 1.0}, {'d', 1.0}};
+			smearFactor = {{'c', 1}, {'u', 1}, {'d', 1}};
 		} else {
 			smearFactor = JetProducer::SmearEnergy(rawPt, eta, phi, *jetRho->Get(), jetArea->At(i), AK4);
 		}
@@ -454,18 +502,74 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 				JetLooseCSVBTag.push_back(true);
 				JetMediumCSVBTag.push_back(true);
 				JetTightCSVBTag.push_back(true);
+
+				if (!isData) {
+					JetLooseCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 0));
+					JetMediumCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 1));
+					JetTightCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 2));
+
+					JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
+					JetMediumCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 1));
+					JetTightCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 2));
+
+					JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
+					JetMediumCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 1));
+					JetTightCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 2));
+				}
 			} else if (csvBTagValue > deepCSVBTag[era]['m']) {
 				JetLooseCSVBTag.push_back(true);
 				JetMediumCSVBTag.push_back(true);
 				JetTightCSVBTag.push_back(false);
+
+				if (!isData) {
+					JetLooseCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 0));
+					JetMediumCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 1));
+					JetTightCSVBTagSF.push_back(0);
+
+					JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
+					JetMediumCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 1));
+					JetTightCSVBTagSFUp.push_back(0);
+
+					JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
+					JetMediumCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 1));
+					JetTightCSVBTagSFDown.push_back(0);
+				}
 			} else if (csvBTagValue > deepCSVBTag[era]['l']) {
 				JetLooseCSVBTag.push_back(true);
 				JetMediumCSVBTag.push_back(false);
 				JetTightCSVBTag.push_back(false);
+
+				if (!isData) {
+					JetLooseCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 0));
+					JetMediumCSVBTagSF.push_back(0);
+					JetTightCSVBTagSF.push_back(0);
+
+					JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
+					JetMediumCSVBTagSFUp.push_back(0);
+					JetTightCSVBTagSFUp.push_back(0);
+
+					JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
+					JetMediumCSVBTagSFDown.push_back(0);
+					JetTightCSVBTagSFDown.push_back(0);
+				}
 			} else {
 				JetLooseCSVBTag.push_back(false);
 				JetMediumCSVBTag.push_back(false);
 				JetTightCSVBTag.push_back(false);
+
+				if (!isData) {
+					JetLooseCSVBTagSF.push_back(0);
+					JetMediumCSVBTagSF.push_back(0);
+					JetTightCSVBTagSF.push_back(0);
+
+					JetLooseCSVBTagSFUp.push_back(0);
+					JetMediumCSVBTagSFUp.push_back(0);
+					JetTightCSVBTagSFUp.push_back(0);
+
+					JetLooseCSVBTagSFDown.push_back(0);
+					JetMediumCSVBTagSFDown.push_back(0);
+					JetTightCSVBTagSFDown.push_back(0);
+				}
 			}
 
 			const float& dfBTagValue = jetDF->At(i);
@@ -474,37 +578,82 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 				JetLooseDFBTag.push_back(true);
 				JetMediumDFBTag.push_back(true);
 				JetTightDFBTag.push_back(true);
+
+				if (!isData) {
+					JetLooseDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 0));
+					JetMediumDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 1));
+					JetTightDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 2));
+
+					JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
+					JetMediumDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 1));
+					JetTightDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 2));
+
+					JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
+					JetMediumDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 1));
+					JetTightDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 2));
+				}
 			} else if (dfBTagValue > deepFlavourBTag[era]['m']) {
 				JetLooseDFBTag.push_back(true);
 				JetMediumDFBTag.push_back(true);
 				JetTightDFBTag.push_back(false);
+
+				if (!isData) {
+					JetLooseDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 0));
+					JetMediumDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 1));
+					JetTightDFBTagSF.push_back(0);
+
+					JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
+					JetMediumDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 1));
+					JetTightDFBTagSFUp.push_back(0);
+
+					JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
+					JetMediumDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 1));
+					JetTightDFBTagSFDown.push_back(0);
+				}
 			} else if (dfBTagValue > deepFlavourBTag[era]['l']) {
 				JetLooseDFBTag.push_back(true);
 				JetMediumDFBTag.push_back(false);
 				JetTightDFBTag.push_back(false);
+
+				if (!isData) {
+					JetLooseDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 0));
+					JetMediumDFBTagSF.push_back(0);
+					JetTightDFBTagSF.push_back(0);
+
+					JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
+					JetMediumDFBTagSFUp.push_back(0);
+					JetTightDFBTagSFUp.push_back(0);
+
+					JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
+					JetMediumDFBTagSFDown.push_back(0);
+					JetTightDFBTagSFDown.push_back(0);
+				}
 			} else {
 				JetLooseDFBTag.push_back(false);
 				JetMediumDFBTag.push_back(false);
 				JetTightDFBTag.push_back(false);
+
+				if (!isData) {
+					JetLooseDFBTagSF.push_back(0);
+					JetMediumDFBTagSF.push_back(0);
+					JetTightDFBTagSF.push_back(0);
+
+					JetLooseDFBTagSFUp.push_back(0);
+					JetMediumDFBTagSFUp.push_back(0);
+					JetTightDFBTagSFUp.push_back(0);
+
+					JetLooseDFBTagSFDown.push_back(0);
+					JetMediumDFBTagSFDown.push_back(0);
+					JetTightDFBTagSFDown.push_back(0);
+				}
 			}
 
 			//Jet four momentum components
-			JetPt.push_back(correctedPt);
-			JetEta.push_back(eta);
-			JetPhi.push_back(phi);
-			JetMass.push_back(correctedMass);
-			JetRawPt.push_back(rawPt);
-			JetRawMass.push_back(rawPt);
+			JetPt.push_back(correctedPt); JetEta.push_back(eta); JetPhi.push_back(phi); JetMass.push_back(correctedMass); JetRawPt.push_back(rawPt); JetRawMass.push_back(rawPt), JetRawFactor.push_back(rawFactor);
 
-			JetPt_jecUp.push_back(correctedPt_jecUp);
-			JetMass_jecUp.push_back(correctedMass_jecUp);
-			JetPt_jecDown.push_back(correctedPt_jecDown);
-			JetMass_jecDown.push_back(correctedMass_jecDown);
+			JetPt_jecUp.push_back(correctedPt_jecUp); JetMass_jecUp.push_back(correctedMass_jecUp); JetPt_jecDown.push_back(correctedPt_jecDown); JetMass_jecDown.push_back(correctedMass_jecDown);
 
-			JetPt_jerUp.push_back(correctedPt_jerUp);
-			JetMass_jerUp.push_back(correctedMass_jerUp);
-			JetPt_jerDown.push_back(correctedPt_jerDown);
-			JetMass_jerDown.push_back(correctedMass_jerDown);
+			JetPt_jerUp.push_back(correctedPt_jerUp); JetMass_jerUp.push_back(correctedMass_jerUp); JetPt_jerDown.push_back(correctedPt_jerDown); JetMass_jerDown.push_back(correctedMass_jerDown);
 
 			//JECCorrection.push_back(correctionFactor);
 			metPx += pt * std::cos(phi) - JetPt.back() * std::cos(phi);
@@ -537,12 +686,46 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		JetEta.erase(JetEta.begin() + nearestJetIndex);
 		JetPhi.erase(JetPhi.begin() + nearestJetIndex);
 		JetMass.erase(JetMass.begin() + nearestJetIndex);
+		JetRawFactor.erase(JetRawFactor.begin() + nearestJetIndex);
+
+		JetPt_jecUp.erase(JetPt_jecUp.begin() + nearestJetIndex);
+		JetPt_jecDown.erase(JetPt_jecDown.begin() + nearestJetIndex);
+		JetPt_jerUp.erase(JetPt_jerUp.begin() + nearestJetIndex);
+		JetPt_jerDown.erase(JetPt_jerDown.begin() + nearestJetIndex);
+		JetMass_jecUp.erase(JetMass_jecUp.begin() + nearestJetIndex);
+		JetMass_jecDown.erase(JetMass_jecDown.begin() + nearestJetIndex);
+		JetMass_jerUp.erase(JetMass_jerUp.begin() + nearestJetIndex);
+		JetMass_jerDown.erase(JetMass_jerDown.begin() + nearestJetIndex);
+
 		JetLooseCSVBTag.erase(JetLooseCSVBTag.begin() + nearestJetIndex);
 		JetMediumCSVBTag.erase(JetMediumCSVBTag.begin() + nearestJetIndex);
 		JetTightCSVBTag.erase(JetTightCSVBTag.begin() + nearestJetIndex);
 		JetLooseDFBTag.erase(JetLooseDFBTag.begin() + nearestJetIndex);
 		JetMediumDFBTag.erase(JetMediumDFBTag.begin() + nearestJetIndex);
 		JetTightDFBTag.erase(JetTightDFBTag.begin() + nearestJetIndex);
+
+		if (!isData) {
+			JetLooseCSVBTagSF.erase(JetLooseCSVBTagSF.begin() + nearestJetIndex);
+			JetMediumCSVBTagSF.erase(JetMediumCSVBTagSF.begin() + nearestJetIndex);
+			JetTightCSVBTagSF.erase(JetTightCSVBTagSF.begin() + nearestJetIndex);
+			JetLooseDFBTagSF.erase(JetLooseDFBTagSF.begin() + nearestJetIndex);
+			JetMediumDFBTagSF.erase(JetMediumDFBTagSF.begin() + nearestJetIndex);
+			JetTightDFBTagSF.erase(JetTightDFBTagSF.begin() + nearestJetIndex);
+
+			JetLooseCSVBTagSFUp.erase(JetLooseCSVBTagSFUp.begin() + nearestJetIndex);
+			JetMediumCSVBTagSFUp.erase(JetMediumCSVBTagSFUp.begin() + nearestJetIndex);
+			JetTightCSVBTagSFUp.erase(JetTightCSVBTagSFUp.begin() + nearestJetIndex);
+			JetLooseDFBTagSFUp.erase(JetLooseDFBTagSFUp.begin() + nearestJetIndex);
+			JetMediumDFBTagSFUp.erase(JetMediumDFBTagSFUp.begin() + nearestJetIndex);
+			JetTightDFBTagSFUp.erase(JetTightDFBTagSFUp.begin() + nearestJetIndex);
+
+			JetLooseCSVBTagSFDown.erase(JetLooseCSVBTagSFDown.begin() + nearestJetIndex);
+			JetMediumCSVBTagSFDown.erase(JetMediumCSVBTagSFDown.begin() + nearestJetIndex);
+			JetTightCSVBTagSFDown.erase(JetTightCSVBTagSFDown.begin() + nearestJetIndex);
+			JetLooseDFBTagSFDown.erase(JetLooseDFBTagSFDown.begin() + nearestJetIndex);
+			JetMediumDFBTagSFDown.erase(JetMediumDFBTagSFDown.begin() + nearestJetIndex);
+			JetTightDFBTagSFDown.erase(JetTightDFBTagSFDown.begin() + nearestJetIndex);
+		}
 	}
 
 	for (unsigned int i = 0; i < nJet; i++) {
@@ -579,12 +762,37 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		SortByIndex<std::vector<float>>(JetPhi, idx);
 		SortByIndex<std::vector<float>>(JetEta, idx);
 		SortByIndex<std::vector<float>>(JetMass, idx);
+		SortByIndex<std::vector<float>>(JetRawFactor, idx);
+
 		SortByIndex<std::vector<bool>>(JetLooseCSVBTag, idx);
 		SortByIndex<std::vector<bool>>(JetMediumCSVBTag, idx);
 		SortByIndex<std::vector<bool>>(JetTightCSVBTag, idx);
 		SortByIndex<std::vector<bool>>(JetLooseDFBTag, idx);
 		SortByIndex<std::vector<bool>>(JetMediumDFBTag, idx);
 		SortByIndex<std::vector<bool>>(JetTightDFBTag, idx);
+
+		if (!isData) {
+			SortByIndex<std::vector<float>>(JetLooseCSVBTagSF, idx);
+			SortByIndex<std::vector<float>>(JetMediumCSVBTagSF, idx);
+			SortByIndex<std::vector<float>>(JetTightCSVBTagSF, idx);
+			SortByIndex<std::vector<float>>(JetLooseDFBTagSF, idx);
+			SortByIndex<std::vector<float>>(JetMediumDFBTagSF, idx);
+			SortByIndex<std::vector<float>>(JetTightDFBTagSF, idx);
+
+			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFUp, idx);
+			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFUp, idx);
+			SortByIndex<std::vector<float>>(JetTightCSVBTagSFUp, idx);
+			SortByIndex<std::vector<float>>(JetLooseDFBTagSFUp, idx);
+			SortByIndex<std::vector<float>>(JetMediumDFBTagSFUp, idx);
+			SortByIndex<std::vector<float>>(JetTightDFBTagSFUp, idx);
+
+			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFDown, idx);
+			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFDown, idx);
+			SortByIndex<std::vector<float>>(JetTightCSVBTagSFDown, idx);
+			SortByIndex<std::vector<float>>(JetLooseDFBTagSFDown, idx);
+			SortByIndex<std::vector<float>>(JetMediumDFBTagSFDown, idx);
+			SortByIndex<std::vector<float>>(JetTightDFBTagSFDown, idx);
+		}
 	}
 
 	//Store values in product to calculate high level variables
@@ -656,6 +864,8 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 }
 
 void JetProducer::EndJob(TFile* file) {
+	delete bTagReader["deepcsv"];
+	delete bTagReader["deepflavour"];
 	for (const JetType& type : {AK4, AK8}) {
 		delete jetCorrectionUncertainty[type];
 	}

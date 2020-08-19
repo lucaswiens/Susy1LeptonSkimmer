@@ -33,12 +33,12 @@ class NanoSkimmer{
 		void ProgressBar(const int &progress);
 
 		//Configure analysis modules
-		void Configure(const float &xSec, const int &era, TTreeReader& reader);
+		void Configure(const float &xSec, const int &era, const char &runPeriod, TTreeReader& reader);
 
 
 	public:
 		NanoSkimmer();
 		NanoSkimmer(const std::string &inFile, const bool &isData);
-		void EventLoop(const float &xSec = 1., const int &era = 2016, const int &nMaxEvents = -999);
+		void EventLoop(const float &xSec = 1., const int &era = 2016, const char &runPeriod = 'm', const int &nMaxEvents = -999);
 		void WriteOutput(const std::string &outFile);
 };

@@ -30,7 +30,7 @@ class NanoSkimmer{
 		std::map<std::string, std::vector<unsigned int>> nMin;
 
 		//Progress bar function
-		void ProgressBar(const int &progress);
+		void ProgressBar(const int &progress, const int &rate);
 
 		//Configure analysis modules
 		void Configure(const float &xSec, const int &era, const char &runPeriod, TTreeReader& reader);

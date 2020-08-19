@@ -21,7 +21,7 @@ NanoSkimmer::NanoSkimmer(const std::string &inFile, const bool &isData):
 		std::cout << "Input file for analysis: " + inFile << std::endl;
 	}
 
-void NanoSkimmer::ProgressBar(const int &progress) {
+void NanoSkimmer::ProgressBar(const int &progress, const int &rate) {
 	std::string progressBar = "[";
 
 	for (int i = 0; i < progress - 1; i++) {
@@ -35,7 +35,7 @@ void NanoSkimmer::ProgressBar(const int &progress) {
 		progressBar += "•";
 	}
 
-	progressBar = progressBar + "] " + std::to_string(progress) + "% of Events processed";
+	progressBar = progressBar + "] " + std::to_string(progress) + "% of Events processed at a rate of " + std::to_string(rate) + " Hz." ;
 	std::cout << "\r" << progressBar << std::flush;
 
 	if (progress == 100) std::cout << std::endl;
@@ -77,7 +77,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 
 	//Progress bar at 0%
 	int processed = 0;
-	ProgressBar(0.);
+	ProgressBar(0., 0.);
 	int nProcessedEvents = 0;
 	int stepSize;
 	if (nMaxEvents > 0) { stepSize = 25;}
@@ -110,11 +110,11 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 			int progress;
 			if (nMaxEvents > 0) { progress = 100 * (float) processed / nMaxEvents;}
 			else { progress = 100 * (float) processed / nEvents;}
-			ProgressBar(progress);
+			ProgressBar(progress, processed / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count());
 		}
 	}
 
-	ProgressBar(100);
+	ProgressBar(100, 0);
 
 	//Print stats
 	if (nMaxEvents>0){

@@ -4,7 +4,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/LeptonProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/JetProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
-//#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TestProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
 
 NanoSkimmer::NanoSkimmer() {}
 
@@ -48,6 +48,7 @@ void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPe
 		std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
 		std::shared_ptr<JetProducer>(new JetProducer(era, 20, 2.4, 0.4, runPeriod, reader)),
 		std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(reader)),
+		std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era, reader)),
 	};
 }
 

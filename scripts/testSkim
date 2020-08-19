@@ -1,0 +1,8 @@
+#!/bin/bash
+bkgSkim $1
+echo ""
+signalSkim $1
+echo ""
+dataSkim $1
+echo ""
+

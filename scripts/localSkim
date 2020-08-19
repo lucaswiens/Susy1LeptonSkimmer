@@ -1,0 +1,14 @@
+#!/bin/bash
+mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
+cd $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
+
+INFILE=$1
+ISDATA=$2
+ERA=$3
+OUT=$4
+JOB=$5
+RUNPERIOD=$6
+NMAXEVENTS=$7
+
+##Do the skimming
+NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD $NMAXEVENTS

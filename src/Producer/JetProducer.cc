@@ -845,7 +845,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	*/
 
 	/* TODO
-		->Proper runNumber of the datasets, maybe there is als a smarter way.. On could just parse the runPeriod as an argument to the wrapper or us a function that gets it from the filename
+		->Proper runNumber of the datasets, maybe there is als a smarter way.. One could just parse the runPeriod as an argument to the wrapper or us a function that gets it from the filename
 		->FatJet Loop
 	*/
 

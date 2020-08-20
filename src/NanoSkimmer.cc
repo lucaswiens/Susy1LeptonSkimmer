@@ -5,6 +5,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/JetProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/GenLevelProducer.h>
 
 NanoSkimmer::NanoSkimmer() {}
 
@@ -50,6 +51,7 @@ void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPe
 		std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(reader)),
 		std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era, reader)),
 	};
+	if (!isData) {producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(era, reader)));}
 }
 
 void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPeriod, const int &nMaxEvents) {

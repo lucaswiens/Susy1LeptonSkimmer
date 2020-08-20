@@ -21,8 +21,9 @@ class NanoSkimmer{
 		//Vector with wished producers
 		std::vector<std::shared_ptr<BaseProducer>> producers;
 
-		//Vector of trees for each analysis
-		//std::vector<TTree*> outputTrees;
+		int finalNumberOfEvents;
+
+		//Output Tree
 		TTree* outputTree;
 
 		//Vector of cutflow histograms for each analysis

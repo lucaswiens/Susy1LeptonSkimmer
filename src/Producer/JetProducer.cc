@@ -314,7 +314,6 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 		jetCorrectionUncertainty[type] = new JetCorrectionUncertainty(JetCorrectorParameters(fileName, "Total"));
 	}
 
-
 	//Set Branches of output tree
 	tree->Branch("JetPt", &JetPt);
 	tree->Branch("JetEta", &JetEta);

@@ -24,7 +24,6 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("LT", &LT);
 	tree->Branch("LP", &LP);
 	tree->Branch("DeltaPhi", &deltaPhi);
-	tree->Branch("deltaPhi", &deltaPhi);
 	tree->Branch("dPhi", &dPhi);
 	tree->Branch("WBosonMt", &wBosonMt);
 	tree->Branch("signalRegion", &signalRegionCSV);

@@ -117,11 +117,13 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 
 	ProgressBar(100, 0);
 
+	finalNumberOfEvents = outputTree->GetEntries();
+
 	//Print stats
 	if (nMaxEvents>0){
-		std::cout << outputTree->GetName() << " analysis: Selected " << outputTree->GetEntries() << " events of " << nMaxEvents << " (" << 100*(float)outputTree->GetEntries()/nMaxEvents << "%)" << std::endl;
+		std::cout << outputTree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nMaxEvents << " (" << 100*(float)outputTree->GetEntries()/nMaxEvents << "%)" << std::endl;
 	} else {
-		std::cout << outputTree->GetName() << " analysis: Selected " << outputTree->GetEntries() << " events of " << eventTree->GetEntries() << " (" << 100*(float)outputTree->GetEntries()/eventTree->GetEntries() << "%)" << std::endl;
+		std::cout << outputTree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(float)finalNumberOfEvents/nEvents << "%)" << std::endl;
 	}
 }
 

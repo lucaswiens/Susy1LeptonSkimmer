@@ -40,10 +40,17 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 
 	tree->Branch("IsoTrackMt2", &IsoTrackMt2);
 	tree->Branch("IsoTrackPt", &IsoTrackPt);
+	tree->Branch("IsoTrackVeto", &IsoTrackVeto);
+	tree->Branch("IsoTrackHadronicDecay", &IsoTrackHadronicDecay);
 }
 
 void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
+	IsoTrackMt2.clear();
+	IsoTrackPt.clear();
+	IsoTrackVeto.clear();
+	IsoTrackHadronicDecay.clear();
+
 	HT = -999;
 	LT = -999;
 	LP = -999;
@@ -126,8 +133,15 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			mt2obj.set_momenta(a, b, c);
 			mt2obj.set_mn(0);
 
-			IsoTrackMt2 = mt2obj.get_mt2();
+			IsoTrackMt2.push_back(mt2obj.get_mt2());
 			IsoTrackPt.push_back(isotrackpt);
+
+			if (10 < abs(isotrackpdgid) && abs(isotrackpdgid) < 14) {
+				IsoTrackHadronicDecay.push_back(false); //leptonic
+			} else {
+				IsoTrackHadronicDecay.push_back(true); //hadronic track
+			}
+			if (IsoTrackMt2.back() <= 60) { IsoTrackVeto.push_back(true);}
 		}
 	}
 

@@ -20,49 +20,29 @@ void METFilterProducer::BeginJob(TTree* tree, bool &isData) {
 	flagEcalDeadCellTriggerPrimitiveFilter = std::make_unique<TTreeReaderValue<bool>>(*reader, "Flag_EcalDeadCellTriggerPrimitiveFilter");
 	flagGoodVertices = std::make_unique<TTreeReaderValue<bool>>(*reader, "Flag_goodVertices");
 	flagGlobalSuperTightHalo2016Filter = std::make_unique<TTreeReaderValue<bool>>(*reader, "Flag_globalSuperTightHalo2016Filter");
-	/* badMuon flag does not exist anymore?
-	if hasattr(event, "Flag_badMuons"):
-		flag_badMuons = getattr(event, "Flag_badMuons")
-		flag_duplicateMuons = getattr(event, "Flag_duplicateMuons")
-	else :
-		flag_duplicateMuons = True
-		flag_badMuons = getattr(event,"Flag_BadPFMuonFilter")
-	*/
+	flagBadMuons = std::make_unique<TTreeReaderValue<bool>>(*reader, "Flag_BadPFMuonFilter");
 
 	SetCollection(this->isData);
 
 	//Set Branches of output tree
 	tree->Branch("PassFilters", &PassFilters);
 	tree->Branch("PassFiltersMoriond2017Tight", &PassFiltersMoriond2017Tight);
-	tree->Branch("PassCSCFilterList", &PassCSCFilterList);
 }
 
 void METFilterProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	if (isData) {
 		const bool& eeBadScFilter = *flagEeBadScFilter->Get();
-		const bool& hBHENoiseFilter = *flagHBHENoiseFilter->Get();
-		const bool& hBHENoiseIsoFilter = *flagHBHENoiseIsoFilter->Get();
+		const bool& hbheNoiseFilter = *flagHBHENoiseFilter->Get();
+		const bool& hbheNoiseIsoFilter = *flagHBHENoiseIsoFilter->Get();
 		const bool& ecalDeadCellTriggerPrimitiveFilter = *flagEcalDeadCellTriggerPrimitiveFilter->Get();
 		const bool& goodVertices = *flagGoodVertices->Get();
 		const bool& globalSuperTightHalo2016Filter = *flagGlobalSuperTightHalo2016Filter->Get();
-		PassFilters = eeBadScFilter && hBHENoiseFilter && hBHENoiseIsoFilter && ecalDeadCellTriggerPrimitiveFilter && goodVertices && globalSuperTightHalo2016Filter;
-		PassCSCFilterList = true; //What is the point?
-		//PassFiltersMoriond2017Tight = PassFilters && !badMuons && !duplicateMuons; //not in NanoAOD?
-		/*
-		# check MET text filter files
-		if (runNr,lumiNr,eventNr) in filterList:
-			#print "yes", runNr,lumiNr,eventNr
-			PassCSCFilterList = False
-		else:
-			#print "no", runNr,lumiNr,eventNr
-			PassCSCFilterList = True
-
-		# check filters present in event
-		*/
+		const bool& badMuons = *flagBadMuons->Get();
+		PassFilters = eeBadScFilter && hbheNoiseFilter && hbheNoiseIsoFilter && ecalDeadCellTriggerPrimitiveFilter && goodVertices && globalSuperTightHalo2016Filter;
+		PassFiltersMoriond2017Tight = PassFilters && !badMuons;
 	} else {
 		PassFilters = true;
 		PassFiltersMoriond2017Tight = true;
-		PassCSCFilterList = true;
 	}
 
 	if (PassFilters) {

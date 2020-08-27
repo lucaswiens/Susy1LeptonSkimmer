@@ -19,7 +19,7 @@ class METFilterProducer : public BaseProducer {
 		//TTreeReader Values for NANO AOD analysis
 		std::unique_ptr<TTreeReaderValue<unsigned int>> runNumber, luminosityNumber;
 		std::unique_ptr<TTreeReaderValue<unsigned long long>> eventNumber;
-		std::unique_ptr<TTreeReaderValue<bool>> flagEeBadScFilter, flagHBHENoiseFilter, flagHBHENoiseIsoFilter, flagEcalDeadCellTriggerPrimitiveFilter, flagGoodVertices, flagGlobalSuperTightHalo2016Filter;
+		std::unique_ptr<TTreeReaderValue<bool>> flagEeBadScFilter, flagBadMuons, flagHBHENoiseFilter, flagHBHENoiseIsoFilter, flagEcalDeadCellTriggerPrimitiveFilter, flagGoodVertices, flagGlobalSuperTightHalo2016Filter;
 
 	public:
 		METFilterProducer(const int& era, TTreeReader& reader);

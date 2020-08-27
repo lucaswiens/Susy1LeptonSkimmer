@@ -6,6 +6,8 @@ class Susy1LeptonProduct {
 		float leptonEta = -999;
 		float leptonPhi = -999;
 		float leptonMass = -999;
+		int leptonPdgId = -999;
+		int leptonCharge = -999;
 
 		unsigned int nJet = 0;
 		unsigned int nLooseCSVBTagJet = 0;
@@ -22,4 +24,17 @@ class Susy1LeptonProduct {
 
 		float metPt = -999;
 		float metPhi = -999;
+
+		int nGenPart = -999;
+		int nGenWBoson = -999;
+		std::vector<float> genWBosonPt;
+		std::vector<float> genWBosonEta;
+		std::vector<float> genWBosonPhi;
+		std::vector<float> genWBosonMass;
+
+		int nGenTop = -999;
+		std::vector<float> genTopPt;
+		std::vector<float> genTopEta;
+		std::vector<float> genTopPhi;
+		std::vector<float> genTopMass;
 };

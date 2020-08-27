@@ -66,8 +66,6 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	electronMiniPFRelIsoAll = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_miniPFRelIso_all");
 	electronCutBased = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_cutBased");
 
-
-
 	//Set TTreeReader for genpart and trigger obj from BaseProducer
 	SetCollection(this->isData);
 
@@ -105,7 +103,6 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	Charge = -999;
 	PdgId = -999;
 
-	//unsigned int
 	nMuon = 0;
 	nElectron = 0;
 	nLepton = 0;
@@ -133,7 +130,6 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 			if (pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand) {
 				if (!isData) {
-					// Create WeightCalculator class for easier acces to SF
 					WeightCalculator* wc = new WeightCalculator;
 					const float& idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
 					const float& isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
@@ -163,7 +159,6 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 			if (pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut) {
 				if (!isData) {
-					// Create WeightCalculator class for easier acces to SF
 					WeightCalculator* wc = new WeightCalculator;
 					const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
 					const float& MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
@@ -176,11 +171,13 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			}
 		}
 	}
-	//Store values in product to calculate high level variables
+
 	product->leptonPt = Pt;
 	product->leptonPhi = Phi;
 	product->leptonEta = Eta;
 	product->leptonMass = Mass;
+	product->leptonPdgId = PdgId;
+	product->leptonCharge = Charge;
 
 	if (Pt != -999) {
 		std::string cutName("N_{#ell} = 1 (no ID req and Iso < 0.4)");

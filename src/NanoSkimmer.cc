@@ -85,7 +85,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 	ProgressBar(0., 0.);
 	int nProcessedEvents = 0;
 	int stepSize;
-	if (nMaxEvents > 0) { stepSize = 25;}
+	if (nMaxEvents > 0) { stepSize = (int)nMaxEvents/100;}
 	else {stepSize = 10000;}
 
 	int nEvents = eventTree->GetEntries();

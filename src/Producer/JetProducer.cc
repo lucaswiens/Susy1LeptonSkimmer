@@ -25,45 +25,42 @@ void JetProducer::SortByIndex(T& var, std::vector<int> idx) {
 	var = std::move(tmp);
 }
 
-void JetProducer::SetCorrector(const JetType& type, const char& runPeriod) {
+void JetProducer::SetCorrector(const char& runPeriod) {
 	std::vector<JetCorrectorParameters> corrVec;
 
 	for (std::string fileName : isData? jecData[era] : jecMC[era]) {
 		if (fileName.find("@") != std::string::npos) {
 			fileName.replace(fileName.find("@"), 1, runEras[era][runPeriod]);
 		}
-
-		fileName.replace(fileName.find("&"), 1, type == AK4 ? "AK4" : "AK8");
-
 		corrVec.push_back(JetCorrectorParameters(fileName));
 	}
 
-	jetCorrector[type] = new FactorizedJetCorrector(corrVec);
+	jetCorrector = new FactorizedJetCorrector(corrVec);
 }
 
 //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
-float JetProducer::CorrectEnergy(const float& pt, const float& eta, const float& rho, const float& area, const JetType &type) {
-	jetCorrector[type]->setJetPt(pt);
-	jetCorrector[type]->setJetEta(eta);
-	jetCorrector[type]->setRho(rho);
-	jetCorrector[type]->setJetA(area);
-	return jetCorrector[type]->getCorrection();
+float JetProducer::CorrectEnergy(const float& pt, const float& eta, const float& rho, const float& area) {
+	jetCorrector->setJetPt(pt);
+	jetCorrector->setJetEta(eta);
+	jetCorrector->setRho(rho);
+	jetCorrector->setJetA(area);
+	return jetCorrector->getCorrection();
 }
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
 //https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_25/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h#L203-L263
-std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta, const float& phi, const float& rho, const float& coneSize, const JetType& type) {
+std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta, const float& phi, const float& rho, const float& coneSize) {
 	jetParameter.setJetPt(pt).setJetEta(eta).setRho(rho);
 
-	float reso = resolution[type].getResolution(jetParameter);
+	float reso = resolution.getResolution(jetParameter);
 	float resoSF;
 	float resoSFUp;
 	float resoSFDown;
-	//if (!isJERsyst) resoSF = resolution_sf[type].getScaleFactor(jetParameter);
-	//else resoSF = resolution_sf[type].getScaleFactor(jetParameter, isUp ? Variation::UP : Variation::DOWN);
-	resoSF     = resolution_sf[type].getScaleFactor(jetParameter);
-	resoSFUp   = resolution_sf[type].getScaleFactor(jetParameter, Variation::UP);
-	resoSFDown = resolution_sf[type].getScaleFactor(jetParameter, Variation::DOWN);
+	//if (!isJERsyst) resoSF = resolution_sf.getScaleFactor(jetParameter);
+	//else resoSF = resolution_sf.getScaleFactor(jetParameter, isUp ? Variation::UP : Variation::DOWN);
+	resoSF     = resolution_sf.getScaleFactor(jetParameter);
+	resoSFUp   = resolution_sf.getScaleFactor(jetParameter, Variation::UP);
+	resoSFDown = resolution_sf.getScaleFactor(jetParameter, Variation::DOWN);
 
 	float smearFactor  = 1.;
 	float smearFactorUp = 1.;
@@ -73,20 +70,20 @@ std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta
 	//unsigned int size;
 	bool isMatched = false;
 
-	unsigned int size = (type == AK4) ? genJetPt->GetSize() : genFatJetPt->GetSize();
+	unsigned int size = genJetPt->GetSize();
 
 	//Loop over all gen jets and find match
 	for (unsigned int i = 0; i < size; i++) {
-		genPt = (type == AK4) ? genJetPt->At(i) : genFatJetPt->At(i);
-		genPhi = (type == AK4) ? genJetPhi->At(i) : genFatJetPhi->At(i);
-		genEta = (type == AK4) ? genJetEta->At(i) : genFatJetEta->At(i);
-		genMass = (type == AK4) ? genJetMass->At(i) : genFatJetMass->At(i);
+		genPt = genJetPt->At(i);
+		genPhi = genJetPhi->At(i);
+		genEta = genJetEta->At(i);
+		genMass = genJetMass->At(i);
 
 		dR = std::sqrt(std::pow(phi - genPhi, 2) + std::pow(eta - genEta, 2));
 
 		//Check if jet and gen jet are matched
 		if (dR < coneSize/2. and abs(pt - genPt) < 3. * reso * pt) {
-			genJet[type] = ROOT::Math::PtEtaPhiMVector(genPt, genEta, genPhi, genMass);
+			genJet = ROOT::Math::PtEtaPhiMVector(genPt, genEta, genPhi, genMass);
 			isMatched = true;
 			break;
 		}
@@ -123,68 +120,68 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	std::string cmsswBase = std::string(std::getenv("CMSSW_BASE"));
 	std::string jmeFilePath = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/jme/";
 	jecMC = {
-		{2016, {jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L2Relative_&PFchs.txt",
-			jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L3Absolute_&PFchs.txt"}
+		{2016, {jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_L3Absolute_AK4PFchs.txt"}
 		},
-		{2017, {jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L2Relative_&PFchs.txt",
-			jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L3Absolute_&PFchs.txt"}
+		{2017, {jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_L3Absolute_AK4PFchs.txt"}
 		},
-		{2018, {jmeFilePath + "Autumn18/Autumn18_V19_MC_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Autumn18/Autumn18_V19_MC_L2Relative_&PFchs.txt",
-			jmeFilePath + "Autumn18/Autumn18_V19_MC_L3Absolute_&PFchs.txt"}
+		{2018, {jmeFilePath + "Autumn18/Autumn18_V19_MC_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_V19_MC_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_V19_MC_L3Absolute_AK4PFchs.txt"}
 		},
 	};
 
 	jecData = {
-		{2016, {jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2Relative_&PFchs.txt",
-			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L3Absolute_&PFchs.txt",
-			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2L3Residual_&PFchs.txt"}
+		{2016, {jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L3Absolute_AK4PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_07Aug2017@_V11_DATA_L2L3Residual_AK4PFchs.txt"}
 		},
-		{2017, {jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2Relative_&PFchs.txt",
-			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L3Absolute_&PFchs.txt",
-			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2L3Residual_&PFchs.txt"}
+		{2017, {jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L3Absolute_AK4PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_17Nov2017@_V32_DATA_L2L3Residual_AK4PFchs.txt"}
 		},
-		{2018, {jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L2Relative_&PFchs.txt",
-			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L3Absolute_&PFchs.txt",
-			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L2L3Residual_&PFchs.txt"}
+		{2018, {jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L3Absolute_AK4PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_Run@_V9_DATA_L2L3Residual_AK4PFchs.txt"}
 		}
 	};
 
 	jecUnc = {
-		{2016, jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_UncertaintySources_&PFchs.txt"},
-		{2017, jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_UncertaintySources_&PFchs.txt"},
-		{2018, jmeFilePath + "Autumn18/Autumn18_V19_MC_UncertaintySources_&PFchs.txt"},
+		{2016, jmeFilePath + "Summer16/Summer16_07Aug2017_V11_MC_UncertaintySources_AK4PFchs.txt"},
+		{2017, jmeFilePath + "Fall17/Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt"},
+		{2018, jmeFilePath + "Autumn18/Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt"},
 	};
 
 	jmeSF = {
-		{2016, jmeFilePath + "Summer16/Summer16_25nsV1_MC_SF_&PFchs.txt"},
-		{2017, jmeFilePath + "Fall17/Fall17_V3_MC_SF_&PFchs.txt"},
-		{2018, jmeFilePath + "Autumn18/Autumn18_V7_MC_SF_&PFchs.txt"},
+		{2016, jmeFilePath + "Summer16/Summer16_25nsV1_MC_SF_AK4PFchs.txt"},
+		{2017, jmeFilePath + "Fall17/Fall17_V3_MC_SF_AK4PFchs.txt"},
+		{2018, jmeFilePath + "Autumn18/Autumn18_V7_MC_SF_AK4PFchs.txt"},
 	};
 
 	jmePtReso = {
-		{2016, jmeFilePath + "Summer16/Summer16_25nsV1_MC_PtResolution_&PFchs.txt"},
-		{2017, jmeFilePath + "Fall17/Fall17_V3_MC_PtResolution_&PFchs.txt"},
-		{2018, jmeFilePath + "Autumn18/Autumn18_V7_MC_PtResolution_&PFchs.txt"},
+		{2016, jmeFilePath + "Summer16/Summer16_25nsV1_MC_PtResolution_AK4PFchs.txt"},
+		{2017, jmeFilePath + "Fall17/Fall17_V3_MC_PtResolution_AK4PFchs.txt"},
+		{2018, jmeFilePath + "Autumn18/Autumn18_V7_MC_PtResolution_AK4PFchs.txt"},
 	};
 
 	jecFastSim = {
-		{2016, {jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L2Relative_&PFchs.txt",
-			jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L3Absolute_&PFchs.txt"}
+		{2016, {jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Summer16/Summer16_FastSimV1_MC_L3Absolute_AK4PFchs.txt"}
 		},
-		{2017, {jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L2Relative_&PFchs.txt",
-			jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L3Absolute_&PFchs.txt"}
+		{2017, {jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Fall17/Fall17_FastSimV1_MC_L3Absolute_AK4PFchs.txt"}
 		},
-		{2018, {jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L1FastJet_&PFchs.txt",
-			jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L2Relative_&PFchs.txt",
-			jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L3Absolute_&PFchs.txt"}
+		{2018, {jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L1FastJet_AK4PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L2Relative_AK4PFchs.txt",
+			jmeFilePath + "Autumn18/Autumn18_FastSimV1_MC_L3Absolute_AK4PFchs.txt"}
 		}
 	};// TODO also do uncertainties for FastSim
 
@@ -272,16 +269,22 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	metPhi = std::make_unique<TTreeReaderValue<float>>(*reader, "MET_phi");
 
 	fatJetNumber = std::make_unique<TTreeReaderValue<unsigned int>>(*reader, "nFatJet");
-	fatJetPt = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_pt");
-	fatJetEta = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_eta");
-	fatJetPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_phi");
-	fatJetMass = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_mass");
-	fatJetArea = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_area");
-	fatJetCSV = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_btagDeepB");
-	//fatJetDF = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_btagDeepFlavB");
-	fatJetTau1 = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_tau1");
-	fatJetTau2 = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_tau2");
-	fatJetTau3 = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_tau3");
+	fatJetDeepTagMDH4qvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_H4qvsQCD");
+	fatJetDeepTagMDHbbvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_HbbvsQCD");
+	fatJetDeepTagMDTvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_TvsQCD");
+	fatJetDeepTagMDWvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_WvsQCD");
+	fatJetDeepTagMDZHbbvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_ZHbbvsQCD");
+	fatJetDeepTagMDZHccvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_ZHccvsQCD");
+	fatJetDeepTagMDZbbvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_ZbbvsQCD");
+	fatJetDeepTagMDZvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_ZvsQCD");
+	fatJetDeepTagMDBbvsLight = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_bbvsLight");
+	fatJetDeepTagMDCcvsLight = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTagMD_ccvsLight");
+	fatJetDeepTagH = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTag_H");
+	fatJetDeepTagQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTag_QCD");
+	fatJetDeepTagQCDothers = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTag_QCDothers");
+	fatJetDeepTagTvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTag_TvsQCD");
+	fatJetDeepTagWvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTag_WvsQCD");
+	fatJetDeepTagZvsQCD = std::make_unique<TTreeReaderArray<float>>(*reader, "FatJet_deepTag_ZvsQCD");
 
 	if (!this->isData) {
 		genJetPt = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJet_pt");
@@ -289,30 +292,20 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 		genJetPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJet_phi");
 		genJetMass = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJet_mass");
 
-		genFatJetPt = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJetAK8_pt");
-		genFatJetEta = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJetAK8_eta");
-		genFatJetPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJetAK8_phi");
-		genFatJetMass = std::make_unique<TTreeReaderArray<float>>(*reader, "GenJetAK8_mass");
-
 		jetFlavour = std::make_unique<TTreeReaderArray<int>>(*reader, "Jet_partonFlavour");
 		jetGenIdx = std::make_unique<TTreeReaderArray<int>>(*reader, "Jet_genJetIdx");
 	}
 
-	for (JetType type : {AK4, AK8}) {
-		//Set configuration for JER tools
-		std::string fileName = jmePtReso[era];
-		fileName.replace(fileName.find("&"), 1, type == AK4 ? "AK4" : "AK8");
-		resolution[type] = JME::JetResolution(fileName);
+	//Set configuration for JER tools
+	std::string fileName = jmePtReso[era];
+	resolution = JME::JetResolution(fileName);
 
-		fileName = jmeSF[era];
-		fileName.replace(fileName.find("&"), 1, type == AK4 ? "AK4" : "AK8");
-		resolution_sf[type] = JME::JetResolutionScaleFactor(fileName);
+	fileName = jmeSF[era];
+	resolution_sf = JME::JetResolutionScaleFactor(fileName);
 
-		//Set object to get JEC uncertainty
-		fileName = jecUnc[era];
-		fileName.replace(fileName.find("&"), 1, type == AK4 ? "AK4" : "AK8");
-		jetCorrectionUncertainty[type] = new JetCorrectionUncertainty(JetCorrectorParameters(fileName, "Total"));
-	}
+	//Set object to get JEC uncertainty
+	fileName = jecUnc[era];
+	jetCorrectionUncertainty = new JetCorrectionUncertainty(JetCorrectorParameters(fileName, "Total"));
 
 	//Set Branches of output tree
 	tree->Branch("JetPt", &JetPt);
@@ -336,36 +329,55 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("JetLooseCSVBTag", &JetLooseCSVBTag);
 	tree->Branch("JetMediumCSVBTag", &JetMediumCSVBTag);
 	tree->Branch("JetTightCSVBTag", &JetTightCSVBTag);
-	tree->Branch("JetLooseDFBTagSF", &JetLooseDFBTagSF);
-	tree->Branch("JetMediumDFBTagSF", &JetMediumDFBTagSF);
-	tree->Branch("JetTightDFBTagSF", &JetTightDFBTagSF);
-	tree->Branch("JetLooseCSVBTagSF", &JetLooseCSVBTagSF);
-	tree->Branch("JetMediumCSVBTagSF", &JetMediumCSVBTagSF);
-	tree->Branch("JetTightCSVBTagSF", &JetTightCSVBTagSF);
-	tree->Branch("JetLooseDFBTagSFUp", &JetLooseDFBTagSFUp);
-	tree->Branch("JetMediumDFBTagSFUp", &JetMediumDFBTagSFUp);
-	tree->Branch("JetTightDFBTagSFUp", &JetTightDFBTagSFUp);
-	tree->Branch("JetLooseCSVBTagSFUp", &JetLooseCSVBTagSFUp);
-	tree->Branch("JetMediumCSVBTagSFUp", &JetMediumCSVBTagSFUp);
-	tree->Branch("JetTightCSVBTagSFUp", &JetTightCSVBTagSFUp);
-	tree->Branch("JetLooseDFBTagSFDown", &JetLooseDFBTagSFDown);
-	tree->Branch("JetMediumDFBTagSFDown", &JetMediumDFBTagSFDown);
-	tree->Branch("JetTightDFBTagSFDown", &JetTightDFBTagSFDown);
-	tree->Branch("JetLooseCSVBTagSFDown", &JetLooseCSVBTagSFDown);
-	tree->Branch("JetMediumCSVBTagSFDown", &JetMediumCSVBTagSFDown);
-	tree->Branch("JetTightCSVBTagSFDown", &JetTightCSVBTagSFDown);
+
+	if (!isData) {
+		tree->Branch("JetLooseDFBTagSF", &JetLooseDFBTagSF);
+		tree->Branch("JetMediumDFBTagSF", &JetMediumDFBTagSF);
+		tree->Branch("JetTightDFBTagSF", &JetTightDFBTagSF);
+		tree->Branch("JetLooseCSVBTagSF", &JetLooseCSVBTagSF);
+		tree->Branch("JetMediumCSVBTagSF", &JetMediumCSVBTagSF);
+		tree->Branch("JetTightCSVBTagSF", &JetTightCSVBTagSF);
+		tree->Branch("JetLooseDFBTagSFUp", &JetLooseDFBTagSFUp);
+		tree->Branch("JetMediumDFBTagSFUp", &JetMediumDFBTagSFUp);
+		tree->Branch("JetTightDFBTagSFUp", &JetTightDFBTagSFUp);
+		tree->Branch("JetLooseCSVBTagSFUp", &JetLooseCSVBTagSFUp);
+		tree->Branch("JetMediumCSVBTagSFUp", &JetMediumCSVBTagSFUp);
+		tree->Branch("JetTightCSVBTagSFUp", &JetTightCSVBTagSFUp);
+		tree->Branch("JetLooseDFBTagSFDown", &JetLooseDFBTagSFDown);
+		tree->Branch("JetMediumDFBTagSFDown", &JetMediumDFBTagSFDown);
+		tree->Branch("JetTightDFBTagSFDown", &JetTightDFBTagSFDown);
+		tree->Branch("JetLooseCSVBTagSFDown", &JetLooseCSVBTagSFDown);
+		tree->Branch("JetMediumCSVBTagSFDown", &JetMediumCSVBTagSFDown);
+		tree->Branch("JetTightCSVBTagSFDown", &JetTightCSVBTagSFDown);
+	}
 
 	tree->Branch("METPt", &METPt);
 	tree->Branch("METPhi", &METPhi);
 
 	tree->Branch("nJet", &nJet);
-	tree->Branch("nFatJet", &nFatJet);
 	tree->Branch("nLooseDFBTagJet", &nLooseDFBTagJet);
 	tree->Branch("nMediumDFBTagJet", &nMediumDFBTagJet);
 	tree->Branch("nTightDFBTagJet", &nTightDFBTagJet);
 	tree->Branch("nLooseCSVBTagJet", &nLooseCSVBTagJet);
 	tree->Branch("nMediumCSVBTagJet", &nMediumCSVBTagJet);
 	tree->Branch("nTightCSVBTagJet ", &nTightCSVBTagJet);
+
+	tree->Branch("FatJet_deepTagMD_H4qvsQCD", &FatJet_deepTagMD_H4qvsQCD);
+	tree->Branch("FatJet_deepTagMD_HbbvsQCD", &FatJet_deepTagMD_HbbvsQCD);
+	tree->Branch("FatJet_deepTagMD_TvsQCD", &FatJet_deepTagMD_TvsQCD);
+	tree->Branch("FatJet_deepTagMD_WvsQCD", &FatJet_deepTagMD_WvsQCD);
+	tree->Branch("FatJet_deepTagMD_ZHbbvsQCD", &FatJet_deepTagMD_ZHbbvsQCD);
+	tree->Branch("FatJet_deepTagMD_ZHccvsQCD", &FatJet_deepTagMD_ZHccvsQCD);
+	tree->Branch("FatJet_deepTagMD_ZbbvsQCD", &FatJet_deepTagMD_ZbbvsQCD);
+	tree->Branch("FatJet_deepTagMD_ZvsQCD", &FatJet_deepTagMD_ZvsQCD);
+	tree->Branch("FatJet_deepTagMD_bbvsLight", &FatJet_deepTagMD_bbvsLight);
+	tree->Branch("FatJet_deepTagMD_ccvsLight", &FatJet_deepTagMD_ccvsLight);
+	tree->Branch("FatJet_deepTag_H", &FatJet_deepTag_H);
+	tree->Branch("FatJet_deepTag_QCD", &FatJet_deepTag_QCD);
+	tree->Branch("FatJet_deepTag_QCDothers", &FatJet_deepTag_QCDothers);
+	tree->Branch("FatJet_deepTag_TvsQCD", &FatJet_deepTag_TvsQCD);
+	tree->Branch("FatJet_deepTag_WvsQCD", &FatJet_deepTag_WvsQCD);
+	tree->Branch("FatJet_deepTag_ZvsQCD", &FatJet_deepTag_ZvsQCD);
 }
 
 void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
@@ -417,7 +429,6 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 	//unsigned int
 	nJet = 0;
-	nFatJet = 0;
 	nLooseCSVBTagJet = 0;
 	nMediumCSVBTagJet = 0;
 	nTightCSVBTagJet = 0;
@@ -431,9 +442,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	nJet = *jetNumber->Get();
 	nFatJet = *fatJetNumber->Get();
 
-	for (const JetType& type : {AK4, AK8}) {
-		SetCorrector(type, runPeriod);
-	}
+	SetCorrector(runPeriod);
 
 	const float& metpt = *metPt->Get();
 	const float& metphi = *metPhi->Get();
@@ -461,16 +470,16 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		const float& rawMass = mass * (1 - rawFactor);
 
 		std::map<char, float> smearFactor;
-		float correctionFactor = CorrectEnergy(rawPt, eta, *jetRho->Get(), jetArea->At(i), AK4);
+		float correctionFactor = CorrectEnergy(rawPt, eta, *jetRho->Get(), jetArea->At(i));
 		float correctionFactorUp = 1, correctionFactorDown = 1;
 
-		if (jecUnc[AK4] !=  nullptr) {
-			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * rawPt);
-			jetCorrectionUncertainty[AK4]->setJetEta(eta);
-			const float uncUp = jetCorrectionUncertainty[AK4]->getUncertainty(true);
-			jetCorrectionUncertainty[AK4]->setJetPt(correctionFactor * rawPt);
-			jetCorrectionUncertainty[AK4]->setJetEta(eta);
-			const float uncDown = jetCorrectionUncertainty[AK4]->getUncertainty(false);
+		if (jetCorrectionUncertainty != nullptr) {
+			jetCorrectionUncertainty->setJetPt(correctionFactor * rawPt);
+			jetCorrectionUncertainty->setJetEta(eta);
+			const float uncUp = jetCorrectionUncertainty->getUncertainty(true);
+			jetCorrectionUncertainty->setJetPt(correctionFactor * rawPt);
+			jetCorrectionUncertainty->setJetEta(eta);
+			const float uncDown = jetCorrectionUncertainty->getUncertainty(false);
 			correctionFactorUp   = (1 + uncUp) * correctionFactor ;
 			correctionFactorDown = (1 - uncDown) * correctionFactor ;
 		}
@@ -478,7 +487,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		if (isData) {
 			smearFactor = {{'c', 1}, {'u', 1}, {'d', 1}};
 		} else {
-			smearFactor = JetProducer::SmearEnergy(rawPt, eta, phi, *jetRho->Get(), jetArea->At(i), AK4);
+			smearFactor = JetProducer::SmearEnergy(rawPt, eta, phi, *jetRho->Get(), jetArea->At(i));
 		}
 
 		const float& correctedPt = smearFactor['c'] * correctionFactor * rawPt;
@@ -667,7 +676,27 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			metPy_jecUp += pt * std::sin(phi) - JetPt_jecUp.back() * std::sin(phi);
 			metPx_jecDown += pt * std::cos(phi) - JetPt_jecDown.back() * std::cos(phi);
 			metPy_jecDown += pt * std::sin(phi) - JetPt_jecDown.back() * std::sin(phi);
+
 		}
+	}
+
+	for (unsigned int i = 0; i < nFatJet; i++) {
+		FatJet_deepTagMD_H4qvsQCD.push_back(fatJetDeepTagMDH4qvsQCD->At(i));
+		FatJet_deepTagMD_HbbvsQCD.push_back(fatJetDeepTagMDHbbvsQCD->At(i));
+		FatJet_deepTagMD_TvsQCD.push_back(fatJetDeepTagMDTvsQCD->At(i));
+		FatJet_deepTagMD_WvsQCD.push_back(fatJetDeepTagMDWvsQCD->At(i));
+		FatJet_deepTagMD_ZHbbvsQCD.push_back(fatJetDeepTagMDZHbbvsQCD->At(i));
+		FatJet_deepTagMD_ZHccvsQCD.push_back(fatJetDeepTagMDZHccvsQCD->At(i));
+		FatJet_deepTagMD_ZbbvsQCD.push_back(fatJetDeepTagMDZbbvsQCD->At(i));
+		FatJet_deepTagMD_ZvsQCD.push_back(fatJetDeepTagMDZvsQCD->At(i));
+		FatJet_deepTagMD_bbvsLight.push_back(fatJetDeepTagMDBbvsLight->At(i));
+		FatJet_deepTagMD_ccvsLight.push_back(fatJetDeepTagMDCcvsLight->At(i));
+		FatJet_deepTag_H.push_back(fatJetDeepTagH->At(i));
+		FatJet_deepTag_QCD.push_back(fatJetDeepTagQCD->At(i));
+		FatJet_deepTag_QCDothers.push_back(fatJetDeepTagQCDothers->At(i));
+		FatJet_deepTag_TvsQCD.push_back(fatJetDeepTagTvsQCD->At(i));
+		FatJet_deepTag_WvsQCD.push_back(fatJetDeepTagWvsQCD->At(i));
+		FatJet_deepTag_ZvsQCD.push_back(fatJetDeepTagZvsQCD->At(i));
 	}
 
 	//Cleanup, remove at most 1 Jet (i.e. per lepton)
@@ -812,43 +841,6 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	product->nMediumDFBTagJet = nMediumDFBTagJet;
 	product->nTightDFBTagJet = nTightDFBTagJet;
 
-
-	/* TODO Loop over fat jets, will be done later
-	for (unsigned int i = 0; i < nFatJet; i++) {
-		//JER smearing
-
-		float fatPt = fatJetPt->At(i);
-		const float fatEta = fatJetEta->At(i);
-		const float fatPhi = fatJetPhi->At(i);
-		const float fatMass = fatJetMass->At(i);
-
-		std::map<char, float> smearFactor;
-		float correctionFactor = CorrectEnergy(fatPt, fatEta, *jetRho->Get(), fatJetArea->At(i), AK4);
-		float correctionFactorUp, correctionFactorDown;
-
-		if (isData) {
-			smearFactor = {{'c', 1.0}, {'u', 1.0}, {'d', 1.0}};
-		} else {
-			smearFactor = JetProducer::SmearEnergy(fatPt, fatEta, fatPhi, *jetRho->Get(), fatJetArea->At(i), AK4);
-		}
-
-		//Get jet uncertainty
-		if (jecUnc[AK8] !=  nullptr) {
-			jetCorrectionUncertainty[AK8]->setJetPt(correctionFactor * fatPt);
-			jetCorrectionUncertainty[AK8]->setJetEta(fatEta);
-			const float uncUp = jetCorrectionUncertainty[AK4]->getUncertainty(true);
-			const float uncDown = jetCorrectionUncertainty[AK4]->getUncertainty(false);
-			correctionFactorUp   = (1 + uncUp) * correctionFactor ;
-			correctionFactorDown = (1 - uncDown) * correctionFactor ;
-		}
-	}
-	*/
-
-	/* TODO
-		->Proper runNumber of the datasets, maybe there is als a smarter way.. One could just parse the runPeriod as an argument to the wrapper or us a function that gets it from the filename
-		->FatJet Loop
-	*/
-
 	if (nJet!=0) {
 		std::string cutName("JetPt > 20, |JetEta| < 2.4");
 		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
@@ -856,16 +848,11 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		cutflow.passed = false;
 	}
 
-	for (const JetType& type : {AK4, AK8}) {
-		delete jetCorrector[type];
-	}
-
+	delete jetCorrector;
 }
 
 void JetProducer::EndJob(TFile* file) {
 	delete bTagReader["deepcsv"];
 	delete bTagReader["deepflavour"];
-	for (const JetType& type : {AK4, AK8}) {
-		delete jetCorrectionUncertainty[type];
-	}
+	delete jetCorrectionUncertainty;
 }

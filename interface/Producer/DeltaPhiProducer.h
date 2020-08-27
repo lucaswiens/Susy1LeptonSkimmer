@@ -3,6 +3,8 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 
+#include "PhysicsTools/Heppy/interface/Davismt2.h"
+
 #include <TMath.h>
 
 class DeltaPhiProducer : public BaseProducer {
@@ -11,11 +13,16 @@ class DeltaPhiProducer : public BaseProducer {
 		bool isData;
 
 		//Vector for the output variables
-		float HT, LT, LP, deltaPhi, dPhi, wBosonMt;
+		std::vector<float> IsoTrackPt;
+		float HT, LT, LP, deltaPhi, dPhi, wBosonMt, IsoTrackMt2;
 		int signalRegionCSV, signalRegionDF;
+		unsigned int nIsoTrack;
+
+		std::unique_ptr<TTreeReaderValue<unsigned int>> isoTrackNumber;
+		std::unique_ptr<TTreeReaderArray<float>> isoTrackPt, isoTrackEta, isoTrackPhi, isoTrackMass, isoTrackIso, isoTrackDxy, isoTrackDz, isoTrackSip3d, isoTrackMiniPFRelIsoAll;
+		std::unique_ptr<TTreeReaderArray<int>> isoTrackPdgId, isoTrackCharge;
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
-
 	public:
 		DeltaPhiProducer(TTreeReader& reader);//TODO reader needeed?
 

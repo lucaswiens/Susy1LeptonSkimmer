@@ -19,6 +19,8 @@
 <use name="SimDataFormats/PileupSummaryInfo"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 
+<use name="PhysicsTools/Heppy"/>
+
 <flags CXXFLAGS="-Wall -std=c++17"/>
 
 <flags ADD_SUBDIR="1"/>

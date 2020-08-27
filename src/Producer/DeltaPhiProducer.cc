@@ -16,6 +16,14 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 	//Set data bool
 	this->isData = isData;
 
+	isoTrackNumber = std::make_unique<TTreeReaderValue<unsigned int>>(*reader, "nIsoTrack");
+	isoTrackPt = std::make_unique<TTreeReaderArray<float>>(*reader, "IsoTrack_pt");
+	isoTrackEta = std::make_unique<TTreeReaderArray<float>>(*reader, "IsoTrack_eta");
+	isoTrackPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "IsoTrack_phi");
+	//isoTrackMass = std::make_unique<TTreeReaderArray<float>>(*reader, "IsoTrack_mass");
+	//isoTrackCharge = std::make_unique<TTreeReaderArray<int>>(*reader, "IsoTrack_charge");
+	isoTrackPdgId = std::make_unique<TTreeReaderArray<int>>(*reader, "IsoTrack_pdgId");
+
 	//Set TTreeReader for genpart and trigger obj from BaseProducer
 	SetCollection(this->isData);
 
@@ -29,6 +37,9 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("signalRegion", &signalRegionCSV);
 	tree->Branch("signalRegionCSV", &signalRegionCSV);
 	tree->Branch("signalRegionDF", &signalRegionDF);
+
+	tree->Branch("IsoTrackMt2", &IsoTrackMt2);
+	tree->Branch("IsoTrackPt", &IsoTrackPt);
 }
 
 void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
@@ -86,6 +97,37 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 			// BLIND data
 			if (isData && product->nJet >= 6) { signalRegionDF = -signalRegionDF;}
+		}
+
+		heppy::Davismt2 mt2obj;
+		nIsoTrack = *isoTrackNumber->Get();
+		float minDeltaR = -999;
+		for (unsigned int j = 0; j < nIsoTrack; j++) {
+			const float& isotrackpt = isoTrackPt->At(j);
+			const float& isotracketa = isoTrackEta->At(j);
+			const float& isotrackphi = isoTrackPhi->At(j);
+			//const float& isotrackmass = isoTrackMass->At(j);
+			const int& isotrackpdgid = isoTrackPdgId->At(j);
+			//const int& isotrackcharge = isoTrackCharge->At(j);
+			const int& isotrackcharge = (0 < isotrackpdgid) - (isotrackpdgid < 0);// this is only correct for leptons I think
+
+			if (isotrackcharge == product->leptonCharge) continue;
+
+			float deltaR = DeltaR(product->leptonEta, product->leptonPhi, isotracketa, isotrackphi);
+
+			if (minDeltaR > deltaR) continue;
+
+			ROOT::Math::PtEtaPhiMVector isotrackP4 = ROOT::Math::PtEtaPhiMVector(isotrackpt, isotracketa, isotrackphi, 0);
+
+			double a[3] = {leptonP4.M(), leptonP4.X(), leptonP4.Y()};
+			double b[3] = {isotrackP4.M(), isotrackP4.X(), isotrackP4.Y()};
+			double c[3] = {metP4.M(), metP4.X(), metP4.Y()};
+
+			mt2obj.set_momenta(a, b, c);
+			mt2obj.set_mn(0);
+
+			IsoTrackMt2 = mt2obj.get_mt2();
+			IsoTrackPt.push_back(isotrackpt);
 		}
 	}
 

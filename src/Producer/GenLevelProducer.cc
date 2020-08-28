@@ -159,7 +159,7 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 						product->genTopMass.push_back(grandMotherMass);
 					}
 
-					for (int j = 0; j < NGenPart; j++){
+					for (int j = i+1; j < NGenPart; j++){
 						const int& idxNeutrinoMother = genPartIdxMother->At(j);
 						const int& statusNeutrino = genPartStatus->At(j);
 						if (idxNeutrinoMother == idxMother && statusNeutrino == 23) {

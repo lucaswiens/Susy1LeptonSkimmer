@@ -12,9 +12,9 @@ class GenLevelProducer : public BaseProducer {
 		int era;
 
 		//Variables to be stored in the output tree
-		std::vector<float> GenDeltaPhiLepWSum, GenDeltaPhiLepWDirect, GenWSumMass, GenWDirectMass, GenMTLepNu;
+		std::vector<float> GenDeltaPhiLepWSum, GenDeltaPhiLepWDirect, GenWSumMass, GenWDirectMass, GenMTLepNu, GenNeutrinoPt;
 		std::vector<int> GrandMotherId, GenTauGrandMotherId, GenTauMotherId, GenLepGrandMotherId, GenLepMotherId;
-		int NGenPart, NGenLepton, NGenTau, NGenLeptonFromTau, NGenMatchedW, LeptonDecayChannelFlag, nISR;
+		int NGenPart, NGenLepton, NGenTau, NGenLeptonFromTau, NGenMatchedW, LeptonDecayChannelFlag, nISR, NGenNeutrino;
 		bool isDiLeptonEvent, isHadTauEvent, LeptonsInAcceptance;
 		float nISRWeight, nISRWeightUp, nISRWeightDown, nISRWeight_Mar17, nISRWeightUp_Mar17, nISRWeightDown_Mar17, nISRWeight_ICHEP16, nISRWeightUp_ICHEP16, nISRWeightDown_ICHEP16;
 

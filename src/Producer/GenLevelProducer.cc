@@ -17,10 +17,10 @@ void GenLevelProducer::BeginJob(TTree* tree, bool &isData) {
 	this->isData = isData;
 
 	//https://indico.cern.ch/event/592621/contributions/2398559/attachments/1383909/2105089/16-12-05_ana_manuelf_isr.pdf
-	ISRweights_Mar17       = {{0, 1}, {1, 0.920},  {2, 0.821}, {3, 0.715}, {4, 0.662}, {5, 0.561}, {6, 0.511}};
+	ISRweights_Mar17       = {{0, 1}, {1, 0.920}, {2, 0.821}, {3, 0.715}, {4, 0.662}, {5, 0.561}, {6, 0.511}};
 	ISRweights_ICHEP16     = {{0, 1}, {1, 0.882}, {2, 0.792}, {3, 0.702}, {4, 0.648}, {5, 0.601}, {6, 0.515}};
-	ISRweightssyst_Mar17   = {{0, 0}, {1, 0.040},  {2, 0.090}, {3, 0.143}, {4, 0.169}, {5, 0.219}, {6, 0.244}};
-	ISRweightssyst_ICHEP16 = {{0, 0}, {1, 0.059},  {2, 0.104}, {3, 0.149}, {4, 0.176}, {5, 0.199}, {6, 0.242}};
+	ISRweightssyst_Mar17   = {{0, 0}, {1, 0.040}, {2, 0.090}, {3, 0.143}, {4, 0.169}, {5, 0.219}, {6, 0.244}};
+	ISRweightssyst_ICHEP16 = {{0, 0}, {1, 0.059}, {2, 0.104}, {3, 0.149}, {4, 0.176}, {5, 0.199}, {6, 0.242}};
 
 	nGenPart = std::make_unique<TTreeReaderValue<unsigned int>>(*reader, "nGenPart");
 	genPartPt = std::make_unique<TTreeReaderArray<float>>(*reader, "GenPart_pt");
@@ -46,6 +46,11 @@ void GenLevelProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("GenLepGrandMotherId", &GenLepGrandMotherId);
 	tree->Branch("GenLepMotherId", &GenLepMotherId);
 	tree->Branch("GenLeptonsInAcceptance", &LeptonsInAcceptance);
+	tree->Branch("nGenLepton", &NGenLepton);
+	tree->Branch("nGenNeutrino", &NGenNeutrino);
+	tree->Branch("nGenTau", &NGenTau);
+	tree->Branch("nGenLeptonFromTau", &NGenLeptonFromTau);
+	tree->Branch("genNeutrinoPt", &GenNeutrinoPt);
 
 	//nISR Reweighting
 	tree->Branch("nISR", &nISR);
@@ -77,8 +82,10 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	GenTauMotherId.clear();
 	GenLepGrandMotherId.clear();
 	GenLepMotherId.clear();
+	GenNeutrinoPt.clear();
 
 	LeptonDecayChannelFlag = -999;
+	NGenNeutrino = 0;
 	NGenPart = -999;
 	NGenLepton = 0;
 	NGenTau = 0;
@@ -87,8 +94,6 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 	isHadTauEvent = false;
 	LeptonsInAcceptance = false;
-	//std::unique_ptr<TTreeReaderArray<float>> nGenPart, GenPartEta, GenPartMass, GenPartPhi, GenPartPt;
-	//std::unique_ptr<TTreeReaderArray<int>> genPartIdxMother, GenPartPdgId, GenPartStatus, GenPartStatusFlags;
 
 	ROOT::Math::PtEtaPhiMVector leptonP4;
 	ROOT::Math::PtEtaPhiMVector neutrinoP4;
@@ -112,6 +117,7 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			idxDaughter.push_back(i);
 		}
 
+		if (abs(pdgId) == 14 || abs(pdgId) == 12) { NGenNeutrino++; GenNeutrinoPt.push_back(genPartPt->At(i)); }
 		if ((abs(pdgId) == 13 || abs(pdgId) == 11 ) && idxMother >= 0) { // 13:Muon, 11:Electron
 			if (statusFlag == 2) { // 2 : isTauDecayProduct
 				NGenLeptonFromTau++;
@@ -156,7 +162,7 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					for (int j = 0; j < NGenPart; j++){
 						const int& idxNeutrinoMother = genPartIdxMother->At(j);
 						const int& statusNeutrino = genPartStatus->At(j);
-						if (idxNeutrinoMother == motherId && statusNeutrino == 23) {
+						if (idxNeutrinoMother == idxMother && statusNeutrino == 23) {
 							NGenMatchedW++;
 							//leptonPt already read
 							const float& leptonPhi = genPartPhi->At(i);

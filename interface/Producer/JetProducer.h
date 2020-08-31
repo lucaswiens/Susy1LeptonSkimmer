@@ -47,7 +47,7 @@ class JetProducer : public BaseProducer {
 		//Vector for the output variables
 		std::vector<float> JetPt, JetEta, JetPhi, JetMass, JetRawPt, JetRawMass, JetRawFactor, JetCSVBTag, JetDFBTag, JetPt_jerUp, JetMass_jerUp, JetPt_jerDown, JetMass_jerDown, JetPt_jecUp, JetMass_jecUp, JetPt_jecDown, JetMass_jecDown, JetLooseDFBTagSF, JetMediumDFBTagSF, JetTightDFBTagSF, JetLooseCSVBTagSF, JetMediumCSVBTagSF, JetTightCSVBTagSF, JetLooseDFBTagSFUp, JetMediumDFBTagSFUp, JetTightDFBTagSFUp, JetLooseCSVBTagSFUp, JetMediumCSVBTagSFUp, JetTightCSVBTagSFUp, JetLooseDFBTagSFDown, JetMediumDFBTagSFDown, JetTightDFBTagSFDown, JetLooseCSVBTagSFDown, JetMediumCSVBTagSFDown, JetTightCSVBTagSFDown, FatJet_deepTagMD_H4qvsQCD, FatJet_deepTagMD_HbbvsQCD, FatJet_deepTagMD_TvsQCD, FatJet_deepTagMD_WvsQCD, FatJet_deepTagMD_ZHbbvsQCD, FatJet_deepTagMD_ZHccvsQCD, FatJet_deepTagMD_ZbbvsQCD, FatJet_deepTagMD_ZvsQCD, FatJet_deepTagMD_bbvsLight, FatJet_deepTagMD_ccvsLight, FatJet_deepTag_H, FatJet_deepTag_QCD, FatJet_deepTag_QCDothers, FatJet_deepTag_TvsQCD, FatJet_deepTag_WvsQCD, FatJet_deepTag_ZvsQCD;
 		std::vector<bool> JetLooseDFBTag, JetMediumDFBTag, JetTightDFBTag, JetLooseCSVBTag, JetMediumCSVBTag, JetTightCSVBTag;
-		float METPt, METPhi, JetRho, METPt_jerUp, METPhi_jerUp, METPt_jerDown, METPhi_jerDown, METPt_jecUp, METPhi_jecUp, METPt_jecDown, METPhi_jecDown;
+		float METPt, METPhi, JetRho, METPt_jerUp, METPhi_jerUp, METPt_jerDown, METPhi_jerDown, METPt_jecUp, METPhi_jecUp, METPt_jecDown, METPhi_jecDown, minMWjj, minMWjjPt, bestMWjj, bestMWjjPt, bestMTop, bestMTopPt;
 		unsigned int nJet, nFatJet, nLooseDFBTagJet, nMediumDFBTagJet, nTightDFBTagJet, nLooseCSVBTagJet, nMediumCSVBTagJet, nTightCSVBTagJet;
 
 		//TTreeReader Values

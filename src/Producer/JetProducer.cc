@@ -822,6 +822,35 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		}
 	}
 
+	minMWjj = 999;
+	minMWjjPt = -999;
+	bestMWjj = -999;
+	bestMWjjPt = -999;
+	bestMTop = -999;
+	bestMTopPt = -999;
+	for (unsigned int i = 0; i < nJet; i++) {
+		ROOT::Math::PtEtaPhiMVector jet1P4 = ROOT::Math::PtEtaPhiMVector(JetPt.at(i), JetEta.at(i), JetPhi.at(i), JetMass.at(i));
+		if (!JetMediumCSVBTag.at(i)) {
+			for (unsigned int j = i+1; j < nJet; j++) {
+				ROOT::Math::PtEtaPhiMVector jet2P4 = ROOT::Math::PtEtaPhiMVector(JetPt.at(j), JetEta.at(j), JetPhi.at(j), JetMass.at(j));
+				ROOT::Math::PtEtaPhiMVector diJetP4 = jet1P4 + jet2P4;
+				float mjj = diJetP4.M();
+				if (mjj > 30 && mjj < minMWjj) { minMWjj = mjj; minMWjjPt = diJetP4.Pt();}
+				if (abs(mjj - 80.4) < abs(bestMWjj - 80.4)) {
+					bestMWjj = mjj; bestMWjjPt = diJetP4.Pt();
+				}
+				for (unsigned int b = 0; b < nJet; b++) {
+					if (JetMediumCSVBTag.at(b) && (DeltaR(JetEta.at(b), JetPhi.at(b), jet1P4.Eta(), jet1P4.Phi()) < 0.1 || DeltaR(JetEta.at(b), JetPhi.at(b), jet2P4.Eta(), jet2P4.Phi()) < 0.1)) {
+						ROOT::Math::PtEtaPhiMVector bJetP4 = ROOT::Math::PtEtaPhiMVector(JetPt.at(j), JetEta.at(j), JetPhi.at(j), JetMass.at(j));
+						ROOT::Math::PtEtaPhiMVector topP4 = diJetP4 + bJetP4;
+						float topMass = topP4.M();
+						if (abs(topMass - 172) < abs(bestMTop - 172)) { bestMTop = topMass; bestMTopPt = topP4.Pt();}
+					}
+				}
+			}
+		}
+	}
+
 	//Store values in product to calculate high level variables
 	product->nJet = nJet;
 	product->jetPt = JetPt;

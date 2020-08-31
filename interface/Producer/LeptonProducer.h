@@ -29,7 +29,7 @@ class LeptonProducer : public BaseProducer {
 		float ptCut, etaCut, dxyCut, dzCut, sip3dCut, isoCut;
 
 		//Vector for the output variables
-		std::vector<float> Pt, Eta, Phi, Mass, MiniPFRelIsoAll, ScaleFactor;
+		std::vector<float> Pt, Eta, Phi, Mass, MiniPFRelIsoAll, ScaleFactor, dileptonMass;
 		std::vector<bool> LooseId, MediumId, TightId;
 		std::vector<int> Charge, PdgId;
 		std::vector<unsigned int> CutBased;

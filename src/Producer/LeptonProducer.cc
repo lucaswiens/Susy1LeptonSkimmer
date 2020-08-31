@@ -228,6 +228,15 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		if (!isData) {
 			SortByIndex<std::vector<float>>(ScaleFactor, idx, nLepton);
 		}
+
+		if (nLepton!=0) { //nLepton can be 0 since unselected leptons are not counted
+			ROOT::Math::PtEtaPhiMVector leadingLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(0), Eta.at(0), Phi.at(0), Mass.at(0));
+			for (unsigned int i = 1; i < nLepton; i++){
+				ROOT::Math::PtEtaPhiMVector otherLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(i), Eta.at(i), Phi.at(i), Mass.at(i));
+				ROOT::Math::PtEtaPhiMVector diLeptonP4 = leadingLeptonP4 + otherLeptonP4;
+				dileptonMass.push_back(diLeptonP4.M());
+			}
+		}
 	}
 
 	if (Pt.size() != 0) {

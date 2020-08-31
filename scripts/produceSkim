@@ -1,21 +1,13 @@
 #!/bin/bash
-source $CHDIR/ChargedAnalysis/setenv.sh CMSSW
-cd $TMP
+mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
+cd $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
 
 INFILE=$1
 ISDATA=$2
-CHANNEL=$3
-XSEC=$4
-OUT=$5
-JOB=$6
-
-##Copy file from DAS
-xrdcp $1 nanoFile.root
+ERA=$3
+OUT=$4
+JOB=$5
+RUNPERIOD=$6
 
 ##Do the skimming
-NanoSkim nanoFile.root $ISDATA "$CHANNEL" $XSEC ${OUT}_${JOB}.root
-rm nanoFile.root
-
-##Move output to base dir
-mkdir -p $CHDIR/Skim2/$OUT/output/
-mv ${OUT}_${JOB}.root $CHDIR/Skim2/$OUT/output
+NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD

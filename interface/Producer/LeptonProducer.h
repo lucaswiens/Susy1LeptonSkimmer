@@ -29,10 +29,14 @@ class LeptonProducer : public BaseProducer {
 		float ptCut, etaCut, dxyCut, dzCut, sip3dCut, isoCut;
 
 		//Vector for the output variables
-		float Pt, Eta, Phi, Mass, MiniPFRelIsoAll, ScaleFactor;
-		bool LooseId, MediumId, TightId, IsPFCand;
-		unsigned int nMuon, nElectron, nLepton, CutBased;
-		int Charge, PdgId;
+		std::vector<float> Pt, Eta, Phi, Mass, MiniPFRelIsoAll, ScaleFactor;
+		std::vector<bool> LooseId, MediumId, TightId;
+		std::vector<int> Charge, PdgId;
+		std::vector<unsigned int> CutBased;
+		//float Pt, Eta, Phi, Mass, MiniPFRelIsoAll, ScaleFactor;
+		//bool LooseId, MediumId, TightId, IsPFCand;
+		unsigned int nMuon, nElectron, nLepton;//, CutBased;
+		//int Charge, PdgId;
 
 		//TTreeReader Values for NANO AOD analysis
 		std::unique_ptr<TTreeReaderValue<unsigned int>> muonNumber, electronNumber;
@@ -42,6 +46,8 @@ class LeptonProducer : public BaseProducer {
 		std::unique_ptr<TTreeReaderArray<float>> electronPt, electronEta, electronPhi, electronMass, electronMiniPFRelIsoAll;
 		std::unique_ptr<TTreeReaderArray<int>> electronPdgId, electronCutBased, electronCharge;
 
+		template <typename T>
+		void SortByIndex(T& var, std::vector<int> idx, unsigned int vectorSize);
 	public:
 		LeptonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader);
 

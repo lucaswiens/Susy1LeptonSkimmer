@@ -1,6 +1,12 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/LeptonProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
+#include <Math/LorentzVector.h>
+#include <Math/PtEtaPhiM4D.h>
+
+#include <cmath>
+#include <random>
+
 LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader):
 	BaseProducer(&reader),
 	era(era),
@@ -11,6 +17,16 @@ LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& 
 	sip3dCut(sip3dCut),
 	isoCut(isoCut)
 	{}
+
+template <typename T>
+void LeptonProducer::SortByIndex(T& var, std::vector<int> idx, unsigned int vectorSize) {
+	T tmp(vectorSize);
+	for (unsigned int i = 0; i < vectorSize; i++) {
+		tmp.at(i) = var.at(idx[i]);
+	}
+	var = std::move(tmp);
+}
+
 
 void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	//Set data bool
@@ -75,58 +91,61 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("LeptonPhi", &Phi);
 	tree->Branch("LeptonMass", &Mass);
 	tree->Branch("LeptonMiniPFRelIsoAll", &MiniPFRelIsoAll);
-	tree->Branch("LeptonScaleFactor", &ScaleFactor);
+	if (!isData) {
+		tree->Branch("LeptonScaleFactor", &ScaleFactor);
+	}
 
 	tree->Branch("LeptonLooseId", &LooseId);
 	tree->Branch("LeptonMediumId", &MediumId);
 	tree->Branch("LeptonTightId", &TightId);
-	tree->Branch("LeptonIsPFCand", &IsPFCand);
 
 	tree->Branch("LeptonCharge", &Charge);
 	tree->Branch("LeptonPdgId", &PdgId);
+	tree->Branch("LeptonCutBased", &CutBased);
 }
 
 void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
-	Pt = -999;
-	Eta = -999;
-	Phi = -999;
-	Mass = -999;
-	MiniPFRelIsoAll = -999;
-	ScaleFactor = -999;
+	Pt.clear();
+	Eta.clear();
+	Phi.clear();
+	Mass.clear();
+	MiniPFRelIsoAll.clear();
+	ScaleFactor.clear();
 
-	LooseId = -999;
-	MediumId = -999;
-	TightId = -999;
-	IsPFCand = -999;
+	LooseId.clear();
+	MediumId.clear();
+	TightId.clear();
 
-	Charge = -999;
-	PdgId = -999;
+	Charge.clear();
+	PdgId.clear();
+
+	CutBased.clear();
 
 	nMuon = 0;
 	nElectron = 0;
 	nLepton = 0;
-	CutBased = 0;
 
 	nMuon = *muonNumber->Get();
 	nElectron = *electronNumber->Get();
 	nLepton = nMuon + nElectron;
 
-	if (nLepton == 1) {
-		if (nMuon == 1) {
-			const float& pt = muonPt->At(0);
-			const float& eta = muonEta->At(0);
-			const float& phi = muonPhi->At(0);
-			const float& mass = muonMass->At(0);
-			const float& charge = muonCharge->At(0);
-			const float& dxy = muonDxy->At(0);
-			const float& dz = muonDz->At(0);
-			const float& sip3d = muonSip3d->At(0);
-			const float& miniPFRelIsoAll = muonMiniPFRelIsoAll->At(0);
+	int muonCounter = 0, electronCounter = 0;
+	if (nLepton > 0) {
+		for (unsigned int i = 0; i < nMuon; i++) {
+			const float& pt = muonPt->At(i);
+			const float& eta = muonEta->At(i);
+			const float& phi = muonPhi->At(i);
+			const float& mass = muonMass->At(i);
+			const float& charge = muonCharge->At(i);
+			const float& dxy = muonDxy->At(i);
+			const float& dz = muonDz->At(i);
+			const float& sip3d = muonSip3d->At(i);
+			const float& miniPFRelIsoAll = muonMiniPFRelIsoAll->At(i);
 
-			const bool& isPFCand = muonIsPFCand->At(0);
+			const bool& isPFCand = muonIsPFCand->At(i);
 
-			const int& pdgId = muonPdgId->At(0);
+			const int& pdgId = muonPdgId->At(i);
 
 			if (pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand) {
 				if (!isData) {
@@ -134,52 +153,91 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					const float& idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
 					const float& isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
 					const float& triggerSF = wc->Get2DWeight(pt, eta, muonTriggerSFHist);
-					ScaleFactor = idSF * isolationSF * triggerSF;
+					ScaleFactor.push_back(idSF * isolationSF * triggerSF);
 					delete wc;
 				}
 
-				Pt = pt; Eta = eta; Phi = phi; Mass = mass; Charge = charge; MiniPFRelIsoAll = miniPFRelIsoAll; PdgId = pdgId;
-				const bool& looseId = muonLooseId->At(0);
-				const bool& mediumId = muonMediumId->At(0);
-				const bool& tightId = muonTightId->At(0);
-				if (tightId) { CutBased = 4;}
-				else if (mediumId) { CutBased = 3;}
-				else if (looseId) { CutBased = 2;}
-				else { CutBased = 1;}
-			}
-		} else if (nElectron == 1) {
-			const float& pt = electronPt->At(0);
-			const float& eta = electronEta->At(0);
-			const float& phi = electronPhi->At(0);
-			const float& mass = electronMass->At(0);
-			const float& charge = muonCharge->At(0);
-			const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(0);
+				Pt.push_back(pt); Eta.push_back(eta); Phi.push_back(phi); Mass.push_back(mass); Charge.push_back(charge); MiniPFRelIsoAll.push_back(miniPFRelIsoAll); PdgId.push_back(pdgId);
+				muonCounter++;
 
-			const int & pdgId = electronPdgId->At(0);
+				const bool& looseId = muonLooseId->At(i);
+				const bool& mediumId = muonMediumId->At(i);
+				const bool& tightId = muonTightId->At(i);
+				if (tightId) { CutBased.push_back(4); TightId.push_back(true); MediumId.push_back(true); LooseId.push_back(true);}
+				else if (mediumId) { CutBased.push_back(3); TightId.push_back(false); MediumId.push_back(true); LooseId.push_back(true);}
+				else if (looseId) { CutBased.push_back(2); TightId.push_back(false); MediumId.push_back(false); LooseId.push_back(true);}
+				else { CutBased.push_back(1); TightId.push_back(false); MediumId.push_back(false); LooseId.push_back(false);}
+			}
+		}
+		for (unsigned int i = 0; i < nElectron; i++) {
+			const float& pt = electronPt->At(i);
+			const float& eta = electronEta->At(i);
+			const float& phi = electronPhi->At(i);
+			const float& mass = electronMass->At(i);
+			const float& charge = muonCharge->At(i);
+			const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(i);
+
+			const int & pdgId = electronPdgId->At(i);
 
 			if (pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut) {
 				if (!isData) {
 					WeightCalculator* wc = new WeightCalculator;
 					const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
 					const float& MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
-					ScaleFactor = GSFSF * MVASF;
+					ScaleFactor.push_back(GSFSF * MVASF);
 					delete wc;
 				}
 
-				Pt = pt; Eta = eta; Phi = phi; Mass = mass; Charge = charge; MiniPFRelIsoAll = miniPFRelIsoAll; PdgId = pdgId;
-				CutBased = electronCutBased->At(0);
+				Pt.push_back(pt); Eta.push_back(eta); Phi.push_back(phi); Mass.push_back(mass); Charge.push_back(charge); MiniPFRelIsoAll.push_back(miniPFRelIsoAll); PdgId.push_back(pdgId);
+				electronCounter++;
+
+				int cutbased = electronCutBased->At(i);
+				CutBased.push_back(cutbased);
+				if (cutbased == 4) {TightId.push_back(true); MediumId.push_back(true); LooseId.push_back(true);}
+				else if (cutbased == 3) {TightId.push_back(false); MediumId.push_back(true); LooseId.push_back(true);}
+				else if (cutbased == 2) {TightId.push_back(false); MediumId.push_back(false); LooseId.push_back(true);}
+				else {TightId.push_back(false); MediumId.push_back(false); LooseId.push_back(false);}
+
 			}
+		}
+
+		//Overwrite number of leptons by excluding leptons that do not survive the cuts
+		nMuon = muonCounter;
+		nElectron = electronCounter;
+		nLepton = Pt.size();
+
+		//Sort Vectors according to leptonPt
+		std::vector<int> idx(nLepton);
+		std::iota(idx.begin(), idx.end(), 0);
+		std::stable_sort(idx.begin(), idx.end(), [&](int i1, int i2) {return Pt[i1] > Pt[i2];});
+		SortByIndex<std::vector<float>>(Pt, idx, nLepton);
+		SortByIndex<std::vector<float>>(Eta, idx, nLepton);
+		SortByIndex<std::vector<float>>(Phi, idx, nLepton);
+		SortByIndex<std::vector<float>>(Mass, idx, nLepton);
+		SortByIndex<std::vector<float>>(MiniPFRelIsoAll, idx, nLepton);
+
+		SortByIndex<std::vector<bool>>(LooseId, idx, nLepton);
+		SortByIndex<std::vector<bool>>(MediumId, idx, nLepton);
+		SortByIndex<std::vector<bool>>(TightId, idx, nLepton);
+
+		SortByIndex<std::vector<int>>(Charge, idx, nLepton);
+		SortByIndex<std::vector<int>>(PdgId, idx, nLepton);
+
+		SortByIndex<std::vector<unsigned int>>(CutBased, idx, nLepton);
+
+		if (!isData) {
+			SortByIndex<std::vector<float>>(ScaleFactor, idx, nLepton);
 		}
 	}
 
-	product->leptonPt = Pt;
-	product->leptonPhi = Phi;
-	product->leptonEta = Eta;
-	product->leptonMass = Mass;
-	product->leptonPdgId = PdgId;
-	product->leptonCharge = Charge;
+	if (Pt.size() != 0) {
+		product->leptonPt = Pt.at(0);
+		product->leptonPhi = Phi.at(0);
+		product->leptonEta = Eta.at(0);
+		product->leptonMass = Mass.at(0);
+		product->leptonPdgId = PdgId.at(0);
+		product->leptonCharge = Charge.at(0);
 
-	if (Pt != -999) {
 		std::string cutName("N_{#ell} = 1 (no ID req and Iso < 0.4)");
 		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 	} else {

@@ -73,7 +73,7 @@ class JetProducer : public BaseProducer {
 		std::map<char, float> SmearEnergy(const float& pt, const float& eta, const float& phi, const float& rho, const float& coneSize);
 
 		template <typename T>
-		void SortByIndex(T& var, std::vector<int> idx);
+		void SortByIndex(T& var, std::vector<int> idx, unsigned int vectorSize);
 	public:
 		JetProducer(const int& era, const float& ptCut, const float& etaCut, const float& deltaRCut, const char& runPeriod, TTreeReader& reader);
 

@@ -16,10 +16,9 @@ JetProducer::JetProducer(const int& era, const float& ptCut, const float& etaCut
 	{}
 
 template <typename T>
-void JetProducer::SortByIndex(T& var, std::vector<int> idx) {
-	//std::vector<float> tmp(nJet);
-	T tmp(nJet);
-	for (unsigned int i = 0; i < nJet; i++) {
+void JetProducer::SortByIndex(T& var, std::vector<int> idx, unsigned int vectorSize) {
+	T tmp(vectorSize);
+	for (unsigned int i = 0; i < vectorSize; i++) {
 		tmp.at(i) = var.at(idx[i]);
 	}
 	var = std::move(tmp);
@@ -786,40 +785,40 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	std::stable_sort(idx.begin(), idx.end(), [&](int i1, int i2) {return JetPt[i1] > JetPt[i2];});
 
 	if (nJet != 0) {
-		SortByIndex<std::vector<float>>(JetPt, idx);
-		SortByIndex<std::vector<float>>(JetPhi, idx);
-		SortByIndex<std::vector<float>>(JetEta, idx);
-		SortByIndex<std::vector<float>>(JetMass, idx);
-		SortByIndex<std::vector<float>>(JetRawFactor, idx);
+		SortByIndex<std::vector<float>>(JetPt, idx, nJet);
+		SortByIndex<std::vector<float>>(JetPhi, idx, nJet);
+		SortByIndex<std::vector<float>>(JetEta, idx, nJet);
+		SortByIndex<std::vector<float>>(JetMass, idx, nJet);
+		SortByIndex<std::vector<float>>(JetRawFactor, idx, nJet);
 
-		SortByIndex<std::vector<bool>>(JetLooseCSVBTag, idx);
-		SortByIndex<std::vector<bool>>(JetMediumCSVBTag, idx);
-		SortByIndex<std::vector<bool>>(JetTightCSVBTag, idx);
-		SortByIndex<std::vector<bool>>(JetLooseDFBTag, idx);
-		SortByIndex<std::vector<bool>>(JetMediumDFBTag, idx);
-		SortByIndex<std::vector<bool>>(JetTightDFBTag, idx);
+		SortByIndex<std::vector<bool>>(JetLooseCSVBTag, idx, nJet);
+		SortByIndex<std::vector<bool>>(JetMediumCSVBTag, idx, nJet);
+		SortByIndex<std::vector<bool>>(JetTightCSVBTag, idx, nJet);
+		SortByIndex<std::vector<bool>>(JetLooseDFBTag, idx, nJet);
+		SortByIndex<std::vector<bool>>(JetMediumDFBTag, idx, nJet);
+		SortByIndex<std::vector<bool>>(JetTightDFBTag, idx, nJet);
 
 		if (!isData) {
-			SortByIndex<std::vector<float>>(JetLooseCSVBTagSF, idx);
-			SortByIndex<std::vector<float>>(JetMediumCSVBTagSF, idx);
-			SortByIndex<std::vector<float>>(JetTightCSVBTagSF, idx);
-			SortByIndex<std::vector<float>>(JetLooseDFBTagSF, idx);
-			SortByIndex<std::vector<float>>(JetMediumDFBTagSF, idx);
-			SortByIndex<std::vector<float>>(JetTightDFBTagSF, idx);
+			SortByIndex<std::vector<float>>(JetLooseCSVBTagSF, idx, nJet);
+			SortByIndex<std::vector<float>>(JetMediumCSVBTagSF, idx, nJet);
+			SortByIndex<std::vector<float>>(JetTightCSVBTagSF, idx, nJet);
+			SortByIndex<std::vector<float>>(JetLooseDFBTagSF, idx, nJet);
+			SortByIndex<std::vector<float>>(JetMediumDFBTagSF, idx, nJet);
+			SortByIndex<std::vector<float>>(JetTightDFBTagSF, idx, nJet);
 
-			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFUp, idx);
-			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFUp, idx);
-			SortByIndex<std::vector<float>>(JetTightCSVBTagSFUp, idx);
-			SortByIndex<std::vector<float>>(JetLooseDFBTagSFUp, idx);
-			SortByIndex<std::vector<float>>(JetMediumDFBTagSFUp, idx);
-			SortByIndex<std::vector<float>>(JetTightDFBTagSFUp, idx);
+			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFUp, idx, nJet);
+			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFUp, idx, nJet);
+			SortByIndex<std::vector<float>>(JetTightCSVBTagSFUp, idx, nJet);
+			SortByIndex<std::vector<float>>(JetLooseDFBTagSFUp, idx, nJet);
+			SortByIndex<std::vector<float>>(JetMediumDFBTagSFUp, idx, nJet);
+			SortByIndex<std::vector<float>>(JetTightDFBTagSFUp, idx, nJet);
 
-			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFDown, idx);
-			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFDown, idx);
-			SortByIndex<std::vector<float>>(JetTightCSVBTagSFDown, idx);
-			SortByIndex<std::vector<float>>(JetLooseDFBTagSFDown, idx);
-			SortByIndex<std::vector<float>>(JetMediumDFBTagSFDown, idx);
-			SortByIndex<std::vector<float>>(JetTightDFBTagSFDown, idx);
+			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFDown, idx, nJet);
+			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFDown, idx, nJet);
+			SortByIndex<std::vector<float>>(JetTightCSVBTagSFDown, idx, nJet);
+			SortByIndex<std::vector<float>>(JetLooseDFBTagSFDown, idx, nJet);
+			SortByIndex<std::vector<float>>(JetMediumDFBTagSFDown, idx, nJet);
+			SortByIndex<std::vector<float>>(JetTightDFBTagSFDown, idx, nJet);
 		}
 	}
 

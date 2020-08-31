@@ -115,6 +115,7 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		if (idxMother >= 0) { //store daughter indices for nISR
 			nDaughters++;
 			idxDaughter.push_back(i);
+			//GenTauMotherId.push_back(motherId);
 		}
 
 		if (abs(pdgId) == 14 || abs(pdgId) == 12) { NGenNeutrino++; GenNeutrinoPt.push_back(genPartPt->At(i)); }
@@ -185,13 +186,13 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 						}
 					}
 				}
-			GenTauMotherId.push_back(motherId);
 			}
 		}
 		product->nGenWBoson = product->genWBosonPt.size();
 		product->nGenTop = product->genTopPt.size();
 
 		if (NGenLepton + NGenLeptonFromTau == 2) {
+			LeptonsInAcceptance = true;
 			isDiLeptonEvent = true;
 			isHadTauEvent = NGenTau > NGenLeptonFromTau;
 			if (isHadTauEvent) { LeptonDecayChannelFlag =1;}

@@ -78,11 +78,12 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	GenWSumMass.clear();
 	GenWDirectMass.clear();
 	GenMTLepNu.clear();
+	GenNeutrinoPt.clear();
+	GrandMotherId.clear();
 	GenTauGrandMotherId.clear();
 	GenTauMotherId.clear();
 	GenLepGrandMotherId.clear();
 	GenLepMotherId.clear();
-	GenNeutrinoPt.clear();
 
 	LeptonDecayChannelFlag = -999;
 	NGenNeutrino = 0;

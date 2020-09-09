@@ -112,6 +112,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	Mass.clear();
 	MiniPFRelIsoAll.clear();
 	ScaleFactor.clear();
+	dileptonMass.clear();
 
 	LooseId.clear();
 	MediumId.clear();

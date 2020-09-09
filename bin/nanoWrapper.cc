@@ -26,7 +26,8 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::vector<std::string> splitFileName = SplitString(fileName, "/");
-	std::string sampleName = splitFileName.back();
+	//std::string sampleName = splitFileName.back(); // only for local files
+	std::string sampleName = splitFileName.at(7);
 	float xSec = CrossSection(sampleName);
 
 	NanoSkimmer skimmer(fileName, isData);

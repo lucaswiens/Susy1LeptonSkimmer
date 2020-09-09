@@ -1,6 +1,14 @@
 #!/bin/bash
-mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
-cd $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
+source /etc/profile
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+
+module use -a /afs/desy.de/group/cms/modulefiles/
+module load cmssw
+cd /nfs/dust/cms/user/wiens/CMSSW/CMSSW_10_6_8/src #For now this is hardcoded
+export SCRAM_ARCH=slc6_amd64_gcc700
+eval `scramv1 runtime -sh` #cmsenv
+
+export X509_USER_PROXY=$HOME/.globus/x509up
 
 INFILE=$1
 ISDATA=$2
@@ -8,6 +16,10 @@ ERA=$3
 OUT=$4
 JOB=$5
 RUNPERIOD=$6
+NMAXEVENTS=$7
 
-##Do the skimming
-NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD
+mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
+cd $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
+
+#Do the skimming
+NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD $NMAXEVENTS

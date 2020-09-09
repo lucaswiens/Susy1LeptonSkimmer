@@ -20,6 +20,8 @@ class Susy1LeptonProduct {
 		std::vector<float> jetPhi;
 		std::vector<float> jetEta;
 		std::vector<float> jetMass;
+		std::vector<bool> jetMediumCSVBTag;
+		std::vector<bool> jetMediumDFBTag;
 		//Required for Signal Region Flag
 
 		float metPt = -999;

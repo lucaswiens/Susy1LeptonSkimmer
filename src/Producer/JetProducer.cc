@@ -385,7 +385,11 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	JetEta.clear();
 	JetPhi.clear();
 	JetMass.clear();
+	JetRawPt.clear();
+	JetRawMass.clear();
 	JetRawFactor.clear();
+	JetCSVBTag.clear();
+	JetDFBTag.clear();
 	JetPt_jerUp.clear();
 	JetMass_jerUp.clear();
 	JetPt_jerDown.clear();
@@ -394,14 +398,6 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	JetMass_jecUp.clear();
 	JetPt_jecDown.clear();
 	JetMass_jecDown.clear();
-	JetCSVBTag.clear();
-	JetDFBTag.clear();
-	JetLooseDFBTag.clear();
-	JetMediumDFBTag.clear();
-	JetTightDFBTag.clear();
-	JetLooseCSVBTag.clear();
-	JetMediumCSVBTag.clear();
-	JetTightCSVBTag.clear();
 	JetLooseDFBTagSF.clear();
 	JetMediumDFBTagSF.clear();
 	JetTightDFBTagSF.clear();
@@ -420,6 +416,29 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	JetLooseCSVBTagSFDown.clear();
 	JetMediumCSVBTagSFDown.clear();
 	JetTightCSVBTagSFDown.clear();
+	FatJet_deepTagMD_H4qvsQCD.clear();
+	FatJet_deepTagMD_HbbvsQCD.clear();
+	FatJet_deepTagMD_TvsQCD.clear();
+	FatJet_deepTagMD_WvsQCD.clear();
+	FatJet_deepTagMD_ZHbbvsQCD.clear();
+	FatJet_deepTagMD_ZHccvsQCD.clear();
+	FatJet_deepTagMD_ZbbvsQCD.clear();
+	FatJet_deepTagMD_ZvsQCD.clear();
+	FatJet_deepTagMD_bbvsLight.clear();
+	FatJet_deepTagMD_ccvsLight.clear();
+	FatJet_deepTag_H.clear();
+	FatJet_deepTag_QCD.clear();
+	FatJet_deepTag_QCDothers.clear();
+	FatJet_deepTag_TvsQCD.clear();
+	FatJet_deepTag_WvsQCD.clear();
+	FatJet_deepTag_ZvsQCD.clear();
+
+	JetLooseDFBTag.clear();
+	JetMediumDFBTag.clear();
+	JetTightDFBTag.clear();
+	JetLooseCSVBTag.clear();
+	JetMediumCSVBTag.clear();
+	JetTightCSVBTag.clear();
 
 	//Initialize all variables as -999
 	METPt = -999;
@@ -868,6 +887,8 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	product->nLooseDFBTagJet = nLooseDFBTagJet;
 	product->nMediumDFBTagJet = nMediumDFBTagJet;
 	product->nTightDFBTagJet = nTightDFBTagJet;
+	product->jetMediumCSVBTag = JetMediumCSVBTag;
+	product->jetMediumDFBTag = JetMediumDFBTag;
 
 	if (nJet!=0) {
 		std::string cutName("JetPt > 20, |JetEta| < 2.4");

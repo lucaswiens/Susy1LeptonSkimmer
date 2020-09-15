@@ -63,7 +63,6 @@ class JetProducer : public BaseProducer {
 
 		//Gen Level Information
 		ROOT::Math::PtEtaPhiMVector genJet;
-		std::vector<int> alreadySeen;
 
 		//Get jet energy correction
 		FactorizedJetCorrector* jetCorrector;

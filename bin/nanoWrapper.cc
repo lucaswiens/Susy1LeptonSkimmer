@@ -3,7 +3,6 @@
 #include <string>
 #include <sstream>
 
-std::vector<std::string> SplitString(const std::string&, const std::string&);
 float CrossSection(std::string);
 
 int main(int argc, char* argv[]) {
@@ -25,26 +24,12 @@ int main(int argc, char* argv[]) {
 		nMaxEvents = -999;
 	}
 
-	std::vector<std::string> splitFileName = SplitString(fileName, "/");
-	//std::string sampleName = splitFileName.back(); // only for local files
-	std::string sampleName = splitFileName.at(7);
+	std::string sampleName = fileName;
 	float xSec = CrossSection(sampleName);
 
 	NanoSkimmer skimmer(fileName, isData);
 	skimmer.EventLoop(xSec, era, runPeriod, nMaxEvents);
 	skimmer.WriteOutput(outName);
-}
-
-std::vector<std::string> SplitString(const std::string& splitString, const std::string& delimeter) {
-	//Function which handles splitting of string input
-	std::vector<std::string> splittedString;
-	std::string string;
-	std::istringstream splittedStream(splitString);
-	while (std::getline(splittedStream, string, delimeter.c_str()[0])) {
-		splittedString.push_back(string);
-	}
-
-	return splittedString;
 }
 
 float CrossSection(std::string sample) {

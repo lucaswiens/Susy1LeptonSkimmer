@@ -27,8 +27,8 @@ class NanoSkimmer{
 		TTree* outputTree;
 
 		//Vector of cutflow histograms for each analysis
-		std::vector<CutFlow> cutflows;
-		std::map<std::string, std::vector<unsigned int>> nMin;
+		CutFlow cutflow;
+
 
 		//Progress bar function
 		void ProgressBar(const int &progress, const int &rate);

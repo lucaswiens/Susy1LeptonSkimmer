@@ -47,14 +47,14 @@ void NanoSkimmer::ProgressBar(const int &progress, const int &rate) {
 
 void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPeriod, TTreeReader& reader) {
 	producers = {
+		std::shared_ptr<TriggerProducer>(new TriggerProducer(era, reader)),
+		std::shared_ptr<METFilterProducer>(new METFilterProducer(era, reader)),
 		std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
 		std::shared_ptr<JetProducer>(new JetProducer(era, 20, 2.4, 0.4, runPeriod, reader)),
 		std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(reader)),
-		std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era, reader)),
-		std::shared_ptr<METFilterProducer>(new METFilterProducer(era, reader)),
-		std::shared_ptr<TriggerProducer>(new TriggerProducer(era, reader)),
 	};
 	if (!isData) {
+		producers.push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era, reader))),
 		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(era, reader)));
 	}
 }
@@ -67,9 +67,6 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 	TTreeReader reader(eventTree);
 
 	Configure(xSec, era, runPeriod, reader);
-
-	//Create cutflow histograms
-	CutFlow cutflow;
 
 	cutflow.hist = new TH1F();
 	cutflow.hist->SetName("cutflow");
@@ -88,7 +85,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 	ProgressBar(0., 0.);
 	int nProcessedEvents = 0;
 	int stepSize;
-	if (nMaxEvents > 0) { stepSize = (int)nMaxEvents/100;}
+	if (nMaxEvents > 0) { stepSize = std::min((int)nMaxEvents/100, 0);}
 	else {stepSize = 10000;}
 
 	int nEvents = eventTree->GetEntries();
@@ -143,10 +140,7 @@ void NanoSkimmer::WriteOutput(const std::string &outFile) {
 		producers[i]->EndJob(file);
 	}
 
-	for (CutFlow& cutflow: cutflows) {
-		cutflow.hist->Write();
-		delete cutflow.hist;
-	}
+	cutflow.hist->Write();
 
 	file->Write(0, TObject::kOverwrite);
 	file->Close();

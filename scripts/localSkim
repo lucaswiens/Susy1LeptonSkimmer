@@ -1,6 +1,6 @@
 #!/bin/bash
-mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
-cd $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT/output/
+mkdir -p $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
+cd $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 
 INFILE=$1
 ISDATA=$2

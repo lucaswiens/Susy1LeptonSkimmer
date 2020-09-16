@@ -1,0 +1,12 @@
+#Template for the submit files created by createFileList.py
+executable = @EXECUTABLE
+arguments  = @ARGS
+
+universe       = vanilla
+request_memory = 1 GB
+
+output = @LOGS/mypayload_$(Cluster)_$(Process).out
+error  = @LOGS/mypayload_$(Cluster)_$(Process).error
+log    = @LOGS/mypayload_$(Cluster)_$(Process).log
+
+queue 1

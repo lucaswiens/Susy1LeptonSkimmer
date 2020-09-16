@@ -1,8 +1,15 @@
 #!/bin/bash
-bkgSkim $1
-echo ""
-signalSkim $1
-echo ""
-dataSkim $1
-echo ""
+mkdir -p $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
+cd $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 
+INFILE=$1
+ISDATA=$2
+ERA=$3
+XSEC=$4
+OUT=$5
+JOB=$6
+RUNPERIOD=$7
+NMAXEVENTS=$8
+
+##Do the skimming
+NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD $NMAXEVENTS

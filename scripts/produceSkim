@@ -1,35 +1,31 @@
 #!/bin/bash
+currentDir=`pwd`
+
 source /etc/profile
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
 
 module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
-cd /nfs/dust/cms/user/wiens/CMSSW/CMSSW_10_6_8/src #For now this is hardcoded
+cd $8
 export SCRAM_ARCH=slc6_amd64_gcc700
 eval `scramv1 runtime -sh` #cmsenv
 
 #export X509_USER_PROXY=$HOME/.globus/x509up
 export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
 
-cd $TMP
-
 #Split the input file name for xSec function
-IFS='/' read -r -a nameArray <<< "$1"
-
-INFILE="${nameArray[7]}.root"
+INFILE=$1
 ISDATA=$2
 ERA=$3
-OUT=$4
-JOB=$5
-RUNPERIOD=$6
-NMAXEVENTS=$7
+XSEC=$4
+OUT=$5
+JOB=$6
+RUNPERIOD=$7
 
-xrdcp $1 $INFILE
-
+cd $currentDir
 #Do the skimming
-NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD $NMAXEVENTS
+NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD
 
-rm $INFILE
 mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT
 mv ${OUT}_${JOB}.root $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT

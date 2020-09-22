@@ -39,4 +39,24 @@ class Susy1LeptonProduct {
 		std::vector<float> genTopEta;
 		std::vector<float> genTopPhi;
 		std::vector<float> genTopMass;
+
+		void clear() {
+			jetPt.clear();
+			jetPhi.clear();
+			jetEta.clear();
+			jetMass.clear();
+			jetMediumCSVBTag.clear();
+			jetMediumDFBTag.clear();
+
+			genWBosonPt.clear();
+			genWBosonEta.clear();
+			genWBosonPhi.clear();
+			genWBosonMass.clear();
+
+			genTopPt.clear();
+			genTopEta.clear();
+			genTopPhi.clear();
+			genTopMass.clear();
+		}
+
 };

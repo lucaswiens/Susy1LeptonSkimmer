@@ -117,6 +117,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 			else { progress = 100 * (float) processed / nEvents;}
 			ProgressBar(progress, processed / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count());
 		}
+		product.clear();
 	}
 
 	ProgressBar(100, 0);

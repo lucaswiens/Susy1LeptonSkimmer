@@ -8,13 +8,13 @@
 class PileUpWeightProducer : public BaseProducer {
 	private:
 		//Check if it is data or MC
-		bool isData;
+		bool isData, doSystematics;
 		int era;
 
 		//Histogram file names
 		std::map<int, TString> pileupPathData, pileupPathMC;
 		TH1D *pileupRatio, *pileupRatioPlus, *pileupRatioMinus;
-		WeightCalculator* wc;
+		WeightCalculator *wc;
 
 		//Variables to be stored in the output tree
 		int nPV;
@@ -25,9 +25,9 @@ class PileUpWeightProducer : public BaseProducer {
 		std::unique_ptr<TTreeReaderArray<float>> muonPt;
 
 	public:
-		PileUpWeightProducer(const int& era, TTreeReader& reader);
+		PileUpWeightProducer(const int &era, TTreeReader &reader);
 
-		void BeginJob(TTree* tree, bool& isData);
-		void Produce(CutFlow& cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile* file);
+		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
+		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
+		void EndJob(TFile *file);
 };

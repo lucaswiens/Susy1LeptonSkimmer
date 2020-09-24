@@ -1,13 +1,14 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
 
-PileUpWeightProducer::PileUpWeightProducer(const int& era, TTreeReader& reader):
+PileUpWeightProducer::PileUpWeightProducer(const int &era, TTreeReader &reader):
 	BaseProducer(&reader),
 	era(era)
 	{}
 
-void PileUpWeightProducer::BeginJob(TTree* tree, bool &isData) {
+void PileUpWeightProducer::BeginJob(TTree* tree, bool &isData, bool &doSystematics) {
 	//Set data bool
 	this->isData = isData;
+	this->doSystematics = doSystematics;
 
 	if (!isData) {
 		TString puFilePath = "$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/pileup/";
@@ -23,13 +24,13 @@ void PileUpWeightProducer::BeginJob(TTree* tree, bool &isData) {
 			{2018, puFilePath + "mcPileup2018.root"}
 		};
 
-		TFile* pileupFileData = TFile::Open(pileupPathData[era], "READ");
-		TH1D* pileupData = static_cast<TH1D*>(pileupFileData->Get("pileup"));
-		TH1D* pileupDataPlus = static_cast<TH1D*>(pileupFileData->Get("pileup_plus"));
-		TH1D* pileupDataMinus = static_cast<TH1D*>(pileupFileData->Get("pileup_minus"));
+		TFile *pileupFileData = TFile::Open(pileupPathData[era], "READ");
+		TH1D *pileupData = static_cast<TH1D*>(pileupFileData->Get("pileup"));
+		TH1D *pileupDataPlus = static_cast<TH1D*>(pileupFileData->Get("pileup_plus"));
+		TH1D *pileupDataMinus = static_cast<TH1D*>(pileupFileData->Get("pileup_minus"));
 
-		TFile* pileupFileMC = TFile::Open(pileupPathMC[era], "READ");
-		TH1D* pileupMC = static_cast<TH1D*>(pileupFileMC->Get("pu_mc"));
+		TFile *pileupFileMC = TFile::Open(pileupPathMC[era], "READ");
+		TH1D *pileupMC = static_cast<TH1D*>(pileupFileMC->Get("pu_mc"));
 
 		wc = new WeightCalculator(true, false);
 
@@ -49,11 +50,9 @@ void PileUpWeightProducer::BeginJob(TTree* tree, bool &isData) {
 		tree->Branch("PileUpWeightMinus", &weightMinus);
 	}
 
-	//Set TTreeReader for genpart and trigger obj from BaseProducer
-	SetCollection(this->isData);
 }
 
-void PileUpWeightProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
+void PileUpWeightProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	nPV = -999;
 	weight = -999;
@@ -72,7 +71,7 @@ void PileUpWeightProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product
 	cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 }
 
-void PileUpWeightProducer::EndJob(TFile* file) {
+void PileUpWeightProducer::EndJob(TFile *file) {
 	if (!isData) {
 		delete wc;
 	}

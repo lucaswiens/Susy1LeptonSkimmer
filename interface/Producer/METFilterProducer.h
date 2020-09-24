@@ -5,7 +5,7 @@
 class METFilterProducer : public BaseProducer {
 	private:
 		//Check if it is data or MC
-		bool isData;
+		bool isData, doSystematics;
 
 		//Cut Variables
 		int era;
@@ -22,9 +22,9 @@ class METFilterProducer : public BaseProducer {
 		std::unique_ptr<TTreeReaderValue<bool>> flagEeBadScFilter, flagBadMuons, flagHBHENoiseFilter, flagHBHENoiseIsoFilter, flagEcalDeadCellTriggerPrimitiveFilter, flagGoodVertices, flagGlobalSuperTightHalo2016Filter;
 
 	public:
-		METFilterProducer(const int& era, TTreeReader& reader);
+		METFilterProducer(const int &era, TTreeReader &reader);
 
-		void BeginJob(TTree* tree, bool& isData);
-		void Produce(CutFlow& cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile* file);
+		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
+		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
+		void EndJob(TFile *file);
 };

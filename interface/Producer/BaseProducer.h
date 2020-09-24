@@ -21,7 +21,7 @@
 
 //Struct for cutflow
 struct CutFlow {
-	TH1F* hist;
+	TH1F *hist;
 	Float_t weight = 1.;
 
 	unsigned char nMinLepton = 1;
@@ -65,7 +65,7 @@ class BaseProducer {
 		};
 
 		//Collection which are used in several producers if NANO AOD is produced
-		TTreeReader* reader = NULL;
+		TTreeReader *reader = NULL;
 
 		std::unique_ptr<TTreeReaderValue<unsigned int>> run;
 
@@ -75,23 +75,19 @@ class BaseProducer {
 		std::unique_ptr<TTreeReaderArray<float>> genPhi, genEta, genPt, genMass;
 		std::unique_ptr<TTreeReaderArray<int>> genID, genMotherIdx, genStatus, eleGenIdx, muonGenIdx;
 
-		//Set trihObj and Gen particle collection
-		void SetCollection(bool &isData);
-		bool isSyst=false;
-
 		//Check for gen particle if it is last copy
-		int FirstCopy(const int& index, const int& pdgID); //NANOAOD
+		int FirstCopy(const int &index, const int &pdgID); //NANOAOD
 
 		//Match Reco to gen particles
-		std::tuple<int, int, int> SetGenParticles(const float& Pt, const float& Eta, const float& Phi, const int &i, const int& pdgID);
+		std::tuple<int, int, int> SetGenParticles(const float &Pt, const float &Eta, const float &Phi, const int &i, const int &pdgID);
 
 	public:
 		virtual ~BaseProducer(){};
 		BaseProducer();
-		BaseProducer(TTreeReader* reader);
-		virtual void BeginJob(TTree* tree, bool& isData) = 0;
-		virtual void Produce(CutFlow& cutflow, Susy1LeptonProduct *product) = 0;
-		virtual void EndJob(TFile* file) = 0;
+		BaseProducer(TTreeReader *reader);
+		virtual void BeginJob(TTree *tree, bool &isData, bool &doSystematics) = 0;
+		virtual void Produce(CutFlow &cutflow, Susy1LeptonProduct *product) = 0;
+		virtual void EndJob(TFile *file) = 0;
 
-		static float DeltaR(const float& eta1, const float& phi1, const float& eta2, const float& phi2);
+		static float DeltaR(const float &eta1, const float &phi1, const float &eta2, const float &phi2);
 };

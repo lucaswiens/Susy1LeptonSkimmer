@@ -1,13 +1,14 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/METFilterProducer.h>
 
-METFilterProducer::METFilterProducer(const int& era, TTreeReader& reader):
+METFilterProducer::METFilterProducer(const int &era, TTreeReader &reader):
 	BaseProducer(&reader),
 	era(era)
 	{}
 
-void METFilterProducer::BeginJob(TTree* tree, bool &isData) {
+void METFilterProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	//Set data bool
 	this->isData = isData;
+	this->doSystematics = doSystematics;
 
 	//Initiliaze TTreeReaderValues
 	runNumber = std::make_unique<TTreeReaderValue<unsigned int>>(*reader, "run");
@@ -22,22 +23,20 @@ void METFilterProducer::BeginJob(TTree* tree, bool &isData) {
 	flagGlobalSuperTightHalo2016Filter = std::make_unique<TTreeReaderValue<bool>>(*reader, "Flag_globalSuperTightHalo2016Filter");
 	flagBadMuons = std::make_unique<TTreeReaderValue<bool>>(*reader, "Flag_BadPFMuonFilter");
 
-	SetCollection(this->isData);
-
 	//Set Branches of output tree
 	tree->Branch("PassFilters", &PassFilters);
 	tree->Branch("PassFiltersMoriond2017Tight", &PassFiltersMoriond2017Tight);
 }
 
-void METFilterProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
+void METFilterProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	if (isData) {
-		const bool& eeBadScFilter = *flagEeBadScFilter->Get();
-		const bool& hbheNoiseFilter = *flagHBHENoiseFilter->Get();
-		const bool& hbheNoiseIsoFilter = *flagHBHENoiseIsoFilter->Get();
-		const bool& ecalDeadCellTriggerPrimitiveFilter = *flagEcalDeadCellTriggerPrimitiveFilter->Get();
-		const bool& goodVertices = *flagGoodVertices->Get();
-		const bool& globalSuperTightHalo2016Filter = *flagGlobalSuperTightHalo2016Filter->Get();
-		const bool& badMuons = *flagBadMuons->Get();
+		const bool &eeBadScFilter = *flagEeBadScFilter->Get();
+		const bool &hbheNoiseFilter = *flagHBHENoiseFilter->Get();
+		const bool &hbheNoiseIsoFilter = *flagHBHENoiseIsoFilter->Get();
+		const bool &ecalDeadCellTriggerPrimitiveFilter = *flagEcalDeadCellTriggerPrimitiveFilter->Get();
+		const bool &goodVertices = *flagGoodVertices->Get();
+		const bool &globalSuperTightHalo2016Filter = *flagGlobalSuperTightHalo2016Filter->Get();
+		const bool &badMuons = *flagBadMuons->Get();
 		PassFilters = eeBadScFilter && hbheNoiseFilter && hbheNoiseIsoFilter && ecalDeadCellTriggerPrimitiveFilter && goodVertices && globalSuperTightHalo2016Filter;
 		PassFiltersMoriond2017Tight = PassFilters && !badMuons;
 	} else {
@@ -53,5 +52,5 @@ void METFilterProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	}
 }
 
-void METFilterProducer::EndJob(TFile* file) {
+void METFilterProducer::EndJob(TFile *file) {
 }

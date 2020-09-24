@@ -17,15 +17,16 @@ export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
 #Split the input file name for xSec function
 INFILE=$1
 ISDATA=$2
-ERA=$3
-XSEC=$4
-OUT=$5
-JOB=$6
-RUNPERIOD=$7
+DOSYSTEMATICS=$3
+ERA=$4
+XSEC=$5
+OUT=$6
+JOB=$7
+RUNPERIOD=$8
 
 cd $currentDir
 #Do the skimming
-NanoSkim $INFILE $ISDATA "$ERA" $XSEC ${OUT}_${JOB}.root $RUNPERIOD
+NanoSkim $INFILE $ISDATA $DOSYSTEMATICS $ERA $XSEC ${OUT}_${JOB}.root $RUNPERIOD
 
 mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT
 mv ${OUT}_${JOB}.root $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT

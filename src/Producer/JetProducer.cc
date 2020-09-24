@@ -6,7 +6,7 @@
 #include <cmath>
 #include <random>
 
-JetProducer::JetProducer(const int& era, const float& ptCut, const float& etaCut, const float& deltaRCut, const char& runPeriod, TTreeReader& reader):
+JetProducer::JetProducer(const int &era, const float &ptCut, const float &etaCut, const float &deltaRCut, const char &runPeriod, TTreeReader &reader):
 	BaseProducer(&reader),
 	runPeriod(runPeriod),
 	era(era),
@@ -16,7 +16,7 @@ JetProducer::JetProducer(const int& era, const float& ptCut, const float& etaCut
 	{}
 
 template <typename T>
-void JetProducer::SortByIndex(T& var, std::vector<int> idx, unsigned int vectorSize) {
+void JetProducer::SortByIndex(T &var, std::vector<int> idx, unsigned int vectorSize) {
 	T tmp(vectorSize);
 	for (unsigned int i = 0; i < vectorSize; i++) {
 		tmp.at(i) = var.at(idx[i]);
@@ -24,7 +24,7 @@ void JetProducer::SortByIndex(T& var, std::vector<int> idx, unsigned int vectorS
 	var = std::move(tmp);
 }
 
-void JetProducer::SetCorrector(const char& runPeriod) {
+void JetProducer::SetCorrector(const char &runPeriod) {
 	std::vector<JetCorrectorParameters> corrVec;
 
 	for (std::string fileName : isData? jecData[era] : jecMC[era]) {
@@ -38,7 +38,7 @@ void JetProducer::SetCorrector(const char& runPeriod) {
 }
 
 //https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
-float JetProducer::CorrectEnergy(const float& pt, const float& eta, const float& rho, const float& area) {
+float JetProducer::CorrectEnergy(const float &pt, const float &eta, const float &rho, const float &area) {
 	jetCorrector->setJetPt(pt);
 	jetCorrector->setJetEta(eta);
 	jetCorrector->setRho(rho);
@@ -48,22 +48,18 @@ float JetProducer::CorrectEnergy(const float& pt, const float& eta, const float&
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
 //https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_25/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h#L203-L263
-std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta, const float& phi, const float& rho, const float& coneSize) {
+float JetProducer::SmearEnergy(const float &pt, const float &eta, const float &phi, const float &rho, const float &coneSize) {
 	jetParameter.setJetPt(pt).setJetEta(eta).setRho(rho);
 
 	float reso = resolution.getResolution(jetParameter);
 	float resoSF;
-	float resoSFUp;
-	float resoSFDown;
-	//if (!isJERsyst) resoSF = resolution_sf.getScaleFactor(jetParameter);
-	//else resoSF = resolution_sf.getScaleFactor(jetParameter, isUp ? Variation::UP : Variation::DOWN);
-	resoSF     = resolution_sf.getScaleFactor(jetParameter);
-	resoSFUp   = resolution_sf.getScaleFactor(jetParameter, Variation::UP);
-	resoSFDown = resolution_sf.getScaleFactor(jetParameter, Variation::DOWN);
+	if (isJERSystematic) {
+		resoSF = isUp ? resolution_sf.getScaleFactor(jetParameter, Variation::UP) : resolution_sf.getScaleFactor(jetParameter, Variation::DOWN);
+	} else {
+		resoSF = resolution_sf.getScaleFactor(jetParameter);
+	}
 
 	float smearFactor  = 1.;
-	float smearFactorUp = 1.;
-	float smearFactorDown = 1.;
 	float dR;
 	float genPt, genPhi, genEta, genMass;
 	//unsigned int size;
@@ -90,30 +86,26 @@ std::map<char, float> JetProducer::SmearEnergy(const float& pt, const float& eta
 
 	//If you found gen matched
 	if (isMatched) {
-		smearFactor     = 1. + (resoSF-1) * (pt - genPt) / pt;
-		smearFactorUp   = 1. + (resoSFUp-1) * (pt - genPt) / pt;
-		smearFactorDown = 1. + (resoSFDown-1) * (pt - genPt) / pt;
+		smearFactor = 1. + (resoSF-1) * (pt - genPt) / pt;
 	} else if (resoSF > 1.) {
 		std::default_random_engine generator;
 		std::normal_distribution<> gaus(0, reso * std::sqrt(resoSF * resoSF - 1));
-		std::normal_distribution<> gausUp(0, reso * std::sqrt(resoSFUp * resoSFUp - 1));
-		std::normal_distribution<> gausDown(0, reso * std::sqrt(resoSFDown * resoSFDown - 1));
-		smearFactor     = 1. + gaus(generator);
-		smearFactorUp   = 1. + gausUp(generator);
-		smearFactorDown = 1. + gausDown(generator);
+		smearFactor = 1. + gaus(generator);
 	}
 
 	//Check if direction of jet not changed
-	if (pt * smearFactor     < 1e-2) { smearFactor     = 1e-2 / pt;}
-	if (pt * smearFactorUp   < 1e-2) { smearFactorUp   = 1e-2 / pt;}
-	if (pt * smearFactorDown < 1e-2) { smearFactorDown = 1e-2 / pt;}
+	if (pt * smearFactor < 1e-2) { smearFactor = 1e-2 / pt;}
 
-	return {{'c', smearFactor}, {'u', smearFactorUp}, {'d', smearFactorDown}};
+	return smearFactor;
 }
 
-void JetProducer::BeginJob(TTree* tree, bool &isData) {
+void JetProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	//Set data bool
 	this->isData = isData;
+	this->doSystematics = doSystematics;
+	isUp = ((std::string)tree->GetName()).find("Up") != std::string::npos ? true : false;
+	isJERSystematic = ((std::string)tree->GetName()).find("JER") != std::string::npos ? true : false;
+	isJECSystematic = ((std::string)tree->GetName()).find("JEC") != std::string::npos ? true : false;
 
 	// Path to Correction files
 	std::string cmsswBase = std::string(std::getenv("CMSSW_BASE"));
@@ -252,8 +244,6 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 		};
 	}
 
-	//Set TTreeReader for genpart and trigger obj from BaseProducer
-	SetCollection(this->isData);
 	jetNumber = std::make_unique<TTreeReaderValue<unsigned int>>(*reader, "nJet");
 	jetPt = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_pt");
 	jetPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_phi");
@@ -304,7 +294,9 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 
 	//Set object to get JEC uncertainty
 	fileName = jecUnc[era];
-	jetCorrectionUncertainty = new JetCorrectionUncertainty(JetCorrectorParameters(fileName, "Total"));
+	if (isJECSystematic) {
+		jetCorrectionUncertainty = new JetCorrectionUncertainty(JetCorrectorParameters(fileName, "Total"));
+	}
 
 	//Set Branches of output tree
 	tree->Branch("JetPt", &JetPt);
@@ -312,14 +304,6 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("JetPhi", &JetPhi);
 	tree->Branch("JetMass", &JetMass);
 	tree->Branch("JetRawFactor", &JetRawFactor);
-	tree->Branch("JetPt_jerUp", &JetPt_jerUp);
-	tree->Branch("JetMass_jerUp", &JetMass_jerUp);
-	tree->Branch("JetPt_jerDown", &JetPt_jerDown);
-	tree->Branch("JetMass_jerDown", &JetMass_jerDown);
-	tree->Branch("JetPt_jecUp", &JetPt_jecUp);
-	tree->Branch("JetMass_jecUp", &JetMass_jecUp);
-	tree->Branch("JetPt_jecDown", &JetPt_jecDown);
-	tree->Branch("JetMass_jecDown", &JetMass_jecDown);
 	tree->Branch("JetCSVBTag", &JetCSVBTag);
 	tree->Branch("JetDFBTag", &JetDFBTag);
 	tree->Branch("JetLooseDFBTag", &JetLooseDFBTag);
@@ -336,18 +320,20 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 		tree->Branch("JetLooseCSVBTagSF", &JetLooseCSVBTagSF);
 		tree->Branch("JetMediumCSVBTagSF", &JetMediumCSVBTagSF);
 		tree->Branch("JetTightCSVBTagSF", &JetTightCSVBTagSF);
-		tree->Branch("JetLooseDFBTagSFUp", &JetLooseDFBTagSFUp);
-		tree->Branch("JetMediumDFBTagSFUp", &JetMediumDFBTagSFUp);
-		tree->Branch("JetTightDFBTagSFUp", &JetTightDFBTagSFUp);
-		tree->Branch("JetLooseCSVBTagSFUp", &JetLooseCSVBTagSFUp);
-		tree->Branch("JetMediumCSVBTagSFUp", &JetMediumCSVBTagSFUp);
-		tree->Branch("JetTightCSVBTagSFUp", &JetTightCSVBTagSFUp);
-		tree->Branch("JetLooseDFBTagSFDown", &JetLooseDFBTagSFDown);
-		tree->Branch("JetMediumDFBTagSFDown", &JetMediumDFBTagSFDown);
-		tree->Branch("JetTightDFBTagSFDown", &JetTightDFBTagSFDown);
-		tree->Branch("JetLooseCSVBTagSFDown", &JetLooseCSVBTagSFDown);
-		tree->Branch("JetMediumCSVBTagSFDown", &JetMediumCSVBTagSFDown);
-		tree->Branch("JetTightCSVBTagSFDown", &JetTightCSVBTagSFDown);
+		if (!doSystematics) {
+			tree->Branch("JetLooseDFBTagSFUp", &JetLooseDFBTagSFUp);
+			tree->Branch("JetLooseDFBTagSFDown", &JetLooseDFBTagSFDown);
+			tree->Branch("JetMediumDFBTagSFUp", &JetMediumDFBTagSFUp);
+			tree->Branch("JetMediumDFBTagSFDown", &JetMediumDFBTagSFDown);
+			tree->Branch("JetTightDFBTagSFUp", &JetTightDFBTagSFUp);
+			tree->Branch("JetTightDFBTagSFDown", &JetTightDFBTagSFDown);
+			tree->Branch("JetLooseCSVBTagSFUp", &JetLooseCSVBTagSFUp);
+			tree->Branch("JetLooseCSVBTagSFDown", &JetLooseCSVBTagSFDown);
+			tree->Branch("JetMediumCSVBTagSFUp", &JetMediumCSVBTagSFUp);
+			tree->Branch("JetMediumCSVBTagSFDown", &JetMediumCSVBTagSFDown);
+			tree->Branch("JetTightCSVBTagSFUp", &JetTightCSVBTagSFUp);
+			tree->Branch("JetTightCSVBTagSFDown", &JetTightCSVBTagSFDown);
+		}
 	}
 
 	tree->Branch("METPt", &METPt);
@@ -361,25 +347,25 @@ void JetProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("nMediumCSVBTagJet", &nMediumCSVBTagJet);
 	tree->Branch("nTightCSVBTagJet ", &nTightCSVBTagJet);
 
-	tree->Branch("FatJet_deepTagMD_H4qvsQCD", &FatJet_deepTagMD_H4qvsQCD);
-	tree->Branch("FatJet_deepTagMD_HbbvsQCD", &FatJet_deepTagMD_HbbvsQCD);
-	tree->Branch("FatJet_deepTagMD_TvsQCD", &FatJet_deepTagMD_TvsQCD);
-	tree->Branch("FatJet_deepTagMD_WvsQCD", &FatJet_deepTagMD_WvsQCD);
-	tree->Branch("FatJet_deepTagMD_ZHbbvsQCD", &FatJet_deepTagMD_ZHbbvsQCD);
-	tree->Branch("FatJet_deepTagMD_ZHccvsQCD", &FatJet_deepTagMD_ZHccvsQCD);
-	tree->Branch("FatJet_deepTagMD_ZbbvsQCD", &FatJet_deepTagMD_ZbbvsQCD);
-	tree->Branch("FatJet_deepTagMD_ZvsQCD", &FatJet_deepTagMD_ZvsQCD);
-	tree->Branch("FatJet_deepTagMD_bbvsLight", &FatJet_deepTagMD_bbvsLight);
-	tree->Branch("FatJet_deepTagMD_ccvsLight", &FatJet_deepTagMD_ccvsLight);
-	tree->Branch("FatJet_deepTag_H", &FatJet_deepTag_H);
-	tree->Branch("FatJet_deepTag_QCD", &FatJet_deepTag_QCD);
-	tree->Branch("FatJet_deepTag_QCDothers", &FatJet_deepTag_QCDothers);
-	tree->Branch("FatJet_deepTag_TvsQCD", &FatJet_deepTag_TvsQCD);
-	tree->Branch("FatJet_deepTag_WvsQCD", &FatJet_deepTag_WvsQCD);
-	tree->Branch("FatJet_deepTag_ZvsQCD", &FatJet_deepTag_ZvsQCD);
+	tree->Branch("FatJetDeepTagMD_H4qvsQCD", &FatJetDeepTagMD_H4qvsQCD);
+	tree->Branch("FatJetDeepTagMD_HbbvsQCD", &FatJetDeepTagMD_HbbvsQCD);
+	tree->Branch("FatJetDeepTagMD_TvsQCD", &FatJetDeepTagMD_TvsQCD);
+	tree->Branch("FatJetDeepTagMD_WvsQCD", &FatJetDeepTagMD_WvsQCD);
+	tree->Branch("FatJetDeepTagMD_ZHbbvsQCD", &FatJetDeepTagMD_ZHbbvsQCD);
+	tree->Branch("FatJetDeepTagMD_ZHccvsQCD", &FatJetDeepTagMD_ZHccvsQCD);
+	tree->Branch("FatJetDeepTagMD_ZbbvsQCD", &FatJetDeepTagMD_ZbbvsQCD);
+	tree->Branch("FatJetDeepTagMD_ZvsQCD", &FatJetDeepTagMD_ZvsQCD);
+	tree->Branch("FatJetDeepTagMD_bbvsLight", &FatJetDeepTagMD_bbvsLight);
+	tree->Branch("FatJetDeepTagMD_ccvsLight", &FatJetDeepTagMD_ccvsLight);
+	tree->Branch("FatJetDeepTag_H", &FatJetDeepTag_H);
+	tree->Branch("FatJetDeepTag_QCD", &FatJetDeepTag_QCD);
+	tree->Branch("FatJetDeepTag_QCDothers", &FatJetDeepTag_QCDothers);
+	tree->Branch("FatJetDeepTag_TvsQCD", &FatJetDeepTag_TvsQCD);
+	tree->Branch("FatJetDeepTag_WvsQCD", &FatJetDeepTag_WvsQCD);
+	tree->Branch("FatJetDeepTag_ZvsQCD", &FatJetDeepTag_ZvsQCD);
 }
 
-void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
+void JetProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	// clear vectors for each event, otherwise this creates a memory leak
 	JetPt.clear();
 	JetEta.clear();
@@ -390,14 +376,7 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	JetRawFactor.clear();
 	JetCSVBTag.clear();
 	JetDFBTag.clear();
-	JetPt_jerUp.clear();
-	JetMass_jerUp.clear();
-	JetPt_jerDown.clear();
-	JetMass_jerDown.clear();
-	JetPt_jecUp.clear();
-	JetMass_jecUp.clear();
-	JetPt_jecDown.clear();
-	JetMass_jecDown.clear();
+
 	JetLooseDFBTagSF.clear();
 	JetMediumDFBTagSF.clear();
 	JetTightDFBTagSF.clear();
@@ -405,33 +384,34 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	JetMediumCSVBTagSF.clear();
 	JetTightCSVBTagSF.clear();
 	JetLooseDFBTagSFUp.clear();
-	JetMediumDFBTagSFUp.clear();
-	JetTightDFBTagSFUp.clear();
-	JetLooseCSVBTagSFUp.clear();
-	JetMediumCSVBTagSFUp.clear();
-	JetTightCSVBTagSFUp.clear();
 	JetLooseDFBTagSFDown.clear();
+	JetMediumDFBTagSFUp.clear();
 	JetMediumDFBTagSFDown.clear();
+	JetTightDFBTagSFUp.clear();
 	JetTightDFBTagSFDown.clear();
+	JetLooseCSVBTagSFUp.clear();
 	JetLooseCSVBTagSFDown.clear();
+	JetMediumCSVBTagSFUp.clear();
 	JetMediumCSVBTagSFDown.clear();
+	JetTightCSVBTagSFUp.clear();
 	JetTightCSVBTagSFDown.clear();
-	FatJet_deepTagMD_H4qvsQCD.clear();
-	FatJet_deepTagMD_HbbvsQCD.clear();
-	FatJet_deepTagMD_TvsQCD.clear();
-	FatJet_deepTagMD_WvsQCD.clear();
-	FatJet_deepTagMD_ZHbbvsQCD.clear();
-	FatJet_deepTagMD_ZHccvsQCD.clear();
-	FatJet_deepTagMD_ZbbvsQCD.clear();
-	FatJet_deepTagMD_ZvsQCD.clear();
-	FatJet_deepTagMD_bbvsLight.clear();
-	FatJet_deepTagMD_ccvsLight.clear();
-	FatJet_deepTag_H.clear();
-	FatJet_deepTag_QCD.clear();
-	FatJet_deepTag_QCDothers.clear();
-	FatJet_deepTag_TvsQCD.clear();
-	FatJet_deepTag_WvsQCD.clear();
-	FatJet_deepTag_ZvsQCD.clear();
+
+	FatJetDeepTagMD_H4qvsQCD.clear();
+	FatJetDeepTagMD_HbbvsQCD.clear();
+	FatJetDeepTagMD_TvsQCD.clear();
+	FatJetDeepTagMD_WvsQCD.clear();
+	FatJetDeepTagMD_ZHbbvsQCD.clear();
+	FatJetDeepTagMD_ZHccvsQCD.clear();
+	FatJetDeepTagMD_ZbbvsQCD.clear();
+	FatJetDeepTagMD_ZvsQCD.clear();
+	FatJetDeepTagMD_bbvsLight.clear();
+	FatJetDeepTagMD_ccvsLight.clear();
+	FatJetDeepTag_H.clear();
+	FatJetDeepTag_QCD.clear();
+	FatJetDeepTag_QCDothers.clear();
+	FatJetDeepTag_TvsQCD.clear();
+	FatJetDeepTag_WvsQCD.clear();
+	FatJetDeepTag_ZvsQCD.clear();
 
 	JetLooseDFBTag.clear();
 	JetMediumDFBTag.clear();
@@ -455,74 +435,45 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	nTightDFBTagJet = 0;
 
 	//float CSVBValue = 0, DeepBValue = 0;
-	float metPx = 0, metPy = 0, metPx_jerUp = 0, metPy_jerUp = 0, metPx_jerDown = 0, metPy_jerDown = 0, metPx_jecUp = 0, metPy_jecUp = 0, metPx_jecDown = 0, metPy_jecDown = 0;
+	float metPx = 0, metPy = 0;
 
 	nJet = *jetNumber->Get();
 	nFatJet = *fatJetNumber->Get();
 
 	SetCorrector(runPeriod);
 
-	const float& metpt = *metPt->Get();
-	const float& metphi = *metPhi->Get();
+	const float &metpt = *metPt->Get();
+	const float &metphi = *metPhi->Get();
 	metPx = metpt * std::cos(metphi);
 	metPy = metpt * std::sin(metphi);
 
-	metPx_jerUp = metPx;
-	metPy_jerUp = metPy;
-	metPx_jerDown = metPx;
-	metPy_jerDown = metPy;
-
-	metPx_jecUp = metPx;
-	metPy_jecUp = metPy;
-	metPx_jecDown = metPx;
-	metPy_jecDown = metPy;
-
 	for (unsigned int i = 0; i < nJet; i++) {
 		//do jet correction, smearing etc.
-		const float& pt = jetPt->At(i);
-		const float& phi = jetPhi->At(i);
-		const float& eta = jetEta->At(i);
-		const float& mass = jetMass->At(i);
-		const float& rawFactor = jetRawFactor->At(i);
-		const float& rawPt = pt * (1 - rawFactor);
-		const float& rawMass = mass * (1 - rawFactor);
+		const float &pt = jetPt->At(i);
+		const float &phi = jetPhi->At(i);
+		const float &eta = jetEta->At(i);
+		const float &rawFactor = jetRawFactor->At(i);
+		const float &rawPt = pt * (1 - rawFactor);
 
-		std::map<char, float> smearFactor;
 		float correctionFactor = CorrectEnergy(rawPt, eta, *jetRho->Get(), jetArea->At(i));
-		float correctionFactorUp = 1, correctionFactorDown = 1;
 
-		if (jetCorrectionUncertainty != nullptr) {
+		if (isJECSystematic) {
 			jetCorrectionUncertainty->setJetPt(correctionFactor * rawPt);
 			jetCorrectionUncertainty->setJetEta(eta);
-			const float uncUp = jetCorrectionUncertainty->getUncertainty(true);
-			jetCorrectionUncertainty->setJetPt(correctionFactor * rawPt);
-			jetCorrectionUncertainty->setJetEta(eta);
-			const float uncDown = jetCorrectionUncertainty->getUncertainty(false);
-			correctionFactorUp   = (1 + uncUp) * correctionFactor ;
-			correctionFactorDown = (1 - uncDown) * correctionFactor ;
+			const float uncertainty = jetCorrectionUncertainty->getUncertainty(isUp);
+			correctionFactor *= isUp ? (1 + uncertainty) : (1 - uncertainty);
 		}
 
-		if (isData) {
-			smearFactor = {{'c', 1}, {'u', 1}, {'d', 1}};
-		} else {
-			smearFactor = JetProducer::SmearEnergy(rawPt, eta, phi, *jetRho->Get(), jetArea->At(i));
-		}
+		const float &smearFactor = isData ? 1.0 : JetProducer::SmearEnergy(rawPt, eta, phi, *jetRho->Get(), jetArea->At(i));
 
-		const float& correctedPt = smearFactor['c'] * correctionFactor * rawPt;
-		const float& correctedMass = smearFactor['c'] * correctionFactor * rawMass;
-
-		const float& correctedPt_jerUp = smearFactor['u'] * correctionFactor * rawPt;
-		const float& correctedMass_jerUp = smearFactor['u'] * correctionFactor * rawMass;
-		const float& correctedPt_jerDown = smearFactor['d'] * correctionFactor * rawPt;
-		const float& correctedMass_jerDown = smearFactor['d'] * correctionFactor * rawMass;
-
-		const float& correctedPt_jecUp = smearFactor['c'] * correctionFactorUp * rawPt;
-		const float& correctedMass_jecUp = smearFactor['c'] * correctionFactorUp * rawMass;
-		const float& correctedPt_jecDown = smearFactor['c'] * correctionFactorDown * rawPt;
-		const float& correctedMass_jecDown = smearFactor['c'] * correctionFactorDown * rawMass;
+		const float &correctedPt = smearFactor * correctionFactor * rawPt;
 
 		if (correctedPt > ptCut && abs(eta) < etaCut) {
-			const float& csvBTagValue = jetCSV->At(i);
+			const float &mass = jetMass->At(i);
+			const float &rawMass = mass * (1 - rawFactor);
+			const float &correctedMass = smearFactor * correctionFactor * rawMass;
+
+			const float &csvBTagValue = jetCSV->At(i);
 			JetCSVBTag.push_back(csvBTagValue);
 			if (csvBTagValue > deepCSVBTag[era]['t']) {
 				JetLooseCSVBTag.push_back(true);
@@ -534,13 +485,15 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 1));
 					JetTightCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 2));
 
-					JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
-					JetMediumCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 1));
-					JetTightCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 2));
+					if (!doSystematics) {
+						JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
+						JetMediumCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 1));
+						JetTightCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 2));
 
-					JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
-					JetMediumCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 1));
-					JetTightCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 2));
+						JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
+						JetMediumCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 1));
+						JetTightCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 2));
+					}
 				}
 			} else if (csvBTagValue > deepCSVBTag[era]['m']) {
 				JetLooseCSVBTag.push_back(true);
@@ -552,13 +505,15 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumCSVBTagSF.push_back(bTagReader["deepcsv"]->Get(correctedPt, 1));
 					JetTightCSVBTagSF.push_back(0);
 
-					JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
-					JetMediumCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 1));
-					JetTightCSVBTagSFUp.push_back(0);
+					if(!doSystematics) {
+						JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
+						JetMediumCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 1));
+						JetTightCSVBTagSFUp.push_back(0);
 
-					JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
-					JetMediumCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 1));
-					JetTightCSVBTagSFDown.push_back(0);
+						JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
+						JetMediumCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 1));
+						JetTightCSVBTagSFDown.push_back(0);
+					}
 				}
 			} else if (csvBTagValue > deepCSVBTag[era]['l']) {
 				JetLooseCSVBTag.push_back(true);
@@ -570,13 +525,15 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumCSVBTagSF.push_back(0);
 					JetTightCSVBTagSF.push_back(0);
 
-					JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
-					JetMediumCSVBTagSFUp.push_back(0);
-					JetTightCSVBTagSFUp.push_back(0);
+					if(!doSystematics) {
+						JetLooseCSVBTagSFUp.push_back(bTagReader["deepcsv"]->GetUp(correctedPt, 0));
+						JetMediumCSVBTagSFUp.push_back(0);
+						JetTightCSVBTagSFUp.push_back(0);
 
-					JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
-					JetMediumCSVBTagSFDown.push_back(0);
-					JetTightCSVBTagSFDown.push_back(0);
+						JetLooseCSVBTagSFDown.push_back(bTagReader["deepcsv"]->GetDown(correctedPt, 0));
+						JetMediumCSVBTagSFDown.push_back(0);
+						JetTightCSVBTagSFDown.push_back(0);
+					}
 				}
 			} else {
 				JetLooseCSVBTag.push_back(false);
@@ -588,17 +545,19 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumCSVBTagSF.push_back(0);
 					JetTightCSVBTagSF.push_back(0);
 
-					JetLooseCSVBTagSFUp.push_back(0);
-					JetMediumCSVBTagSFUp.push_back(0);
-					JetTightCSVBTagSFUp.push_back(0);
+					if(!doSystematics) {
+						JetLooseCSVBTagSFUp.push_back(0);
+						JetMediumCSVBTagSFUp.push_back(0);
+						JetTightCSVBTagSFUp.push_back(0);
 
-					JetLooseCSVBTagSFDown.push_back(0);
-					JetMediumCSVBTagSFDown.push_back(0);
-					JetTightCSVBTagSFDown.push_back(0);
+						JetLooseCSVBTagSFDown.push_back(0);
+						JetMediumCSVBTagSFDown.push_back(0);
+						JetTightCSVBTagSFDown.push_back(0);
+					}
 				}
 			}
 
-			const float& dfBTagValue = jetDF->At(i);
+			const float &dfBTagValue = jetDF->At(i);
 			JetDFBTag.push_back(dfBTagValue);
 			if (dfBTagValue > deepFlavourBTag[era]['t']) {
 				JetLooseDFBTag.push_back(true);
@@ -610,13 +569,15 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 1));
 					JetTightDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 2));
 
-					JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
-					JetMediumDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 1));
-					JetTightDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 2));
+					if (!doSystematics) {
+						JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
+						JetMediumDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 1));
+						JetTightDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 2));
 
-					JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
-					JetMediumDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 1));
-					JetTightDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 2));
+						JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
+						JetMediumDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 1));
+						JetTightDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 2));
+					}
 				}
 			} else if (dfBTagValue > deepFlavourBTag[era]['m']) {
 				JetLooseDFBTag.push_back(true);
@@ -628,13 +589,15 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumDFBTagSF.push_back(bTagReader["deepflavour"]->Get(correctedPt, 1));
 					JetTightDFBTagSF.push_back(0);
 
-					JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
-					JetMediumDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 1));
-					JetTightDFBTagSFUp.push_back(0);
+					if (!doSystematics) {
+						JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
+						JetMediumDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 1));
+						JetTightDFBTagSFUp.push_back(0);
 
-					JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
-					JetMediumDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 1));
-					JetTightDFBTagSFDown.push_back(0);
+						JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
+						JetMediumDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 1));
+						JetTightDFBTagSFDown.push_back(0);
+					}
 				}
 			} else if (dfBTagValue > deepFlavourBTag[era]['l']) {
 				JetLooseDFBTag.push_back(true);
@@ -646,13 +609,15 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumDFBTagSF.push_back(0);
 					JetTightDFBTagSF.push_back(0);
 
-					JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
-					JetMediumDFBTagSFUp.push_back(0);
-					JetTightDFBTagSFUp.push_back(0);
+					if (!doSystematics) {
+						JetLooseDFBTagSFUp.push_back(bTagReader["deepflavour"]->GetUp(correctedPt, 0));
+						JetMediumDFBTagSFUp.push_back(0);
+						JetTightDFBTagSFUp.push_back(0);
 
-					JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
-					JetMediumDFBTagSFDown.push_back(0);
-					JetTightDFBTagSFDown.push_back(0);
+						JetLooseDFBTagSFDown.push_back(bTagReader["deepflavour"]->GetDown(correctedPt, 0));
+						JetMediumDFBTagSFDown.push_back(0);
+						JetTightDFBTagSFDown.push_back(0);
+					}
 				}
 			} else {
 				JetLooseDFBTag.push_back(false);
@@ -664,57 +629,44 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					JetMediumDFBTagSF.push_back(0);
 					JetTightDFBTagSF.push_back(0);
 
-					JetLooseDFBTagSFUp.push_back(0);
-					JetMediumDFBTagSFUp.push_back(0);
-					JetTightDFBTagSFUp.push_back(0);
+					if (!doSystematics) {
+						JetLooseDFBTagSFUp.push_back(0);
+						JetMediumDFBTagSFUp.push_back(0);
+						JetTightDFBTagSFUp.push_back(0);
 
-					JetLooseDFBTagSFDown.push_back(0);
-					JetMediumDFBTagSFDown.push_back(0);
-					JetTightDFBTagSFDown.push_back(0);
+						JetLooseDFBTagSFDown.push_back(0);
+						JetMediumDFBTagSFDown.push_back(0);
+						JetTightDFBTagSFDown.push_back(0);
+					}
 				}
 			}
 
 			//Jet four momentum components
 			JetPt.push_back(correctedPt); JetEta.push_back(eta); JetPhi.push_back(phi); JetMass.push_back(correctedMass); JetRawPt.push_back(rawPt); JetRawMass.push_back(rawPt), JetRawFactor.push_back(rawFactor);
 
-			JetPt_jecUp.push_back(correctedPt_jecUp); JetMass_jecUp.push_back(correctedMass_jecUp); JetPt_jecDown.push_back(correctedPt_jecDown); JetMass_jecDown.push_back(correctedMass_jecDown);
-
-			JetPt_jerUp.push_back(correctedPt_jerUp); JetMass_jerUp.push_back(correctedMass_jerUp); JetPt_jerDown.push_back(correctedPt_jerDown); JetMass_jerDown.push_back(correctedMass_jerDown);
-
 			//JECCorrection.push_back(correctionFactor);
 			metPx += pt * std::cos(phi) - JetPt.back() * std::cos(phi);
 			metPy += pt * std::sin(phi) - JetPt.back() * std::sin(phi);
-
-			metPx_jerUp += pt * std::cos(phi) - JetPt_jerUp.back() * std::cos(phi);
-			metPy_jerUp += pt * std::sin(phi) - JetPt_jerUp.back() * std::sin(phi);
-			metPx_jerDown += pt * std::cos(phi) - JetPt_jerDown.back() * std::cos(phi);
-			metPy_jerDown += pt * std::sin(phi) - JetPt_jerDown.back() * std::sin(phi);
-
-			metPx_jecUp += pt * std::cos(phi) - JetPt_jecUp.back() * std::cos(phi);
-			metPy_jecUp += pt * std::sin(phi) - JetPt_jecUp.back() * std::sin(phi);
-			metPx_jecDown += pt * std::cos(phi) - JetPt_jecDown.back() * std::cos(phi);
-			metPy_jecDown += pt * std::sin(phi) - JetPt_jecDown.back() * std::sin(phi);
-
 		}
 	}
 
 	for (unsigned int i = 0; i < nFatJet; i++) {
-		FatJet_deepTagMD_H4qvsQCD.push_back(fatJetDeepTagMDH4qvsQCD->At(i));
-		FatJet_deepTagMD_HbbvsQCD.push_back(fatJetDeepTagMDHbbvsQCD->At(i));
-		FatJet_deepTagMD_TvsQCD.push_back(fatJetDeepTagMDTvsQCD->At(i));
-		FatJet_deepTagMD_WvsQCD.push_back(fatJetDeepTagMDWvsQCD->At(i));
-		FatJet_deepTagMD_ZHbbvsQCD.push_back(fatJetDeepTagMDZHbbvsQCD->At(i));
-		FatJet_deepTagMD_ZHccvsQCD.push_back(fatJetDeepTagMDZHccvsQCD->At(i));
-		FatJet_deepTagMD_ZbbvsQCD.push_back(fatJetDeepTagMDZbbvsQCD->At(i));
-		FatJet_deepTagMD_ZvsQCD.push_back(fatJetDeepTagMDZvsQCD->At(i));
-		FatJet_deepTagMD_bbvsLight.push_back(fatJetDeepTagMDBbvsLight->At(i));
-		FatJet_deepTagMD_ccvsLight.push_back(fatJetDeepTagMDCcvsLight->At(i));
-		FatJet_deepTag_H.push_back(fatJetDeepTagH->At(i));
-		FatJet_deepTag_QCD.push_back(fatJetDeepTagQCD->At(i));
-		FatJet_deepTag_QCDothers.push_back(fatJetDeepTagQCDothers->At(i));
-		FatJet_deepTag_TvsQCD.push_back(fatJetDeepTagTvsQCD->At(i));
-		FatJet_deepTag_WvsQCD.push_back(fatJetDeepTagWvsQCD->At(i));
-		FatJet_deepTag_ZvsQCD.push_back(fatJetDeepTagZvsQCD->At(i));
+		FatJetDeepTagMD_H4qvsQCD.push_back(fatJetDeepTagMDH4qvsQCD->At(i));
+		FatJetDeepTagMD_HbbvsQCD.push_back(fatJetDeepTagMDHbbvsQCD->At(i));
+		FatJetDeepTagMD_TvsQCD.push_back(fatJetDeepTagMDTvsQCD->At(i));
+		FatJetDeepTagMD_WvsQCD.push_back(fatJetDeepTagMDWvsQCD->At(i));
+		FatJetDeepTagMD_ZHbbvsQCD.push_back(fatJetDeepTagMDZHbbvsQCD->At(i));
+		FatJetDeepTagMD_ZHccvsQCD.push_back(fatJetDeepTagMDZHccvsQCD->At(i));
+		FatJetDeepTagMD_ZbbvsQCD.push_back(fatJetDeepTagMDZbbvsQCD->At(i));
+		FatJetDeepTagMD_ZvsQCD.push_back(fatJetDeepTagMDZvsQCD->At(i));
+		FatJetDeepTagMD_bbvsLight.push_back(fatJetDeepTagMDBbvsLight->At(i));
+		FatJetDeepTagMD_ccvsLight.push_back(fatJetDeepTagMDCcvsLight->At(i));
+		FatJetDeepTag_H.push_back(fatJetDeepTagH->At(i));
+		FatJetDeepTag_QCD.push_back(fatJetDeepTagQCD->At(i));
+		FatJetDeepTag_QCDothers.push_back(fatJetDeepTagQCDothers->At(i));
+		FatJetDeepTag_TvsQCD.push_back(fatJetDeepTagTvsQCD->At(i));
+		FatJetDeepTag_WvsQCD.push_back(fatJetDeepTagWvsQCD->At(i));
+		FatJetDeepTag_ZvsQCD.push_back(fatJetDeepTagZvsQCD->At(i));
 	}
 
 	//Cleanup, remove at most 1 Jet (i.e. per lepton)
@@ -727,21 +679,12 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			nearestJetIndex = i;
 		}
 	}
-	if (minDeltaR < deltaRCut && nearestJetIndex > 0) {
+	if (minDeltaR < deltaRCut && nearestJetIndex > 0) { // TODO check if this is the correct cut
 		JetPt.erase(JetPt.begin() + nearestJetIndex);
 		JetEta.erase(JetEta.begin() + nearestJetIndex);
 		JetPhi.erase(JetPhi.begin() + nearestJetIndex);
 		JetMass.erase(JetMass.begin() + nearestJetIndex);
 		JetRawFactor.erase(JetRawFactor.begin() + nearestJetIndex);
-
-		JetPt_jecUp.erase(JetPt_jecUp.begin() + nearestJetIndex);
-		JetPt_jecDown.erase(JetPt_jecDown.begin() + nearestJetIndex);
-		JetPt_jerUp.erase(JetPt_jerUp.begin() + nearestJetIndex);
-		JetPt_jerDown.erase(JetPt_jerDown.begin() + nearestJetIndex);
-		JetMass_jecUp.erase(JetMass_jecUp.begin() + nearestJetIndex);
-		JetMass_jecDown.erase(JetMass_jecDown.begin() + nearestJetIndex);
-		JetMass_jerUp.erase(JetMass_jerUp.begin() + nearestJetIndex);
-		JetMass_jerDown.erase(JetMass_jerDown.begin() + nearestJetIndex);
 
 		JetLooseCSVBTag.erase(JetLooseCSVBTag.begin() + nearestJetIndex);
 		JetMediumCSVBTag.erase(JetMediumCSVBTag.begin() + nearestJetIndex);
@@ -758,21 +701,25 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			JetMediumDFBTagSF.erase(JetMediumDFBTagSF.begin() + nearestJetIndex);
 			JetTightDFBTagSF.erase(JetTightDFBTagSF.begin() + nearestJetIndex);
 
-			JetLooseCSVBTagSFUp.erase(JetLooseCSVBTagSFUp.begin() + nearestJetIndex);
-			JetMediumCSVBTagSFUp.erase(JetMediumCSVBTagSFUp.begin() + nearestJetIndex);
-			JetTightCSVBTagSFUp.erase(JetTightCSVBTagSFUp.begin() + nearestJetIndex);
-			JetLooseDFBTagSFUp.erase(JetLooseDFBTagSFUp.begin() + nearestJetIndex);
-			JetMediumDFBTagSFUp.erase(JetMediumDFBTagSFUp.begin() + nearestJetIndex);
-			JetTightDFBTagSFUp.erase(JetTightDFBTagSFUp.begin() + nearestJetIndex);
+			if (!doSystematics) {
+				JetLooseCSVBTagSFUp.erase(JetLooseCSVBTagSFUp.begin() + nearestJetIndex);
+				JetMediumCSVBTagSFUp.erase(JetMediumCSVBTagSFUp.begin() + nearestJetIndex);
+				JetTightCSVBTagSFUp.erase(JetTightCSVBTagSFUp.begin() + nearestJetIndex);
+				JetLooseDFBTagSFUp.erase(JetLooseDFBTagSFUp.begin() + nearestJetIndex);
+				JetMediumDFBTagSFUp.erase(JetMediumDFBTagSFUp.begin() + nearestJetIndex);
+				JetTightDFBTagSFUp.erase(JetTightDFBTagSFUp.begin() + nearestJetIndex);
 
-			JetLooseCSVBTagSFDown.erase(JetLooseCSVBTagSFDown.begin() + nearestJetIndex);
-			JetMediumCSVBTagSFDown.erase(JetMediumCSVBTagSFDown.begin() + nearestJetIndex);
-			JetTightCSVBTagSFDown.erase(JetTightCSVBTagSFDown.begin() + nearestJetIndex);
-			JetLooseDFBTagSFDown.erase(JetLooseDFBTagSFDown.begin() + nearestJetIndex);
-			JetMediumDFBTagSFDown.erase(JetMediumDFBTagSFDown.begin() + nearestJetIndex);
-			JetTightDFBTagSFDown.erase(JetTightDFBTagSFDown.begin() + nearestJetIndex);
+				JetLooseCSVBTagSFDown.erase(JetLooseCSVBTagSFDown.begin() + nearestJetIndex);
+				JetMediumCSVBTagSFDown.erase(JetMediumCSVBTagSFDown.begin() + nearestJetIndex);
+				JetTightCSVBTagSFDown.erase(JetTightCSVBTagSFDown.begin() + nearestJetIndex);
+				JetLooseDFBTagSFDown.erase(JetLooseDFBTagSFDown.begin() + nearestJetIndex);
+				JetMediumDFBTagSFDown.erase(JetMediumDFBTagSFDown.begin() + nearestJetIndex);
+				JetTightDFBTagSFDown.erase(JetTightDFBTagSFDown.begin() + nearestJetIndex);
+			}
 		}
 	}
+
+	nJet = JetPt.size();
 
 	for (unsigned int i = 0; i < nJet; i++) {
 		if (JetTightCSVBTag[i]) { nLooseCSVBTagJet++; nMediumCSVBTagJet++; nTightCSVBTagJet++;}
@@ -784,19 +731,8 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		else if (JetLooseDFBTag[i]) { nLooseDFBTagJet++;}
 	}
 
-	nJet = JetPt.size();
 	METPt = std::sqrt(std::pow(metPx, 2) + std::pow(metPy, 2));
 	METPhi = std::atan2(metPy, metPx);
-
-	METPt_jerUp = std::sqrt(std::pow(metPx_jerUp, 2) + std::pow(metPy_jerUp, 2));
-	METPhi_jerUp = std::atan2(metPy_jerUp, metPx_jerUp);
-	METPt_jerDown = std::sqrt(std::pow(metPx_jerDown, 2) + std::pow(metPy_jerDown, 2));
-	METPhi_jerDown = std::atan2(metPy_jerDown, metPx_jerDown);
-
-	METPt_jecUp = std::sqrt(std::pow(metPx_jecUp, 2) + std::pow(metPy_jecUp, 2));
-	METPhi_jecUp = std::atan2(metPy_jecUp, metPx_jecUp);
-	METPt_jecDown = std::sqrt(std::pow(metPx_jecDown, 2) + std::pow(metPy_jecDown, 2));
-	METPhi_jecDown = std::atan2(metPy_jecDown, metPx_jecDown);
 
 	//Sort Vectors according to JetPt, since the correction could have changed the order
 	std::vector<int> idx(nJet);
@@ -825,19 +761,21 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			SortByIndex<std::vector<float>>(JetMediumDFBTagSF, idx, nJet);
 			SortByIndex<std::vector<float>>(JetTightDFBTagSF, idx, nJet);
 
-			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFUp, idx, nJet);
-			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFUp, idx, nJet);
-			SortByIndex<std::vector<float>>(JetTightCSVBTagSFUp, idx, nJet);
-			SortByIndex<std::vector<float>>(JetLooseDFBTagSFUp, idx, nJet);
-			SortByIndex<std::vector<float>>(JetMediumDFBTagSFUp, idx, nJet);
-			SortByIndex<std::vector<float>>(JetTightDFBTagSFUp, idx, nJet);
+			if (!doSystematics) {
+				SortByIndex<std::vector<float>>(JetLooseCSVBTagSFUp, idx, nJet);
+				SortByIndex<std::vector<float>>(JetMediumCSVBTagSFUp, idx, nJet);
+				SortByIndex<std::vector<float>>(JetTightCSVBTagSFUp, idx, nJet);
+				SortByIndex<std::vector<float>>(JetLooseDFBTagSFUp, idx, nJet);
+				SortByIndex<std::vector<float>>(JetMediumDFBTagSFUp, idx, nJet);
+				SortByIndex<std::vector<float>>(JetTightDFBTagSFUp, idx, nJet);
 
-			SortByIndex<std::vector<float>>(JetLooseCSVBTagSFDown, idx, nJet);
-			SortByIndex<std::vector<float>>(JetMediumCSVBTagSFDown, idx, nJet);
-			SortByIndex<std::vector<float>>(JetTightCSVBTagSFDown, idx, nJet);
-			SortByIndex<std::vector<float>>(JetLooseDFBTagSFDown, idx, nJet);
-			SortByIndex<std::vector<float>>(JetMediumDFBTagSFDown, idx, nJet);
-			SortByIndex<std::vector<float>>(JetTightDFBTagSFDown, idx, nJet);
+				SortByIndex<std::vector<float>>(JetLooseCSVBTagSFDown, idx, nJet);
+				SortByIndex<std::vector<float>>(JetMediumCSVBTagSFDown, idx, nJet);
+				SortByIndex<std::vector<float>>(JetTightCSVBTagSFDown, idx, nJet);
+				SortByIndex<std::vector<float>>(JetLooseDFBTagSFDown, idx, nJet);
+				SortByIndex<std::vector<float>>(JetMediumDFBTagSFDown, idx, nJet);
+				SortByIndex<std::vector<float>>(JetTightDFBTagSFDown, idx, nJet);
+			}
 		}
 	}
 
@@ -900,8 +838,10 @@ void JetProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	delete jetCorrector;
 }
 
-void JetProducer::EndJob(TFile* file) {
+void JetProducer::EndJob(TFile *file) {
 	delete bTagReader["deepcsv"];
 	delete bTagReader["deepflavour"];
-	delete jetCorrectionUncertainty;
+	if (doSystematics) {
+		delete jetCorrectionUncertainty;
+	}
 }

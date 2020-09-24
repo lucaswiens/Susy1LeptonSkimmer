@@ -8,7 +8,7 @@
 class GenLevelProducer : public BaseProducer {
 	private:
 		//Check if it is data or MC
-		bool isData;
+		bool isData, doSystematics;
 		int era;
 
 		//Variables to be stored in the output tree
@@ -27,9 +27,9 @@ class GenLevelProducer : public BaseProducer {
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
 	public:
-		GenLevelProducer(const int& era, TTreeReader& reader);
+		GenLevelProducer(const int &era, TTreeReader &reader);
 
-		void BeginJob(TTree* tree, bool& isData);
-		void Produce(CutFlow& cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile* file);
+		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
+		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
+		void EndJob(TFile *file);
 };

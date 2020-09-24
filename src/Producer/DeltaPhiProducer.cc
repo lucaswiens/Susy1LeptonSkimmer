@@ -1,6 +1,6 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 
-DeltaPhiProducer::DeltaPhiProducer(TTreeReader& reader):
+DeltaPhiProducer::DeltaPhiProducer(TTreeReader &reader):
 	BaseProducer(&reader)
 	{}
 
@@ -12,9 +12,10 @@ float DeltaPhiProducer::DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtE
 	return dPhi;
 }
 
-void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
+void DeltaPhiProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	//Set data bool
 	this->isData = isData;
+	this->doSystematics = doSystematics;
 
 	isoTrackNumber = std::make_unique<TTreeReaderValue<unsigned int>>(*reader, "nIsoTrack");
 	isoTrackPt = std::make_unique<TTreeReaderArray<float>>(*reader, "IsoTrack_pt");
@@ -23,9 +24,6 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 	//isoTrackMass = std::make_unique<TTreeReaderArray<float>>(*reader, "IsoTrack_mass");
 	//isoTrackCharge = std::make_unique<TTreeReaderArray<int>>(*reader, "IsoTrack_charge");
 	isoTrackPdgId = std::make_unique<TTreeReaderArray<int>>(*reader, "IsoTrack_pdgId");
-
-	//Set TTreeReader for genpart and trigger obj from BaseProducer
-	SetCollection(this->isData);
 
 	//Set Branches of output tree
 	tree->Branch("HT", &HT);
@@ -44,7 +42,7 @@ void DeltaPhiProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("IsoTrackHadronicDecay", &IsoTrackHadronicDecay);
 }
 
-void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
+void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	IsoTrackMt2.clear();
 	IsoTrackPt.clear();
@@ -110,13 +108,13 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 		nIsoTrack = *isoTrackNumber->Get();
 		float minDeltaR = -999;
 		for (unsigned int j = 0; j < nIsoTrack; j++) {
-			const float& isotrackpt = isoTrackPt->At(j);
-			const float& isotracketa = isoTrackEta->At(j);
-			const float& isotrackphi = isoTrackPhi->At(j);
-			//const float& isotrackmass = isoTrackMass->At(j);
-			const int& isotrackpdgid = isoTrackPdgId->At(j);
-			//const int& isotrackcharge = isoTrackCharge->At(j);
-			const int& isotrackcharge = (0 < isotrackpdgid) - (isotrackpdgid < 0);// this is only correct for leptons I think
+			const float &isotrackpt = isoTrackPt->At(j);
+			const float &isotracketa = isoTrackEta->At(j);
+			const float &isotrackphi = isoTrackPhi->At(j);
+			//const float &isotrackmass = isoTrackMass->At(j);
+			const int &isotrackpdgid = isoTrackPdgId->At(j);
+			//const int &isotrackcharge = isoTrackCharge->At(j);
+			const int &isotrackcharge = (0 < isotrackpdgid) - (isotrackpdgid < 0);// this is only correct for leptons I think
 
 			if (isotrackcharge == product->leptonCharge) continue;
 
@@ -153,5 +151,5 @@ void DeltaPhiProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	} // This should probably check if both the lepton producer and the jet producer were successful
 }
 
-void DeltaPhiProducer::EndJob(TFile* file) {
+void DeltaPhiProducer::EndJob(TFile *file) {
 }

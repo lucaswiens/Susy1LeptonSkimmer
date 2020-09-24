@@ -1,14 +1,15 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TriggerProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
-TriggerProducer::TriggerProducer(const int& era, TTreeReader& reader):
+TriggerProducer::TriggerProducer(const int &era, TTreeReader &reader):
 	BaseProducer(&reader),
 	era(era)
 	{}
 
-void TriggerProducer::BeginJob(TTree* tree, bool &isData) {
+void TriggerProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	//Set data bool
 	this->isData = isData;
+	this->doSystematics = doSystematics;
 
 	//Initiliaze TTreeReaderValues
 	if(era == 2016){
@@ -77,9 +78,6 @@ void TriggerProducer::BeginJob(TTree* tree, bool &isData) {
 		hlt_PFMETNoMu120_PFMHTNoMu120_IDTight = std::make_unique<TTreeReaderValue<bool>>(*reader, "HLT_PFMETNoMu120_PFMHTNoMu120_IDTight");
 	}
 
-	//Set TTreeReader for genpart and trigger obj from BaseProducer
-	SetCollection(this->isData);
-
 	//Set Branches of output tree
 	tree->Branch("HLTElectronOr", &HLT_EleOr);
 	tree->Branch("HLTMuonOr", &HLT_MuOr);
@@ -88,7 +86,7 @@ void TriggerProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("TriggerEfficiency", &TriggerEfficiency);
 }
 
-void TriggerProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
+void TriggerProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	HLT_EleOr = false;
 	HLT_MuOr = false;
@@ -142,5 +140,5 @@ void TriggerProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 }
 
-void TriggerProducer::EndJob(TFile* file) {
+void TriggerProducer::EndJob(TFile *file) {
 }

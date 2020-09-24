@@ -10,7 +10,7 @@
 class DeltaPhiProducer : public BaseProducer {
 	private:
 		//Check if it is data or MC
-		bool isData;
+		bool isData, doSystematics;
 
 		//Vector for the output variables
 		float HT, LT, LP, deltaPhi, dPhi, wBosonMt;
@@ -25,9 +25,9 @@ class DeltaPhiProducer : public BaseProducer {
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
 	public:
-		DeltaPhiProducer(TTreeReader& reader);//TODO reader needeed?
+		DeltaPhiProducer(TTreeReader &reader);//TODO reader needeed?
 
-		void BeginJob(TTree* tree, bool& isData);
-		void Produce(CutFlow& cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile* file);
+		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
+		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
+		void EndJob(TFile *file);
 };

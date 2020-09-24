@@ -7,7 +7,7 @@
 #include <cmath>
 #include <random>
 
-LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& etaCut, const float& dxyCut, const float& dzCut, const float& sip3dCut, const float& isoCut, TTreeReader& reader):
+LeptonProducer::LeptonProducer(const int &era, const float &ptCut, const float &etaCut, const float &dxyCut, const float &dzCut, const float &sip3dCut, const float &isoCut, TTreeReader &reader):
 	BaseProducer(&reader),
 	era(era),
 	ptCut(ptCut),
@@ -19,7 +19,7 @@ LeptonProducer::LeptonProducer(const int& era, const float& ptCut, const float& 
 	{}
 
 template <typename T>
-void LeptonProducer::SortByIndex(T& var, std::vector<int> idx, unsigned int vectorSize) {
+void LeptonProducer::SortByIndex(T &var, std::vector<int> idx, unsigned int vectorSize) {
 	T tmp(vectorSize);
 	for (unsigned int i = 0; i < vectorSize; i++) {
 		tmp.at(i) = var.at(idx[i]);
@@ -28,9 +28,10 @@ void LeptonProducer::SortByIndex(T& var, std::vector<int> idx, unsigned int vect
 }
 
 
-void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
+void LeptonProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	//Set data bool
 	this->isData = isData;
+	this->doSystematics = doSystematics;
 
 	//Path to files containing Scale Factors TODO find correct files for 17,18
 	TString muonIdSFFileLocation        = TString("$CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/leptonSF/Mu_ID.root");
@@ -82,9 +83,6 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	electronMiniPFRelIsoAll = std::make_unique<TTreeReaderArray<float>>(*reader, "Electron_miniPFRelIso_all");
 	electronCutBased = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_cutBased");
 
-	//Set TTreeReader for genpart and trigger obj from BaseProducer
-	SetCollection(this->isData);
-
 	//Set Branches of output tree
 	tree->Branch("LeptonPt", &Pt);
 	tree->Branch("LeptonEta", &Eta);
@@ -93,6 +91,18 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("LeptonMiniPFRelIsoAll", &MiniPFRelIsoAll);
 	if (!isData) {
 		tree->Branch("LeptonScaleFactor", &ScaleFactor);
+		if (!doSystematics) {
+		tree->Branch("LeptonSFIdUp", &ScaleFactorIdUp);
+		tree->Branch("LeptonSFIdDown", &ScaleFactorIdDown);
+		tree->Branch("LeptonSFIsolationUp", &ScaleFactorIsolationUp);
+		tree->Branch("LeptonSFIsolationDown", &ScaleFactorIsolationDown);
+		tree->Branch("LeptonSFTriggerUp", &ScaleFactorTriggerUp);
+		tree->Branch("LeptonSFTriggerDown", &ScaleFactorTriggerDown);
+		tree->Branch("LeptonSFGSFUp", &ScaleFactorGSFUp);
+		tree->Branch("LeptonSFGSFDown", &ScaleFactorGSFDown);
+		tree->Branch("LeptonSFMVAUp", &ScaleFactorMVAUp);
+		tree->Branch("LeptonSFMVADown", &ScaleFactorMVADown);
+		}
 	}
 
 	tree->Branch("LeptonLooseId", &LooseId);
@@ -104,7 +114,7 @@ void LeptonProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("LeptonCutBased", &CutBased);
 }
 
-void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
+void LeptonProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	Pt.clear();
 	Eta.clear();
@@ -134,36 +144,48 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	int muonCounter = 0, electronCounter = 0;
 	if (nLepton > 0) {
 		for (unsigned int i = 0; i < nMuon; i++) {
-			const float& pt = muonPt->At(i);
-			const float& eta = muonEta->At(i);
-			const float& phi = muonPhi->At(i);
-			const float& mass = muonMass->At(i);
-			const float& charge = muonCharge->At(i);
-			const float& dxy = muonDxy->At(i);
-			const float& dz = muonDz->At(i);
-			const float& sip3d = muonSip3d->At(i);
-			const float& miniPFRelIsoAll = muonMiniPFRelIsoAll->At(i);
+			const float &pt = muonPt->At(i);
+			const float &eta = muonEta->At(i);
+			const float &phi = muonPhi->At(i);
+			const float &mass = muonMass->At(i);
+			const float &charge = muonCharge->At(i);
+			const float &dxy = muonDxy->At(i);
+			const float &dz = muonDz->At(i);
+			const float &sip3d = muonSip3d->At(i);
+			const float &miniPFRelIsoAll = muonMiniPFRelIsoAll->At(i);
 
-			const bool& isPFCand = muonIsPFCand->At(i);
+			const bool &isPFCand = muonIsPFCand->At(i);
 
-			const int& pdgId = muonPdgId->At(i);
+			const int &pdgId = muonPdgId->At(i);
 
 			if (pt > ptCut && abs(eta) < etaCut && dxy < dxyCut && dz < dzCut && sip3d < sip3dCut && miniPFRelIsoAll < isoCut && isPFCand) {
 				if (!isData) {
-					WeightCalculator* wc = new WeightCalculator;
-					const float& idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
-					const float& isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
-					const float& triggerSF = wc->Get2DWeight(pt, eta, muonTriggerSFHist);
+					WeightCalculator *wc = new WeightCalculator;
+					const float &idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
+					const float &isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
+					const float &triggerSF = wc->Get2DWeight(pt, eta, muonTriggerSFHist);
 					ScaleFactor.push_back(idSF * isolationSF * triggerSF);
+
+					if(!doSystematics) {
+						const float &idSFUncertainty = wc->Get2DWeightErr(pt, eta, muonIdSFHist);
+						const float &isolationSFUncertainty = wc->Get2DWeightErr(pt, eta, muonIsolationSFHist);
+						const float &triggerSFUncertainty = wc->Get2DWeightErr(pt, eta, muonTriggerSFHist);
+						ScaleFactorIdUp.push_back(  (idSF + idSFUncertainty) * isolationSF * triggerSF);
+						ScaleFactorIdDown.push_back((idSF - idSFUncertainty) * isolationSF * triggerSF);
+						ScaleFactorIsolationUp.push_back(  idSF * (isolationSF + isolationSFUncertainty) * triggerSF);
+						ScaleFactorIsolationDown.push_back(idSF * (isolationSF - isolationSFUncertainty) * triggerSF);
+						ScaleFactorTriggerUp.push_back(  idSF * isolationSF * (triggerSF + triggerSFUncertainty));
+						ScaleFactorTriggerDown.push_back(idSF * isolationSF * (triggerSF - triggerSFUncertainty));
+					}
 					delete wc;
 				}
 
 				Pt.push_back(pt); Eta.push_back(eta); Phi.push_back(phi); Mass.push_back(mass); Charge.push_back(charge); MiniPFRelIsoAll.push_back(miniPFRelIsoAll); PdgId.push_back(pdgId);
 				muonCounter++;
 
-				const bool& looseId = muonLooseId->At(i);
-				const bool& mediumId = muonMediumId->At(i);
-				const bool& tightId = muonTightId->At(i);
+				const bool &looseId = muonLooseId->At(i);
+				const bool &mediumId = muonMediumId->At(i);
+				const bool &tightId = muonTightId->At(i);
 				if (tightId) { CutBased.push_back(4); TightId.push_back(true); MediumId.push_back(true); LooseId.push_back(true);}
 				else if (mediumId) { CutBased.push_back(3); TightId.push_back(false); MediumId.push_back(true); LooseId.push_back(true);}
 				else if (looseId) { CutBased.push_back(2); TightId.push_back(false); MediumId.push_back(false); LooseId.push_back(true);}
@@ -171,21 +193,29 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			}
 		}
 		for (unsigned int i = 0; i < nElectron; i++) {
-			const float& pt = electronPt->At(i);
-			const float& eta = electronEta->At(i);
-			const float& phi = electronPhi->At(i);
-			const float& mass = electronMass->At(i);
-			const float& charge = muonCharge->At(i);
-			const float& miniPFRelIsoAll = electronMiniPFRelIsoAll->At(i);
+			const float &pt = electronPt->At(i);
+			const float &eta = electronEta->At(i);
+			const float &phi = electronPhi->At(i);
+			const float &mass = electronMass->At(i);
+			const float &charge = muonCharge->At(i);
+			const float &miniPFRelIsoAll = electronMiniPFRelIsoAll->At(i);
 
-			const int & pdgId = electronPdgId->At(i);
+			const int  &pdgId = electronPdgId->At(i);
 
 			if (pt > ptCut && abs(eta) < etaCut && miniPFRelIsoAll < isoCut) {
 				if (!isData) {
-					WeightCalculator* wc = new WeightCalculator;
-					const float& GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
-					const float& MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
+					WeightCalculator *wc = new WeightCalculator;
+					const float &GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
+					const float &MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
 					ScaleFactor.push_back(GSFSF * MVASF);
+					if(!doSystematics) {
+						const float &GSFSFUncertainty = wc->Get2DWeightErr(pt, eta, electronGSFSFHist);
+						const float &MVASFUncertainty = wc->Get2DWeightErr(pt, eta, electronMVASFHist);
+						ScaleFactorGSFUp.push_back(  (GSFSF + GSFSFUncertainty) * MVASF);
+						ScaleFactorGSFDown.push_back((GSFSF - GSFSFUncertainty) * MVASF);
+						ScaleFactorMVAUp.push_back(  GSFSF * (MVASF + MVASFUncertainty));
+						ScaleFactorMVADown.push_back(GSFSF * (MVASF - MVASFUncertainty));
+					}
 					delete wc;
 				}
 
@@ -255,7 +285,7 @@ void LeptonProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	}
 }
 
-void LeptonProducer::EndJob(TFile* file) {
+void LeptonProducer::EndJob(TFile *file) {
 	muonIdSFFile->Close();
 	muonIsolationSFFile->Close();
 	muonTriggerSFFile->Close();

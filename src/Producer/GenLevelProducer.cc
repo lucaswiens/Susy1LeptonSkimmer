@@ -1,6 +1,6 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/GenLevelProducer.h>
 
-GenLevelProducer::GenLevelProducer(const int& era, TTreeReader& reader):
+GenLevelProducer::GenLevelProducer(const int &era, TTreeReader &reader):
 	BaseProducer(&reader),
 	era(era)
 	{}
@@ -12,9 +12,10 @@ float GenLevelProducer::DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtE
 	return dPhi;
 }
 
-void GenLevelProducer::BeginJob(TTree* tree, bool &isData) {
+void GenLevelProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	//Set data bool
 	this->isData = isData;
+	this->doSystematics = doSystematics;
 
 	//https://indico.cern.ch/event/592621/contributions/2398559/attachments/1383909/2105089/16-12-05_ana_manuelf_isr.pdf
 	ISRweights_Mar17       = {{0, 1}, {1, 0.920}, {2, 0.821}, {3, 0.715}, {4, 0.662}, {5, 0.561}, {6, 0.511}};
@@ -65,13 +66,9 @@ void GenLevelProducer::BeginJob(TTree* tree, bool &isData) {
 	tree->Branch("nISRWeight_ICHEP16", &nISRWeight_ICHEP16);
 	tree->Branch("nISRWeightUp_ICHEP16", &nISRWeightUp_ICHEP16);
 	tree->Branch("nISRWeightDown_ICHEP16", &nISRWeightDown_ICHEP16);
-
-
-	//Set TTreeReader for genpart and trigger obj from BaseProducer
-	SetCollection(this->isData);
 }
 
-void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
+void GenLevelProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	GenDeltaPhiLepWSum.clear();
 	GenDeltaPhiLepWDirect.clear();
@@ -105,12 +102,12 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	std::vector<int> idxDaughter;
 	NGenPart = *nGenPart->Get();
 	for (int i = 0; i < NGenPart; i++){
-		const int& pdgId = genPartPdgId->At(i);
-		const int& status = genPartStatus->At(i);
-		const int& statusFlag = genPartStatusFlag->At(i);
-		const int& idxMother = genPartIdxMother->At(i);
+		const int &pdgId = genPartPdgId->At(i);
+		const int &status = genPartStatus->At(i);
+		const int &statusFlag = genPartStatusFlag->At(i);
+		const int &idxMother = genPartIdxMother->At(i);
 
-		const float& leptonPt = genPartPt->At(i);
+		const float &leptonPt = genPartPt->At(i);
 		if (leptonPt > maxLeptonPt) {maxLeptonPt = leptonPt;}
 
 		if (idxMother >= 0) { //store daughter indices for nISR
@@ -127,20 +124,20 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 				idxTauLepton.push_back(i);
 			} else {
 				NGenLepton++;
-				//const int& motherStatus = genPartStatus->At(idxMother);
-				const int& motherId = genPartPdgId->At(idxMother);
-				const int& idxGrandMother = genPartIdxMother->At(idxMother);
+				//const int &motherStatus = genPartStatus->At(idxMother);
+				const int &motherId = genPartPdgId->At(idxMother);
+				const int &idxGrandMother = genPartIdxMother->At(idxMother);
 				GenLepMotherId.push_back(idxMother);
 				if(idxGrandMother > 0){
-					const int& grandMotherId = genPartPdgId->At(idxGrandMother);
+					const int &grandMotherId = genPartPdgId->At(idxGrandMother);
 					GenLepGrandMotherId.push_back(grandMotherId);
 				}
 
 				if (abs(motherId) == 24 && status == 23) { // genLep is outgoing and has W as mother
-					const float& motherPt = genPartPt->At(idxMother);
-					const float& motherPhi = genPartPhi->At(idxMother);
-					const float& motherEta = genPartEta->At(idxMother);
-					const float& motherMass = genPartMass->At(idxMother);
+					const float &motherPt = genPartPt->At(idxMother);
+					const float &motherPhi = genPartPhi->At(idxMother);
+					const float &motherEta = genPartEta->At(idxMother);
+					const float &motherMass = genPartMass->At(idxMother);
 
 					ROOT::Math::PtEtaPhiMVector motherP4(motherPt, motherEta, motherPhi, motherMass);
 					product->genWBosonPt.push_back(motherPt);
@@ -151,10 +148,10 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 
 					if(idxGrandMother > 0 && abs(GenLepGrandMotherId.back()) == 6){
 						//Used for sytematic variations, store in product for now
-						const float& grandMotherPt = genPartPt->At(idxGrandMother);
-						const float& grandMotherPhi = genPartPhi->At(idxGrandMother);
-						const float& grandMotherEta = genPartEta->At(idxGrandMother);
-						const float& grandMotherMass = genPartMass->At(idxGrandMother);
+						const float &grandMotherPt = genPartPt->At(idxGrandMother);
+						const float &grandMotherPhi = genPartPhi->At(idxGrandMother);
+						const float &grandMotherEta = genPartEta->At(idxGrandMother);
+						const float &grandMotherMass = genPartMass->At(idxGrandMother);
 						product->genTopPt.push_back(grandMotherPt);
 						product->genTopEta.push_back(grandMotherEta);
 						product->genTopPhi.push_back(grandMotherPhi);
@@ -162,19 +159,19 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 					}
 
 					for (int j = i+1; j < NGenPart; j++){
-						const int& idxNeutrinoMother = genPartIdxMother->At(j);
-						const int& statusNeutrino = genPartStatus->At(j);
+						const int &idxNeutrinoMother = genPartIdxMother->At(j);
+						const int &statusNeutrino = genPartStatus->At(j);
 						if (idxNeutrinoMother == idxMother && statusNeutrino == 23) {
 							NGenMatchedW++;
 							//leptonPt already read
-							const float& leptonPhi = genPartPhi->At(i);
-							const float& leptonEta = genPartEta->At(i);
-							const float& leptonMass = genPartMass->At(i);
+							const float &leptonPhi = genPartPhi->At(i);
+							const float &leptonEta = genPartEta->At(i);
+							const float &leptonMass = genPartMass->At(i);
 
-							const float& neutrinoPt = genPartPt->At(j);
-							const float& neutrinoPhi = genPartPhi->At(j);
-							const float& neutrinoEta = genPartEta->At(j);
-							const float& neutrinoMass = genPartMass->At(j);
+							const float &neutrinoPt = genPartPt->At(j);
+							const float &neutrinoPhi = genPartPhi->At(j);
+							const float &neutrinoEta = genPartEta->At(j);
+							const float &neutrinoMass = genPartMass->At(j);
 
 							leptonP4 = ROOT::Math::PtEtaPhiMVector(leptonPt, leptonEta, leptonPhi, leptonMass);
 							neutrinoP4 = ROOT::Math::PtEtaPhiMVector(neutrinoPt, neutrinoEta, neutrinoPhi, neutrinoMass);
@@ -198,11 +195,11 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			isHadTauEvent = NGenTau > NGenLeptonFromTau;
 			if (isHadTauEvent) { LeptonDecayChannelFlag =1;}
 			for (int idx : idxTauLepton) {
-				const float& pt = genPartPt->At(idx);
-				//const float& phi = genPartPhi->At(idx);
-				const float& eta = genPartEta->At(idx);
-				//const float& mass = genPartMass->At(idx);
-				const float& pdgId = genPartPdgId->At(idx);
+				const float &pt = genPartPt->At(idx);
+				//const float &phi = genPartPhi->At(idx);
+				const float &eta = genPartEta->At(idx);
+				//const float &mass = genPartMass->At(idx);
+				const float &pdgId = genPartPdgId->At(idx);
 
 				if (maxLeptonPt >= 25 && pt < 10) { LeptonsInAcceptance = false;}
 				if (maxLeptonPt < 25 && pt < 5) { LeptonsInAcceptance = false;}
@@ -227,16 +224,16 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 			if (matched) {
 				break;
 			} else {
-				const int& pdgId = genPartPdgId->At(imc);
-				const int& status = genPartStatus->At(imc);
+				const int &pdgId = genPartPdgId->At(imc);
+				const int &status = genPartStatus->At(imc);
 				if (status !=23 || abs(pdgId) > 5) continue;
-				const int& idxMother = genPartIdxMother->At(imc);
+				const int &idxMother = genPartIdxMother->At(imc);
 				int motherId = genPartPdgId->At(idxMother);
 				if (!(motherId == 6 || motherId == 23 || motherId == 24 || motherId == 25 || motherId>1e6)) continue;
 				//check against daughter in case of hard initial splitting
 				for (unsigned int idau = 0; idau < nDaughters; idau++) {
-					const float& genPhi = genPartPhi->At(idxDaughter.at(idau));
-					const float& genEta = genPartEta->At(idxDaughter.at(idau));
+					const float &genPhi = genPartPhi->At(idxDaughter.at(idau));
+					const float &genEta = genPartEta->At(idxDaughter.at(idau));
 					float dR = DeltaR(product->jetEta.at(ijet), product->jetPhi.at(ijet), genEta, genPhi);
 					if (dR < 0.3 ) {
 						matched = true;
@@ -270,5 +267,5 @@ void GenLevelProducer::Produce(CutFlow& cutflow, Susy1LeptonProduct *product) {
 	cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
 }
 
-void GenLevelProducer::EndJob(TFile* file) {
+void GenLevelProducer::EndJob(TFile *file) {
 }

@@ -61,15 +61,15 @@ void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPe
 
 	for (unsigned int i = 0; i < outputTrees.size(); i++) {
 		producers.push_back({
-			//std::shared_ptr<TriggerProducer>(new TriggerProducer(era, reader)),
-			//std::shared_ptr<METFilterProducer>(new METFilterProducer(era, reader)),
-			//std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
+			std::shared_ptr<TriggerProducer>(new TriggerProducer(era, reader)),
+			std::shared_ptr<METFilterProducer>(new METFilterProducer(era, reader)),
+			std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
 			std::shared_ptr<JetProducer>(new JetProducer(era, 20, 2.4, 0.4, runPeriod, reader)),
-			//std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(reader)),
+			std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(reader)),
 		});
 		if (!isData) {
-			//producers.at(i).push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era, reader))),
-			//producers.at(i).push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(era, reader)));
+			producers.at(i).push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era, reader))),
+			producers.at(i).push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(era, reader)));
 		}
 
 		CutFlow cutflow;
@@ -94,9 +94,9 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 
 	//Progress bar at 0%
 	int processed = 0;
-	ProgressBar(0., 0.);
+	ProgressBar(0, 0);
 	int stepSize;
-	if (nMaxEvents > 0) { stepSize = (int)nMaxEvents/100;}
+	if (nMaxEvents > 0) { stepSize = std::max<int>(1, (int)nMaxEvents/100);}
 	else {stepSize = 10000;}
 	int nEvents = eventTree->GetEntries();
 

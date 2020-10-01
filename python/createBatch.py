@@ -118,6 +118,7 @@ if __name__=="__main__":
 	parser = argparse.ArgumentParser(description="Runs a NAF batch system for nanoAOD", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-i", "--input-file", required=True, help="Path to the file containing a list of samples.")
 	parser.add_argument("-o", "--output", help="Path to the output directory", default = cmsswBase + "/" "Batch/" + date)
+	parser.add_argument("--do-systematics", help="Perform systematic variations", default = "False") #vs. localSkim for faster skimming
 	parser.add_argument("-e", "--executable", help="Name of the executable", default = "produceSkim") #vs. localSkim for faster skimming
 
 	args = parser.parse_args()
@@ -164,7 +165,7 @@ if __name__=="__main__":
 				submitFileContent = submitFileContent.replace("@LOGS", logDirectory)
 				submitFileContent = submitFileContent.replace("@X509", X509)
 				xSec = getXSec(filename)
-				submitFileContent = submitFileContent.replace("@ARGS", "root://cms-xrd-global.cern.ch/" + filename + " " + str(isData) + " " + str(year) + " " + str(xSec)+ " " + str(sampleName) + " " + str(i) + " " + str(runPeriod) + " " + cmsswBase + "/src")
+				submitFileContent = submitFileContent.replace("@ARGS", "root://cms-xrd-global.cern.ch/" + filename + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(xSec)+ " " + str(sampleName) + " " + str(i) + " " + str(runPeriod) + " " + cmsswBase + "/src")
 
 
 				submitFile = open(args.output + "/condor/" + sampleName + str(i) + ".submit", "w")

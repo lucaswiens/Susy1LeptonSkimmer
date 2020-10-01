@@ -5,7 +5,7 @@ source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
 
 module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
-cd $8 #For now this is hardcoded
+cd $9
 export SCRAM_ARCH=slc6_amd64_gcc700
 eval `scramv1 runtime -sh` #cmsenv
 

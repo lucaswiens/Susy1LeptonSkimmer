@@ -77,7 +77,7 @@ float JetProducer::SmearEnergy(const float &pt, const float &eta, const float &p
 		dR = std::sqrt(std::pow(phi - genPhi, 2) + std::pow(eta - genEta, 2));
 
 		//Check if jet and gen jet are matched
-		if (dR < coneSize/2. and abs(pt - genPt) < 3. * reso * pt) {
+		if (dR < coneSize/2. && abs(pt - genPt) < 3. * reso * pt) {
 			genJet = ROOT::Math::PtEtaPhiMVector(genPt, genEta, genPhi, genMass);
 			isMatched = true;
 			break;
@@ -448,7 +448,6 @@ void JetProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	metPy = metpt * std::sin(metphi);
 
 	for (unsigned int i = 0; i < nJet; i++) {
-		//do jet correction, smearing etc.
 		const float &pt = jetPt->At(i);
 		const float &phi = jetPhi->At(i);
 		const float &eta = jetEta->At(i);

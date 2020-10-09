@@ -90,18 +90,22 @@ void LeptonProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	tree->Branch("LeptonMass", &Mass);
 	tree->Branch("LeptonMiniPFRelIsoAll", &MiniPFRelIsoAll);
 	if (!isData) {
-		tree->Branch("LeptonScaleFactor", &ScaleFactor);
+		tree->Branch("LeptonSFId", &ScaleFactorId);
+		tree->Branch("LeptonSFIsolation", &ScaleFactorIsolation);
+		tree->Branch("LeptonSFTrigger", &ScaleFactorTrigger);
+		tree->Branch("LeptonSFGSF", &ScaleFactorGSF);
+		tree->Branch("LeptonSFMVA", &ScaleFactorMVA);
 		if (!doSystematics) {
-		tree->Branch("LeptonSFIdUp", &ScaleFactorIdUp);
-		tree->Branch("LeptonSFIdDown", &ScaleFactorIdDown);
-		tree->Branch("LeptonSFIsolationUp", &ScaleFactorIsolationUp);
-		tree->Branch("LeptonSFIsolationDown", &ScaleFactorIsolationDown);
-		tree->Branch("LeptonSFTriggerUp", &ScaleFactorTriggerUp);
-		tree->Branch("LeptonSFTriggerDown", &ScaleFactorTriggerDown);
-		tree->Branch("LeptonSFGSFUp", &ScaleFactorGSFUp);
-		tree->Branch("LeptonSFGSFDown", &ScaleFactorGSFDown);
-		tree->Branch("LeptonSFMVAUp", &ScaleFactorMVAUp);
-		tree->Branch("LeptonSFMVADown", &ScaleFactorMVADown);
+			tree->Branch("LeptonSFIdUp", &ScaleFactorIdUp);
+			tree->Branch("LeptonSFIdDown", &ScaleFactorIdDown);
+			tree->Branch("LeptonSFIsolationUp", &ScaleFactorIsolationUp);
+			tree->Branch("LeptonSFIsolationDown", &ScaleFactorIsolationDown);
+			tree->Branch("LeptonSFTriggerUp", &ScaleFactorTriggerUp);
+			tree->Branch("LeptonSFTriggerDown", &ScaleFactorTriggerDown);
+			tree->Branch("LeptonSFGSFUp", &ScaleFactorGSFUp);
+			tree->Branch("LeptonSFGSFDown", &ScaleFactorGSFDown);
+			tree->Branch("LeptonSFMVAUp", &ScaleFactorMVAUp);
+			tree->Branch("LeptonSFMVADown", &ScaleFactorMVADown);
 		}
 	}
 
@@ -121,8 +125,22 @@ void LeptonProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	Phi.clear();
 	Mass.clear();
 	MiniPFRelIsoAll.clear();
-	ScaleFactor.clear();
 	dileptonMass.clear();
+	ScaleFactorId.clear();
+	ScaleFactorTrigger.clear();
+	ScaleFactorIsolation.clear();
+	ScaleFactorGSF.clear();
+	ScaleFactorMVA.clear();
+	ScaleFactorIdUp.clear();
+	ScaleFactorTriggerUp.clear();
+	ScaleFactorIsolationUp.clear();
+	ScaleFactorGSFUp.clear();
+	ScaleFactorMVAUp.clear();
+	ScaleFactorIdDown.clear();
+	ScaleFactorIsolationDown.clear();
+	ScaleFactorTriggerDown.clear();
+	ScaleFactorGSFDown.clear();
+	ScaleFactorMVADown.clear();
 
 	LooseId.clear();
 	MediumId.clear();
@@ -164,18 +182,26 @@ void LeptonProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 					const float &idSF = wc->Get2DWeight(pt, eta, muonIdSFHist);
 					const float &isolationSF = wc->Get2DWeight(pt, eta, muonIsolationSFHist);
 					const float &triggerSF = wc->Get2DWeight(pt, eta, muonTriggerSFHist);
-					ScaleFactor.push_back(idSF * isolationSF * triggerSF);
+					ScaleFactorId.push_back(idSF);
+					ScaleFactorIsolation.push_back(isolationSF);
+					ScaleFactorTrigger.push_back(triggerSF);
+					ScaleFactorGSF.push_back(1);
+					ScaleFactorMVA.push_back(1);
 
 					if(!doSystematics) {
 						const float &idSFUncertainty = wc->Get2DWeightErr(pt, eta, muonIdSFHist);
 						const float &isolationSFUncertainty = wc->Get2DWeightErr(pt, eta, muonIsolationSFHist);
 						const float &triggerSFUncertainty = wc->Get2DWeightErr(pt, eta, muonTriggerSFHist);
-						ScaleFactorIdUp.push_back(  (idSF + idSFUncertainty) * isolationSF * triggerSF);
-						ScaleFactorIdDown.push_back((idSF - idSFUncertainty) * isolationSF * triggerSF);
-						ScaleFactorIsolationUp.push_back(  idSF * (isolationSF + isolationSFUncertainty) * triggerSF);
-						ScaleFactorIsolationDown.push_back(idSF * (isolationSF - isolationSFUncertainty) * triggerSF);
-						ScaleFactorTriggerUp.push_back(  idSF * isolationSF * (triggerSF + triggerSFUncertainty));
-						ScaleFactorTriggerDown.push_back(idSF * isolationSF * (triggerSF - triggerSFUncertainty));
+						ScaleFactorIdUp.push_back(  idSF + idSFUncertainty);
+						ScaleFactorIdDown.push_back(idSF - idSFUncertainty);
+						ScaleFactorIsolationUp.push_back(  isolationSF + isolationSFUncertainty);
+						ScaleFactorIsolationDown.push_back(isolationSF - isolationSFUncertainty);
+						ScaleFactorTriggerUp.push_back(  triggerSF + triggerSFUncertainty);
+						ScaleFactorTriggerDown.push_back(triggerSF - triggerSFUncertainty);
+						ScaleFactorGSFUp.push_back(1);
+						ScaleFactorGSFDown.push_back(1);
+						ScaleFactorMVAUp.push_back(1);
+						ScaleFactorMVADown.push_back(1);
 					}
 					delete wc;
 				}
@@ -207,14 +233,24 @@ void LeptonProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 					WeightCalculator *wc = new WeightCalculator;
 					const float &GSFSF = wc->Get2DWeight(pt, eta, electronGSFSFHist);
 					const float &MVASF = wc->Get2DWeight(pt, eta, electronMVASFHist);
-					ScaleFactor.push_back(GSFSF * MVASF);
+					ScaleFactorId.push_back(1);
+					ScaleFactorIsolation.push_back(1);
+					ScaleFactorTrigger.push_back(1);
+					ScaleFactorGSF.push_back(GSFSF);
+					ScaleFactorMVA.push_back(MVASF);
 					if(!doSystematics) {
 						const float &GSFSFUncertainty = wc->Get2DWeightErr(pt, eta, electronGSFSFHist);
 						const float &MVASFUncertainty = wc->Get2DWeightErr(pt, eta, electronMVASFHist);
-						ScaleFactorGSFUp.push_back(  (GSFSF + GSFSFUncertainty) * MVASF);
-						ScaleFactorGSFDown.push_back((GSFSF - GSFSFUncertainty) * MVASF);
-						ScaleFactorMVAUp.push_back(  GSFSF * (MVASF + MVASFUncertainty));
-						ScaleFactorMVADown.push_back(GSFSF * (MVASF - MVASFUncertainty));
+						ScaleFactorIdUp.push_back(1);
+						ScaleFactorIdDown.push_back(1);
+						ScaleFactorIsolationUp.push_back(1);
+						ScaleFactorIsolationDown.push_back(1);
+						ScaleFactorTriggerUp.push_back(1);
+						ScaleFactorTriggerDown.push_back(1);
+						ScaleFactorGSFUp.push_back(  GSFSF + GSFSFUncertainty);
+						ScaleFactorGSFDown.push_back(GSFSF - GSFSFUncertainty);
+						ScaleFactorMVAUp.push_back(  MVASF + MVASFUncertainty);
+						ScaleFactorMVADown.push_back(MVASF - MVASFUncertainty);
 					}
 					delete wc;
 				}
@@ -241,6 +277,7 @@ void LeptonProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 		std::vector<int> idx(nLepton);
 		std::iota(idx.begin(), idx.end(), 0);
 		std::stable_sort(idx.begin(), idx.end(), [&](int i1, int i2) {return Pt[i1] > Pt[i2];});
+
 		SortByIndex<std::vector<float>>(Pt, idx, nLepton);
 		SortByIndex<std::vector<float>>(Eta, idx, nLepton);
 		SortByIndex<std::vector<float>>(Phi, idx, nLepton);
@@ -257,7 +294,23 @@ void LeptonProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 		SortByIndex<std::vector<unsigned int>>(CutBased, idx, nLepton);
 
 		if (!isData) {
-			SortByIndex<std::vector<float>>(ScaleFactor, idx, nLepton);
+			SortByIndex<std::vector<float>>(ScaleFactorId, idx, nLepton);
+			SortByIndex<std::vector<float>>(ScaleFactorTrigger, idx, nLepton);
+			SortByIndex<std::vector<float>>(ScaleFactorIsolation, idx, nLepton);
+			SortByIndex<std::vector<float>>(ScaleFactorGSF, idx, nLepton);
+			SortByIndex<std::vector<float>>(ScaleFactorMVA, idx, nLepton);
+			SortByIndex<std::vector<float>>(ScaleFactorIdUp, idx, nLepton);
+			if (!doSystematics) {
+				SortByIndex<std::vector<float>>(ScaleFactorTriggerUp, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorIsolationUp, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorGSFUp, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorMVAUp, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorIdDown, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorIsolationDown, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorTriggerDown, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorGSFDown, idx, nLepton);
+				SortByIndex<std::vector<float>>(ScaleFactorMVADown, idx, nLepton);
+			}
 		}
 
 		if (nLepton!=0) { //nLepton can be 0 since unselected leptons are not counted

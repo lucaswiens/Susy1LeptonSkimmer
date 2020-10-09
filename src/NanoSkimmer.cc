@@ -19,6 +19,26 @@ NanoSkimmer::NanoSkimmer(const std::string &inFile, const std::string &outFile, 
 	{
 		start = std::chrono::steady_clock::now();
 		std::cout << "Input file for analysis: " + inFile << std::endl;
+
+		file = new TFile(this->outFile.c_str(), "RECREATE");
+
+		if (doSystematics) { // create a tree for each systematic variation
+			for (std::string systematic : {"JEC", "JER"}) {
+				for (std::string shift : {"Up", "Down"}) {
+					TTree* tree = new TTree((systematic + shift).c_str(), (systematic + shift).c_str());
+					tree->SetDirectory(file);
+
+					outputTrees.push_back(tree);
+				}
+			}
+		} else { // create just the nominal tree
+			TTree *tree = new TTree("nominal", "nominal");
+			tree->SetDirectory(file);
+
+			outputTrees.push_back(tree);
+		}
+
+
 	}
 
 void NanoSkimmer::ProgressBar(const int &progress, const int &rate) {
@@ -43,22 +63,6 @@ void NanoSkimmer::ProgressBar(const int &progress, const int &rate) {
 }
 
 void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPeriod, TTreeReader &reader) {
-	file = TFile::Open(outFile.c_str(), "RECREATE");
-
-	if (doSystematics) { // create a tree for each systematic variation
-		for (std::string systematic : {"JEC", "JER"}) {
-			for (std::string shift : {"Up", "Down"}) {
-				TTree* tree = new TTree(("systematic" + systematic + shift).c_str(), ("systematic" + systematic + shift).c_str());
-				tree->SetAutoFlush(400000); // Flush tree to Disk to avoid memory leaks
-				outputTrees.push_back(tree);
-			}
-		}
-	} else { // create just the nominal tree
-		TTree *tree = new TTree("nominal", "nominal");
-		tree->SetAutoFlush(400000); // Flush tree to Disk to avoid memory leaks
-		outputTrees.push_back(tree);
-	}
-
 	for (unsigned int i = 0; i < outputTrees.size(); i++) {
 		producers.push_back({
 			std::shared_ptr<TriggerProducer>(new TriggerProducer(era, reader)),
@@ -79,7 +83,7 @@ void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPe
 		cutflow.weight = 1;
 		cutflows.push_back(cutflow);
 
-	//Begin jobs for all producers
+		//Begin jobs for all producers
 		for (std::shared_ptr<BaseProducer> producer: producers.at(i)) {
 			producer->BeginJob(outputTrees.at(i), isData, doSystematics);
 		}
@@ -112,17 +116,15 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 		for (unsigned int i = 0; i < outputTrees.size(); i++) {
 			for (unsigned int j = 0; j < producers.at(i).size(); j++) {
 				producers.at(i).at(j)->Produce(cutflows.at(i), &product);
-
 				//If the cutflow fails for one producer, reject the event
 				if (!cutflows.at(i).passed) { break;}
 			}
 
-			//Check individual for each channel, if event should be filled
+			//Check if event should be filled
 			if (cutflows.at(i).passed) {
 				outputTrees.at(i)->Fill();
 			}
 			cutflows.at(i).passed = true;
-
 		}
 
 		//progress bar
@@ -160,6 +162,7 @@ void NanoSkimmer::WriteOutput() {
 
 	file->Write(0, TObject::kOverwrite);
 	file->Close();
+	delete file;
 
 	end = std::chrono::steady_clock::now();
 	std::cout << "Finished event loop (in seconds): " << std::chrono::duration_cast<std::chrono::seconds>(end - start).count() << std::endl;

@@ -29,4 +29,6 @@ int main(int argc, char* argv[]) {
 	NanoSkimmer skimmer(fileName, outName, isData, doSystematics);
 	skimmer.EventLoop(xSec, era, runPeriod, nMaxEvents);
 	skimmer.WriteOutput();
+
+	return 0;
 }

@@ -5,8 +5,8 @@ arguments  = @ARGS
 universe       = vanilla
 request_memory = 1 GB
 
-output = @LOGS/mypayload_$(Cluster)_$(Process).out
-error  = @LOGS/mypayload_$(Cluster)_$(Process).error
-log    = @LOGS/mypayload_$(Cluster)_$(Process).log
+output = @LOGS/job$(Cluster)_$(Process).out
+error  = @LOGS/job$(Cluster)_$(Process).error
+log    = @LOGS/job$(Cluster)_$(Process).log
 
 queue 1

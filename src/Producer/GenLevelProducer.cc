@@ -127,7 +127,7 @@ void GenLevelProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 				//const int &motherStatus = genPartStatus->At(idxMother);
 				const int &motherId = genPartPdgId->At(idxMother);
 				const int &idxGrandMother = genPartIdxMother->At(idxMother);
-				GenLepMotherId.push_back(idxMother);
+				GenLepMotherId.push_back(motherId);
 				if(idxGrandMother > 0){
 					const int &grandMotherId = genPartPdgId->At(idxGrandMother);
 					GenLepGrandMotherId.push_back(grandMotherId);

@@ -9,10 +9,8 @@ cd $9
 export SCRAM_ARCH=slc6_amd64_gcc700
 eval `scramv1 runtime -sh` #cmsenv
 
-#export X509_USER_PROXY=$HOME/.globus/x509up
 export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
 
-#Split the input file name for xSec function
 INFILE=$1
 ISDATA=$2
 DOSYSTEMATICS=$3

@@ -1,7 +1,4 @@
 #!/bin/bash
-mkdir -p $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
-cd $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
-
 INFILE=$1
 ISDATA=$2
 DOSYSTEMATICS=$3
@@ -11,6 +8,9 @@ OUT=$6
 JOB=$7
 RUNPERIOD=$8
 NMAXEVENTS=$9
+
+mkdir -p $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
+cd $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 
 ##Do the skimming
 NanoSkim $INFILE $ISDATA $DOSYSTEMATICS $ERA $XSEC ${OUT}_${JOB}.root $RUNPERIOD $NMAXEVENTS

@@ -122,6 +122,8 @@ if __name__=="__main__":
 	parser.add_argument("-e", "--executable", help="Name of the executable", default = "produceSkim") #vs. localSkim for faster skimming
 
 	args = parser.parse_args()
+	#Make specific subdirectory depending on input file (expects input file to be path/to/input/inputFile.md)
+	args.output = args.output + "/" + args.input_file.split("/")[-1][:-3]
 
 	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/" + args.executable
 
@@ -179,4 +181,3 @@ if __name__=="__main__":
 	os.system("chmod +744 " + args.output + "/submitAllViaHTC")
 	print "submitAllViaHTC created in " + args.output + " to submit all jobs"
 	sampleFile.close()
-

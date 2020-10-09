@@ -23,13 +23,6 @@
 struct CutFlow {
 	TH1F *hist;
 	Float_t weight = 1.;
-
-	unsigned char nMinLepton = 1;
-	unsigned char nMinElectron = 0;
-	unsigned char nMinMuon = 0;
-	unsigned char nMinJet = 0;
-	unsigned char nMinFatjet = 0;
-
 	bool passed = true;
 };
 

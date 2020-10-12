@@ -1,4 +1,5 @@
 #!/bin/bash
+TARGETDIR=${PWD##*/}
 source /etc/profile
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
@@ -20,9 +21,12 @@ OUT=$6
 JOB=$7
 RUNPERIOD=$8
 
-cd $TMP
+cd /tmp
+xrdcp $INFILE inputFile.root
 #Do the skimming
-NanoSkim $INFILE $ISDATA $DOSYSTEMATICS $ERA $XSEC ${OUT}_${JOB}.root $RUNPERIOD
+#NanoSkim $INFILE $ISDATA $DOSYSTEMATICS $ERA $XSEC ${OUT}_${JOB}.root $RUNPERIOD
+NanoSkim inputFile.root $ISDATA $DOSYSTEMATICS $ERA $XSEC ${OUT}_${JOB}.root $RUNPERIOD
 
-mkdir -p $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT
-mv ${OUT}_${JOB}.root $CMSSW_BASE/Skimming/`date +"%Y_%m_%d"`/$OUT
+mkdir -p $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
+mv ${OUT}_${JOB}.root $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
+rm inputFile.root

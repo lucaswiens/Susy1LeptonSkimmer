@@ -244,6 +244,8 @@ void JetProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 		};
 	}
 
+	SetCorrector(runPeriod);
+
 	jetNumber = std::make_unique<TTreeReaderValue<unsigned int>>(*reader, "nJet");
 	jetPt = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_pt");
 	jetPhi = std::make_unique<TTreeReaderArray<float>>(*reader, "Jet_phi");
@@ -439,8 +441,6 @@ void JetProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 
 	nJet = *jetNumber->Get();
 	nFatJet = *fatJetNumber->Get();
-
-	SetCorrector(runPeriod);
 
 	const float &metpt = *metPt->Get();
 	const float &metphi = *metPhi->Get();
@@ -833,11 +833,10 @@ void JetProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	} else {
 		cutflow.passed = false;
 	}
-
-	delete jetCorrector;
 }
 
 void JetProducer::EndJob(TFile *file) {
+	delete jetCorrector;
 	delete bTagReader["deepcsv"];
 	delete bTagReader["deepflavour"];
 	if (doSystematics) {

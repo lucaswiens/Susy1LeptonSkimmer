@@ -1,3 +1,4 @@
+#!/cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_6_8/external/slc7_amd64_gcc700/bin/python
 import sys, os
 import argparse
 import subprocess
@@ -92,8 +93,8 @@ def getXSec(sample):
   elif sample.find("SMS-T1tttt_mGluino-2000_mLSP-100"         ) !=-1 : return 0.0004488	;
   elif sample.find("SingleMuon")!=-1  or sample.find("SingleElectron") !=-1 or sample.find("JetHT")  !=-1 or sample.find("MET") !=-1 or sample.find("MTHT") !=-1: return 1.
   else:
-	  print "Cross section not defined for this sample!!"
-	  return 0.
+	print "Cross section not defined for this sample!!"
+	return 0.
 
 def getOSVariable(Var):
 	try:
@@ -105,27 +106,19 @@ def getOSVariable(Var):
 
 if __name__=="__main__":
 	date = subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).replace("\n", "")
-
 	cmsswBase = getOSVariable("CMSSW_BASE")
-	workarea = "%s/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/condor/" % cmsswBase + date
-	condTEMP = "./scripts/condor.submit"
-	#X509 = "/tmp/x509up_u33974"
-	#X509 = "/afs/desy.de/user/w/wiens/.globus/x509up_u33974"
-	home = getOSVariable("HOME")
-	#X509 = home + "/.globus/x509up"
-	X509 = getOSVariable("X509_USER_PROXY")
 
 	parser = argparse.ArgumentParser(description="Runs a NAF batch system for nanoAOD", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-i", "--input-file", required=True, help="Path to the file containing a list of samples.")
 	parser.add_argument("-o", "--output", help="Path to the output directory", default = cmsswBase + "/" "Batch/" + date)
 	parser.add_argument("--do-systematics", help="Perform systematic variations", default = "False") #vs. localSkim for faster skimming
-	parser.add_argument("-e", "--executable", help="Name of the executable", default = "produceSkim") #vs. localSkim for faster skimming
 
 	args = parser.parse_args()
-	#Make specific subdirectory depending on input file (expects input file to be path/to/input/inputFile.md)
-	args.output = args.output + "/" + args.input_file.split("/")[-1][:-3]
 
-	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/" + args.executable
+	#Make specific subdirectory depending on input file (expects input file to be path/to/input/inputFile.md)
+	outputDirName = args.input_file.split("/")[-1][:-3]
+	args.output = args.output + "/" + outputDirName
+	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim"
 
 	if  os.path.exists(args.output):
 		keepDirectory = raw_input("Output directory already exists: " + str(args.output) + " Do you want to remove it [y/n]: ")
@@ -133,51 +126,45 @@ if __name__=="__main__":
 			shutil.rmtree(str(args.output))
 			os.makedirs(str(args.output))
 			os.makedirs(str(args.output) + "/samples")
-			os.makedirs(str(args.output) + "/condor")
 			os.makedirs(str(args.output) + "/logs")
+			os.makedirs(str(args.output) + "/error")
+			os.makedirs(str(args.output) + "/output")
 		elif ( "N" in keepDirectory or  "n" in keepDirectory or  "No" in keepDirectory or "no" in keepDirectory): print str(args.output) , "will be ovewritten by the job output -- take care"
 		else:
 			raise ValueError( "invalid input, answer with \"Yes\" or \"No\"")
 	else:
 		os.makedirs(str(args.output))
 		os.makedirs(str(args.output) + "/samples")
-		os.makedirs(str(args.output) + "/condor")
 		os.makedirs(str(args.output) + "/logs")
+		os.makedirs(str(args.output) + "/error")
+		os.makedirs(str(args.output) + "/output")
+
+
+	submitFileContent = open(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/condor.submit", "r").read()
+	submitFileContent = submitFileContent.replace("@EXECUTABLE", executable)
+	submitFileContent = submitFileContent.replace("@OUT", args.output)
+
+	submitFile = open(args.output + "/" + outputDirName + ".submit", "w")
+	submitFile.write(submitFileContent)
+	submitFile.close()
 
 	sampleFile = open(args.input_file, "r")
+	argumentFile = open(args.output + "/arguments.md", "w")
 	for sample in sampleFile:
 		sample = sample.strip()
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			fileList = findFileLocation(sample)
-			print(fileList)
 			isData, isSignal, year, runPeriod, isFastSim = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 
 			file = open(args.output + "/samples/" + sampleName + ".txt", "w+")
 			for filename in fileList:
 				file.write("root://cms-xrd-global.cern.ch/" + str(filename) + "\n")
+				argumentFile.write("root://cms-xrd-global.cern.ch/" + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + cmsswBase + "/src\n")
 			file.close()
-
-			i = 1
-			logDirectory = args.output + "/logs"
-			for filename in fileList:
-				os.system("cp " + condTEMP + " " + args.output + "/condor/" + sampleName + str(i) + ".submit")
-				submitFileContent = open(args.output + "/condor/" + sampleName + str(i) + ".submit").read()
-				submitFileContent = submitFileContent.replace("@EXECUTABLE", executable)
-				submitFileContent = submitFileContent.replace("@LOGS", logDirectory)
-				submitFileContent = submitFileContent.replace("@X509", X509)
-				xSec = getXSec(filename)
-				submitFileContent = submitFileContent.replace("@ARGS", "root://cms-xrd-global.cern.ch/" + filename + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(xSec)+ " " + str(sampleName) + " " + str(i) + " " + str(runPeriod) + " " + cmsswBase + "/src")
-
-
-				submitFile = open(args.output + "/condor/" + sampleName + str(i) + ".submit", "w")
-				submitFile.write(submitFileContent)
-				submitFile.close()
-
-				file = open(args.output + "/submitAllViaHTC", "a")
-				file.write("condor_submit " + "condor/" + sampleName + str(i) + ".submit\n")
-				file.close()
-				i += 1
-	os.system("chmod +744 " + args.output + "/submitAllViaHTC")
-	print "submitAllViaHTC created in " + args.output + " to submit all jobs"
 	sampleFile.close()
+	argumentFile.close()
+
+	print "Condor submission file created."
+	print "cd " + args.output
+	print "condor_submit " + outputDirName + ".submit"

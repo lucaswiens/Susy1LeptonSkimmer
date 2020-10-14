@@ -62,7 +62,7 @@ void NanoSkimmer::ProgressBar(const int &progress, const int &rate) {
 
 }
 
-void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPeriod, TTreeReader &reader) {
+void NanoSkimmer::Configure(const int &era, const char &runPeriod, TTreeReader &reader) {
 	for (unsigned int i = 0; i < outputTrees.size(); i++) {
 		producers.push_back({
 			std::shared_ptr<TriggerProducer>(new TriggerProducer(era, reader)),
@@ -90,7 +90,7 @@ void NanoSkimmer::Configure(const float &xSec, const int &era, const char &runPe
 	}
 }
 
-void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPeriod, const int &nMaxEvents) {
+void NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMaxEvents) {
 	//TTreeReader preperation
 	TFile *inputFile = TFile::Open(inFile.c_str(), "READ");
 	TTree *eventTree = (TTree*)inputFile->Get("Events");
@@ -104,7 +104,7 @@ void NanoSkimmer::EventLoop(const float &xSec, const int &era, const char &runPe
 	else {stepSize = 10000;}
 	int nEvents = eventTree->GetEntries();
 
-	Configure(xSec, era, runPeriod, reader);
+	Configure(era, runPeriod, reader);
 
 	while(reader.Next()) {
 		//Stop Events Loop after nMaxEvents

@@ -1,12 +1,12 @@
-#Template for the submit files created by createFileList.py
+#Template for the submit file created by createFileList.py alongside the arguments.md
 executable = @EXECUTABLE
-arguments  = @ARGS
+arguments  = $(inputFile) $(outputFile) $(isData) $(doSystematics) $(year) $(runPeriod) $(Process) $(cmsswBase)
 
 universe       = vanilla
 request_memory = 1 GB
 
-output = @LOGS/job$(Cluster)_$(Process).out
-error  = @LOGS/job$(Cluster)_$(Process).error
-log    = @LOGS/job$(Cluster)_$(Process).log
+output = @OUT/output/job$(Cluster)_$(Process).stdout
+error  = @OUT/error/job$(Cluster)_$(Process).stderr
+log    = @OUT/logs/job$(Cluster)_$(Process).log
 
-queue 1
+queue inputFile outputFile isData doSystematics year runPeriod cmsswBase from arguments.md

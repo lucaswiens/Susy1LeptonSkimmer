@@ -125,7 +125,6 @@ if __name__=="__main__":
 		if ( "y" in keepDirectory or "Y" in keepDirectory or "Yes" in keepDirectory or "yes" in keepDirectory):
 			shutil.rmtree(str(args.output))
 			os.makedirs(str(args.output))
-			os.makedirs(str(args.output) + "/samples")
 			os.makedirs(str(args.output) + "/logs")
 			os.makedirs(str(args.output) + "/error")
 			os.makedirs(str(args.output) + "/output")
@@ -134,7 +133,6 @@ if __name__=="__main__":
 			raise ValueError( "invalid input, answer with \"Yes\" or \"No\"")
 	else:
 		os.makedirs(str(args.output))
-		os.makedirs(str(args.output) + "/samples")
 		os.makedirs(str(args.output) + "/logs")
 		os.makedirs(str(args.output) + "/error")
 		os.makedirs(str(args.output) + "/output")
@@ -144,7 +142,7 @@ if __name__=="__main__":
 	submitFileContent = submitFileContent.replace("@EXECUTABLE", executable)
 	submitFileContent = submitFileContent.replace("@OUT", args.output)
 
-	submitFile = open(args.output + "/" + outputDirName + ".submit", "w")
+	submitFile = open(args.output + "/condor.submit", "w")
 	submitFile.write(submitFileContent)
 	submitFile.close()
 
@@ -157,14 +155,11 @@ if __name__=="__main__":
 			isData, isSignal, year, runPeriod, isFastSim = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 
-			file = open(args.output + "/samples/" + sampleName + ".txt", "w+")
 			for filename in fileList:
-				file.write("root://cms-xrd-global.cern.ch/" + str(filename) + "\n")
 				argumentFile.write("root://cms-xrd-global.cern.ch/" + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + cmsswBase + "/src\n")
-			file.close()
 	sampleFile.close()
 	argumentFile.close()
 
-	print "Condor submission file created."
+	print "Condor submission file created. Can be submitted via:"
 	print "cd " + args.output
-	print "condor_submit " + outputDirName + ".submit"
+	print "condor_submit condor.submit"

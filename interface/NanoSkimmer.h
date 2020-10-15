@@ -1,5 +1,6 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 
+#include <stdlib.h>
 #include <vector>
 #include <string>
 #include <chrono>
@@ -41,6 +42,6 @@ class NanoSkimmer{
 	public:
 		NanoSkimmer();
 		NanoSkimmer(const std::string &inFile, const std::string &outFile, const bool &isData, const bool &doSystematics);
-		void EventLoop(const int &era = 2016, const char &runPeriod = 'm', const int &nMaxEvents = -999);
+		int EventLoop(const int &era = 2016, const char &runPeriod = 'm', const int &nMaxEvents = -999);
 		void WriteOutput();
 };

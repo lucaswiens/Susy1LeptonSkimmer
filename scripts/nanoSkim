@@ -25,10 +25,7 @@ export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
 
 #Do the skimming
 cd /tmp
-xrdcp $INFILE inputFile.root
-NanoSkim inputFile.root ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD
-### NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD
+NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD
 
 mkdir -p $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
 mv ${OUT}_${JOB}.root $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
-rm inputFile.root

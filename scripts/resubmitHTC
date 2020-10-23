@@ -16,16 +16,17 @@ fi
 #Look for failed jobs and find the arguments of this job.
 #Create a new arguments file
 for arg in $(for out in $(
-	grep -r "return value" logs |
-	grep -v "return value 0" |
+	grep -rv '\[' error/ |
 	awk -F: '{printf $1 "\n"}' |
 	uniq |
 	sed "s@error@output@g" |
 	sed "s@stderr@stdout@g"
 	)
 	do
-		grep Processing $out |
-		awk '{printf $2 "\n"}'
+		if ! grep -q "Finished event loop" $out; then
+			grep Processing $out |
+			awk '{printf $2 "\n"}'
+		fi
 	done
 )
 do

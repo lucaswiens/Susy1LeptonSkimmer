@@ -27,14 +27,12 @@ NanoSkimmer::NanoSkimmer(const std::string &inFile, const std::string &outFile, 
 				for (std::string shift : {"Up", "Down"}) {
 					TTree* tree = new TTree((systematic + shift).c_str(), (systematic + shift).c_str());
 					tree->SetDirectory(file);
-
 					outputTrees.push_back(tree);
 				}
 			}
 		} else { // create just the nominal tree
 			TTree *tree = new TTree("nominal", "nominal");
 			tree->SetDirectory(file);
-
 			outputTrees.push_back(tree);
 		}
 

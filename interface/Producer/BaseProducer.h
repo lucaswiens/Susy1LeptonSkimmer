@@ -37,7 +37,9 @@ class BaseProducer {
 					{'C', "BCD"},
 					{'D', "BCD"},
 					{'E', "EF"},
-					{'F', "GH"}
+					{'F', "EF"},
+					{'G', "GH"},
+					{'H', "GH"}
 				}
 			},
 			{2017,	{

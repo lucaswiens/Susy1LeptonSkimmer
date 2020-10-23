@@ -12,4 +12,4 @@ mkdir -p $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 cd $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 
 ##Do the skimming
-NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $NMAXEVENTS
+echo NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $NMAXEVENTS

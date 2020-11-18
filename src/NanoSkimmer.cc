@@ -164,6 +164,11 @@ void NanoSkimmer::WriteOutput() {
 		}
 	}
 
+	for (CutFlow cutflow : cutflows) {
+		file->cd();
+		cutflow.hist->Write();
+	}
+
 	file->Write(0, TObject::kOverwrite);
 	file->Close();
 	delete file;

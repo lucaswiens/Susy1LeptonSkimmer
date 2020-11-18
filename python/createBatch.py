@@ -51,6 +51,8 @@ def getOSVariable(Var):
 if __name__=="__main__":
 	date = subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).replace("\n", "")
 	cmsswBase = getOSVariable("CMSSW_BASE")
+	#redirector = "root://cms-xrd-global.cern.ch/"
+	redirector = "root://xrootd-cms.infn.it/"
 
 	parser = argparse.ArgumentParser(description="Runs a NAF batch system for nanoAOD", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-i", "--input-file", required=True, help="Path to the file containing a list of samples.")
@@ -99,8 +101,11 @@ if __name__=="__main__":
 			isData, isSignal, year, runPeriod, isFastSim = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 
+			#file = open(args.output + "/samples/" + sampleName + ".txt", "w+")
 			for filename in fileList:
-				argumentFile.write("root://cms-xrd-global.cern.ch/" + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + cmsswBase + "/src\n")
+				#file.write(+ str(filename) + "\n")
+				argumentFile.write(redirector + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + cmsswBase + "/src\n")
+			#file.close()
 	sampleFile.close()
 	argumentFile.close()
 

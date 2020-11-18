@@ -146,6 +146,7 @@ void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	if (product->leptonPt != -999) {
 		std::string cutName("DeltaPhi Calculated!");
 		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
+		cutflow.passed = true;
 	} else {
 		cutflow.passed = false;
 	} // This should probably check if both the lepton producer and the jet producer were successful

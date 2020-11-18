@@ -63,7 +63,7 @@ void NanoSkimmer::ProgressBar(const int &progress, const int &rate) {
 void NanoSkimmer::Configure(const int &era, const char &runPeriod, TTreeReader &reader) {
 	for (unsigned int i = 0; i < outputTrees.size(); i++) {
 		producers.push_back({
-			std::shared_ptr<TriggerProducer>(new TriggerProducer(era, reader)),
+			std::shared_ptr<TriggerProducer>(new TriggerProducer(era, runPeriod, reader)),
 			std::shared_ptr<METFilterProducer>(new METFilterProducer(era, reader)),
 			std::shared_ptr<LeptonProducer>(new LeptonProducer(era, 10, 2.4, 0.5, 1, 4, 0.4, reader)),
 			std::shared_ptr<JetProducer>(new JetProducer(era, 20, 2.4, 0.4, runPeriod, reader)),
@@ -141,7 +141,7 @@ int NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMa
 		product.clear();// probably not needed
 	}
 
-	ProgressBar(100, 0);
+	ProgressBar(100, processed / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count());
 
 	//Print stats
 	for (TTree *tree : outputTrees) {

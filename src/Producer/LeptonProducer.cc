@@ -84,6 +84,7 @@ void LeptonProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	electronCutBased = std::make_unique<TTreeReaderArray<int>>(*reader, "Electron_cutBased");
 
 	//Set Branches of output tree
+	tree->Branch("nLepton", &nLepton);
 	tree->Branch("LeptonPt", &Pt);
 	tree->Branch("LeptonEta", &Eta);
 	tree->Branch("LeptonPhi", &Phi);

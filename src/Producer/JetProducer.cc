@@ -224,7 +224,7 @@ void JetProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) {
 	};
 
 	//BTag Scale Factor Files
-	std::string btagSFFilePath = cmsswBase + "/src/PhysicsTools/NanoAODTools/data/btagSF/";
+	std::string btagSFFilePath = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/btagSF/";
 	deepCSVTagSFFile = {
 		{2016, "DeepCSV_2016LegacySF_V1.csv"},
 		{2017, "DeepCSV_94XSF_V4_B_F.csv"},

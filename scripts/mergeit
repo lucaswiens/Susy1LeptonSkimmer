@@ -1,0 +1,42 @@
+#!/bin/bash
+MERGEDIR=${PWD##*/}
+DIRNUM=1
+MAXSIZE=2000000000
+
+for FILE in *; do
+	if [ `du -b -s "${FILE}" | cut -f 1` -gt ${MAXSIZE} ]; then
+		echo "${FILE} is too big for a single folder, skipping"
+		continue
+	fi
+	if [ ! -d "${MERGEDIR}_${DIRNUM}" ]; then
+		echo "creating directory ${MERGEDIR}_${DIRNUM}"
+		mkdir "${MERGEDIR}_${DIRNUM}"
+	fi
+	if [ `du -b -s "${MERGEDIR}_${DIRNUM}" | cut -f 1` -gt ${MAXSIZE} ]; then
+		echo "${MERGEDIR}_${DIRNUM} has reached ${MAXSIZE}"
+		let "DIRNUM += 1"
+		if [ ! -d "${MERGEDIR}_${DIRNUM}" ]; then
+			echo "creating directory ${MERGEDIR}_${DIRNUM}"
+			mkdir "${MERGEDIR}_${DIRNUM}"
+		fi
+		mv "${FILE}" "${MERGEDIR}_${DIRNUM}"
+	else
+		mv "${FILE}" "${MERGEDIR}_${DIRNUM}"
+	fi
+done
+
+for DIR in *; do
+	mkdir -p ../merged/${DIR}
+	cd ${DIR}
+	echo "Merging files in ${DIR}"
+	hadd ${PWD##*/}_merged.root *
+	echo "Moving merged file"
+	mv *_merged.root ../../merged/${DIR}
+	echo "Deleting unmerged files:"
+	ls *.root
+	echo ""
+	#rm *.root
+	cd ..
+	#echo rm -rf ${DIR}
+done
+

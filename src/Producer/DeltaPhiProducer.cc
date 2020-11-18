@@ -38,6 +38,7 @@ void DeltaPhiProducer::BeginJob(TTree *tree, bool &isData, bool &doSystematics) 
 
 	tree->Branch("IsoTrackMt2", &IsoTrackMt2);
 	tree->Branch("IsoTrackPt", &IsoTrackPt);
+	tree->Branch("IsoTrackPdgId", &IsoTrackPdgId);
 	tree->Branch("IsoTrackVeto", &IsoTrackVeto);
 	tree->Branch("IsoTrackHadronicDecay", &IsoTrackHadronicDecay);
 }
@@ -46,6 +47,7 @@ void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	//Initialize all variables as -999
 	IsoTrackMt2.clear();
 	IsoTrackPt.clear();
+	IsoTrackPdgId.clear();
 	IsoTrackVeto.clear();
 	IsoTrackHadronicDecay.clear();
 
@@ -108,35 +110,38 @@ void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 		nIsoTrack = *isoTrackNumber->Get();
 		float minDeltaR = -999;
 		for (unsigned int j = 0; j < nIsoTrack; j++) {
-			const float &isotrackpt = isoTrackPt->At(j);
-			const float &isotracketa = isoTrackEta->At(j);
-			const float &isotrackphi = isoTrackPhi->At(j);
-			//const float &isotrackmass = isoTrackMass->At(j);
 			const int &isotrackpdgid = isoTrackPdgId->At(j);
-			//const int &isotrackcharge = isoTrackCharge->At(j);
-			const int &isotrackcharge = (0 < isotrackpdgid) - (isotrackpdgid < 0);// this is only correct for leptons I think
-
-			if (isotrackcharge == product->leptonCharge) continue;
-
-			float deltaR = DeltaR(product->leptonEta, product->leptonPhi, isotracketa, isotrackphi);
-
-			if (minDeltaR > deltaR) continue;
-
-			ROOT::Math::PtEtaPhiMVector isotrackP4 = ROOT::Math::PtEtaPhiMVector(isotrackpt, isotracketa, isotrackphi, 0);
-
-			double a[3] = {leptonP4.M(), leptonP4.X(), leptonP4.Y()};
-			double b[3] = {isotrackP4.M(), isotrackP4.X(), isotrackP4.Y()};
-			double c[3] = {metP4.M(), metP4.X(), metP4.Y()};
-
-			mt2obj.set_momenta(a, b, c);
-			mt2obj.set_mn(0);
-
-			IsoTrackMt2.push_back(mt2obj.get_mt2());
-			IsoTrackPt.push_back(isotrackpt);
-
+			// The isotrack veto is used to reject dilepton events, thus only calculate variables if its a lepton
 			if (10 < abs(isotrackpdgid) && abs(isotrackpdgid) < 14) {
+				const float &isotrackpt = isoTrackPt->At(j);
+				const float &isotracketa = isoTrackEta->At(j);
+				const float &isotrackphi = isoTrackPhi->At(j);
+
+				const int &isotrackcharge = (0 < isotrackpdgid) - (isotrackpdgid < 0);
+
+				if (isotrackcharge == product->leptonCharge) continue;
+
+				float deltaR = DeltaR(product->leptonEta, product->leptonPhi, isotracketa, isotrackphi);
+
+				if (minDeltaR > deltaR) continue;
+
+				ROOT::Math::PtEtaPhiMVector isotrackP4 = ROOT::Math::PtEtaPhiMVector(isotrackpt, isotracketa, isotrackphi, 0);
+
+				double a[3] = {leptonP4.M(), leptonP4.X(), leptonP4.Y()};
+				double b[3] = {isotrackP4.M(), isotrackP4.X(), isotrackP4.Y()};
+				double c[3] = {metP4.M(), metP4.X(), metP4.Y()};
+
+				mt2obj.set_momenta(a, b, c);
+				mt2obj.set_mn(0);
+
+				IsoTrackMt2.push_back(mt2obj.get_mt2());
+				IsoTrackPt.push_back(isotrackpt);
+				IsoTrackPdgId.push_back(isotrackpdgid);
 				IsoTrackHadronicDecay.push_back(false); //leptonic
 			} else {
+				IsoTrackMt2.push_back(9999);
+				IsoTrackPt.push_back(-999);
+				IsoTrackPdgId.push_back(-999);
 				IsoTrackHadronicDecay.push_back(true); //hadronic track
 			}
 			if (IsoTrackMt2.back() <= 60) { IsoTrackVeto.push_back(true);}

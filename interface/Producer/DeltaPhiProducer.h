@@ -14,10 +14,11 @@ class DeltaPhiProducer : public BaseProducer {
 
 		//Vector for the output variables
 		float HT, LT, LP, deltaPhi, dPhi, wBosonMt;
-		int signalRegionCSV, signalRegionDF, IsoTrackPdgId;
+		int signalRegionCSV, signalRegionDF;
 		unsigned int nIsoTrack;
 		std::vector<float> IsoTrackMt2, IsoTrackPt;
 		std::vector<bool> IsoTrackVeto, IsoTrackHadronicDecay;
+		std::vector<int> IsoTrackPdgId;
 
 		std::unique_ptr<TTreeReaderValue<unsigned int>> isoTrackNumber;
 		std::unique_ptr<TTreeReaderArray<float>> isoTrackPt, isoTrackEta, isoTrackPhi, isoTrackMass, isoTrackIso, isoTrackDxy, isoTrackDz, isoTrackSip3d, isoTrackMiniPFRelIsoAll;

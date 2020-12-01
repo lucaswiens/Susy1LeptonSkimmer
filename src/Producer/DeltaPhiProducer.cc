@@ -48,8 +48,8 @@ void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	IsoTrackMt2.clear();
 	IsoTrackPt.clear();
 	IsoTrackPdgId.clear();
-	IsoTrackVeto.clear();
 	IsoTrackHadronicDecay.clear();
+	IsoTrackVeto = false;
 
 	HT = -999;
 	LT = -999;
@@ -108,7 +108,7 @@ void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 
 		heppy::Davismt2 mt2obj;
 		nIsoTrack = *isoTrackNumber->Get();
-		float minDeltaR = -999;
+		float minDeltaR = 999;
 		for (unsigned int j = 0; j < nIsoTrack; j++) {
 			const int &isotrackpdgid = isoTrackPdgId->At(j);
 			// The isotrack veto is used to reject dilepton events, thus only calculate variables if its a lepton
@@ -123,7 +123,7 @@ void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 
 				float deltaR = DeltaR(product->leptonEta, product->leptonPhi, isotracketa, isotrackphi);
 
-				if (minDeltaR > deltaR) continue;
+				if (deltaR < minDeltaR) continue;
 
 				ROOT::Math::PtEtaPhiMVector isotrackP4 = ROOT::Math::PtEtaPhiMVector(isotrackpt, isotracketa, isotrackphi, 0);
 
@@ -139,22 +139,21 @@ void DeltaPhiProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 				IsoTrackPdgId.push_back(isotrackpdgid);
 				IsoTrackHadronicDecay.push_back(false); //leptonic
 			} else {
-				IsoTrackMt2.push_back(9999);
+				IsoTrackMt2.push_back(999);
 				IsoTrackPt.push_back(-999);
 				IsoTrackPdgId.push_back(-999);
 				IsoTrackHadronicDecay.push_back(true); //hadronic track
 			}
-			if (IsoTrackMt2.back() <= 60) { IsoTrackVeto.push_back(true);}
+			if (IsoTrackMt2.back() <= 60) { IsoTrackVeto = true; break;}
 		}
 	}
 
 	if (product->leptonPt != -999) {
 		std::string cutName("DeltaPhi Calculated!");
 		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
-		cutflow.passed = true;
 	} else {
 		cutflow.passed = false;
-	} // This should probably check if both the lepton producer and the jet producer were successful
+	}
 }
 
 void DeltaPhiProducer::EndJob(TFile *file) {

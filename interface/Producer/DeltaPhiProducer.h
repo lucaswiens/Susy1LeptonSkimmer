@@ -16,8 +16,9 @@ class DeltaPhiProducer : public BaseProducer {
 		float HT, LT, LP, deltaPhi, dPhi, wBosonMt;
 		int signalRegionCSV, signalRegionDF;
 		unsigned int nIsoTrack;
+		bool IsoTrackVeto;
 		std::vector<float> IsoTrackMt2, IsoTrackPt;
-		std::vector<bool> IsoTrackVeto, IsoTrackHadronicDecay;
+		std::vector<bool> IsoTrackHadronicDecay;
 		std::vector<int> IsoTrackPdgId;
 
 		std::unique_ptr<TTreeReaderValue<unsigned int>> isoTrackNumber;

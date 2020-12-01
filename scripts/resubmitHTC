@@ -36,3 +36,10 @@ done
 #Create a new submit file using the new arguments file in the queue statement
 cp condor.submit re.submit
 sed -i "s@arguments\.md@${DEST}@g" re.submit
+
+mkdir error/error_${COUNT}
+mv error/*.stderr error/error_${COUNT}
+mkdir logs/logs_${COUNT}
+mv logs/*.log logs/logs_${COUNT}
+mkdir output/output_${COUNT}
+mv error/*.stdout output/output_${COUNT}

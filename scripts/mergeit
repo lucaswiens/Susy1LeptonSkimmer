@@ -1,7 +1,7 @@
 #!/bin/bash
 MERGEDIR=${PWD##*/}
 DIRNUM=1
-MAXSIZE=2000000000
+MAXSIZE=1000000000
 
 for FILE in *; do
 	if [ `du -b -s "${FILE}" | cut -f 1` -gt ${MAXSIZE} ]; then

@@ -3,7 +3,7 @@ executable = @EXECUTABLE
 arguments  = $(inputFile) $(outputFile) $(isData) $(doSystematics) $(year) $(runPeriod) $(Process) $(cmsswBase)
 
 universe       = vanilla
-request_memory = 1 GB
+request_memory = 500 MB
 
 output = @OUT/output/job$(Cluster)_$(Process).stdout
 error  = @OUT/error/job$(Cluster)_$(Process).stderr

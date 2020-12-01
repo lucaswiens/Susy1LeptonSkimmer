@@ -263,8 +263,7 @@ void GenLevelProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	nISRWeightDown = nISRWeightDown_Mar17;
 
 	product->nGenPart = NGenPart;
-	std::string cutName("GenLevelProducer");
-	cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
+	cutflow.hist->Fill("GenLevelProducer", cutflow.weight);
 }
 
 void GenLevelProducer::EndJob(TFile *file) {

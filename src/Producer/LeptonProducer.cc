@@ -332,8 +332,7 @@ void LeptonProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 		product->leptonPdgId = PdgId.at(0);
 		product->leptonCharge = Charge.at(0);
 
-		std::string cutName("isGoodLepton");
-		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
+		cutflow.hist->Fill("isGoodLepton", cutflow.weight);
 	} else {
 		cutflow.passed = false;
 	}

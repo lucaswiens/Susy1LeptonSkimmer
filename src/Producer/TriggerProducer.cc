@@ -116,8 +116,7 @@ void TriggerProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 
 	HLT_LepOr = HLT_EleOr || HLT_MuOr;
 
-	std::string cutName("Lepton Passed Trigger");
-	cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
+	cutflow.hist->Fill("Lepton Passed Trigger", cutflow.weight);
 }
 
 void TriggerProducer::EndJob(TFile *file) {

@@ -76,9 +76,10 @@ void NanoSkimmer::Configure(const int &era, const char &runPeriod, TTreeReader &
 
 		CutFlow cutflow;
 		cutflow.hist = new TH1F();
-		cutflow.hist->SetName("cutflow_" + *outputTrees.at(i)->GetName());
+		cutflow.hist->SetName(("cutflow_" + (std::string)outputTrees.at(i)->GetName()).c_str());
 		cutflow.hist->GetYaxis()->SetName("N");
 		cutflow.weight = 1;
+		cutflow.passed = true;
 		cutflows.push_back(cutflow);
 
 		//Begin jobs for all producers
@@ -108,6 +109,9 @@ int NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMa
 
 	Configure(era, runPeriod, reader);
 
+	for (CutFlow cutflow : cutflows) {
+		cutflow.hist->Fill("Generated Events", nEvents);
+	}
 	while(reader.Next()) {
 		//Stop Events Loop after nMaxEvents
 		if (nMaxEvents > 0 && processed >= nMaxEvents) { break;}
@@ -158,15 +162,12 @@ int NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMa
 
 void NanoSkimmer::WriteOutput() {
 	//End jobs for all producers
+	file->cd();
 	for (unsigned int i = 0; i < outputTrees.size(); i++) {
 		for (unsigned int j = 0; j < producers.at(i).size(); j++) {
 			producers.at(i).at(j)->EndJob(file);
 		}
-	}
-
-	for (CutFlow cutflow : cutflows) {
-		file->cd();
-		cutflow.hist->Write();
+		cutflows.at(i).hist->Write();
 	}
 
 	file->Write(0, TObject::kOverwrite);

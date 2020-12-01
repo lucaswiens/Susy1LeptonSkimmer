@@ -45,8 +45,7 @@ void METFilterProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	}
 
 	if (PassFilters) {
-		std::string cutName("Passes MET Filters");
-		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
+		cutflow.hist->Fill("Passes MET Filters", cutflow.weight);
 	} else {
 		cutflow.passed = false;
 	}

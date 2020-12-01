@@ -67,8 +67,7 @@ void PileUpWeightProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product
 		weightMinus = wc->GetWeight(nPV, pileupRatioMinus);
 	}
 
-	std::string cutName("PileUpWeight");
-	cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
+	cutflow.hist->Fill("PileUpWeight", cutflow.weight);
 }
 
 void PileUpWeightProducer::EndJob(TFile *file) {

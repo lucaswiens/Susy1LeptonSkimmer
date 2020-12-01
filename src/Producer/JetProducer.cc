@@ -828,8 +828,7 @@ void JetProducer::Produce(CutFlow &cutflow, Susy1LeptonProduct *product) {
 	product->jetMediumDFBTag = JetMediumDFBTag;
 
 	if (nJet!=0) {
-		std::string cutName("JetPt > 20, |JetEta| < 2.4");
-		cutflow.hist->Fill(cutName.c_str(), cutflow.weight);
+		cutflow.hist->Fill("Jets accepted", cutflow.weight);
 	} else {
 		cutflow.passed = false;
 	}

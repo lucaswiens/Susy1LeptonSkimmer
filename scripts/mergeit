@@ -26,15 +26,14 @@ for FILE in *; do
 done
 
 for DIR in *; do
-	mkdir -p ../merged/${DIR}
+	mkdir -p ../merged/${DIR::-2}
 	cd ${DIR}
 	echo "Merging files in ${DIR}"
 	hadd ${PWD##*/}_merged.root *
 	echo "Moving merged file"
-	mv *_merged.root ../../merged/${DIR}
+	mv *_merged.root ../../merged/${DIR::-2}
 	echo "Deleting unmerged files:"
 	ls *.root
-	echo ""
 	#rm *.root
 	cd ..
 	#echo rm -rf ${DIR}

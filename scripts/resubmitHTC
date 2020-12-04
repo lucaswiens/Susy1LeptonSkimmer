@@ -42,4 +42,4 @@ mv error/*.stderr error/error_${COUNT}
 mkdir logs/logs_${COUNT}
 mv logs/*.log logs/logs_${COUNT}
 mkdir output/output_${COUNT}
-mv error/*.stdout output/output_${COUNT}
+mv output/*.stdout output/output_${COUNT}

@@ -26,12 +26,12 @@ for FILE in *; do
 done
 
 for DIR in *; do
-	mkdir -p ../merged/${DIR::-2}
+	mkdir -p ../merged/$(echo ${DIR} | sed "s@NANOAOD_[1-100]*@NANOAOD@g")
 	cd ${DIR}
 	echo "Merging files in ${DIR}"
 	hadd ${PWD##*/}_merged.root *
 	echo "Moving merged file"
-	mv *_merged.root ../../merged/${DIR::-2}
+	mv *_merged.root ../../merged/$(echo ${DIR} | sed "s@NANOAOD_[1-100]*@NANOAOD@g")
 	echo "Deleting unmerged files:"
 	ls *.root
 	#rm *.root

@@ -22,7 +22,6 @@ class NanoSkimmer{
 		bool isData, doSystematics;
 		//Vector with wished producers
 		std::vector<std::vector<std::shared_ptr<BaseProducer>>> producers;
-		//std::vector<std::shared_ptr<BaseProducer>> producers;
 
 		int finalNumberOfEvents;
 

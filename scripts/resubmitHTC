@@ -16,19 +16,19 @@ fi
 #Look for failed jobs and find the arguments of this job.
 #Create a new arguments file
 for arg in $(for out in $(
-	grep -rv '\[' error/ |
-	awk -F: '{printf $1 "\n"}' |
-	uniq |
-	sed "s@error@output@g" |
-	sed "s@stderr@stdout@g"
+			grep -rv '\[' error/ |
+			awk -F: '{printf $1 "\n"}' |
+			uniq |
+			sed "s@error@output@g" |
+			sed "s@stderr@stdout@g"
+		)
+		do
+			if ! grep -q "Finished event loop" $out; then
+				grep Processing $out |
+				awk '{printf $2 "\n"}'
+			fi
+		done
 	)
-	do
-		if ! grep -q "Finished event loop" $out; then
-			grep Processing $out |
-			awk '{printf $2 "\n"}'
-		fi
-	done
-)
 do
 	grep $arg arguments.md >> $DEST
 done
@@ -37,9 +37,8 @@ done
 cp condor.submit re.submit
 sed -i "s@arguments\.md@${DEST}@g" re.submit
 
-mkdir error/error_${COUNT}
-mv error/*.stderr error/error_${COUNT}
-mkdir logs/logs_${COUNT}
-mv logs/*.log logs/logs_${COUNT}
-mkdir output/output_${COUNT}
-mv output/*.stdout output/output_${COUNT}
+#Create backup of current logfiles
+mv error error$((COUNT-1))
+mv output output$((COUNT-1))
+mv logs logs$((COUNT-1))
+mkdir error output logs

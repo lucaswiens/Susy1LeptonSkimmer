@@ -101,11 +101,8 @@ if __name__=="__main__":
 			isData, isSignal, year, runPeriod, isFastSim = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 
-			#file = open(args.output + "/samples/" + sampleName + ".txt", "w+")
 			for filename in fileList:
-				#file.write(+ str(filename) + "\n")
 				argumentFile.write(redirector + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + cmsswBase + "/src\n")
-			#file.close()
 	sampleFile.close()
 	argumentFile.close()
 

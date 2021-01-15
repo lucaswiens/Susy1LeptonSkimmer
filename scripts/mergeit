@@ -32,10 +32,10 @@ for DIR in *; do
 	hadd ${PWD##*/}_merged.root *
 	echo "Moving merged file"
 	mv *_merged.root ../../merged/$(echo ${DIR} | sed "s@NANOAOD_[1-100]*@NANOAOD@g")
+	cd ..
 	echo "Deleting unmerged files:"
 	ls *.root
 	#rm *.root
-	cd ..
 	#echo rm -rf ${DIR}
 done
 

@@ -89,13 +89,13 @@ void NanoSkimmer::Configure(const int &era, const char &runPeriod, TTreeReader &
 	}
 }
 
-int NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMaxEvents) {
+void NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMaxEvents) {
 	//TTreeReader preperation
 	TFile *inputFile = TFile::Open(inFile.c_str(), "READ");
 	if (inputFile == nullptr) {
 		std::cerr << "Input File " << inFile << " is a zombie." << std::endl;
-		return -1;
 	}
+
 	TTree *eventTree = (TTree*)inputFile->Get("Events");
 	TTreeReader reader(eventTree);
 
@@ -156,8 +156,6 @@ int NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMa
 			std::cout << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(float)finalNumberOfEvents/nEvents << "%)" << std::endl;
 		}
 	}
-
-	return 0;
 }
 
 void NanoSkimmer::WriteOutput() {

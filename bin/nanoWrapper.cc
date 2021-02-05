@@ -25,11 +25,9 @@ int main(int argc, char* argv[]) {
 		nMaxEvents = -999;
 	}
 
-	NanoSkimmer skimmer(fileName, outName, isData, doSystematics);
-	int exitCode = skimmer.EventLoop(era, runPeriod, nMaxEvents);
-	if (exitCode == 0) {
-		skimmer.WriteOutput();
-	}
+	NanoSkimmer skimmer(fileName, outName, isData, doSystematics, era, runPeriod, xSection);
+	skimmer.EventLoop(nMaxEvents);
+	skimmer.WriteOutput();
 
-	return exitCode;
+	return 0;
 }

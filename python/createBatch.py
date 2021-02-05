@@ -5,6 +5,8 @@ import subprocess
 import shutil
 from re import findall
 
+import getXSection
+
 def createFileList(sampleFileName):
 	fileList = []
 	sampleFile = open(sampleFileName, "r")
@@ -38,9 +40,10 @@ def prepareArguments(sample):
 		isSignal = True
 	if isData:
 		runPeriod = findall("Run201..", sample)[0][-1]
-	return isData, isSignal, year, runPeriod, isFastSim
+	xSection = getXSection.GetXSection(sample)
+	return isData, isSignal, year, runPeriod, isFastSim, xSection
 
-def getOSVariable(Var):
+def GetOSVariable(Var):
 	try:
 		variable = os.environ[Var]
 	except KeyError:
@@ -50,7 +53,7 @@ def getOSVariable(Var):
 
 if __name__=="__main__":
 	date = subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).replace("\n", "")
-	cmsswBase = getOSVariable("CMSSW_BASE")
+	cmsswBase = GetOSVariable("CMSSW_BASE")
 	#redirector = "root://cms-xrd-global.cern.ch/"
 	redirector = "root://xrootd-cms.infn.it/"
 
@@ -98,11 +101,11 @@ if __name__=="__main__":
 		sample = sample.strip()
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			fileList = findFileLocation(sample)
-			isData, isSignal, year, runPeriod, isFastSim = prepareArguments(sample)
+			isData, isSignal, year, runPeriod, isFastSim, xSection = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 
 			for filename in fileList:
-				argumentFile.write(redirector + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + cmsswBase + "/src\n")
+				argumentFile.write(redirector + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
 	sampleFile.close()
 	argumentFile.close()
 

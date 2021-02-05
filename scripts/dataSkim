@@ -1,3 +1,3 @@
 #!/bin/bash
-testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/Run2016B_ver1_SingleElectron_NANOAOD_Nano25Oct2019_ver1-v1.root "SingleElectron" True False 2016 "B" 1 $1
+testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/Run2016B_ver1_SingleElectron_NANOAOD_Nano25Oct2019_ver1-v1.root "SingleElectron" True False 2016 "B" 1 1 $1
 

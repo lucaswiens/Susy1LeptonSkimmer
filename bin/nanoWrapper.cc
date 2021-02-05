@@ -12,15 +12,12 @@ int main(int argc, char* argv[]) {
 	bool isData          = std::string(argv[3]) == "True" ? true : false;
 	bool doSystematics   = std::string(argv[4]) == "True" ? true : false;
 	int era              = std::stoi(std::string(argv[5]));
-
-	char runPeriod; //If it is MC, then runPeriod does not matter
-	if (isData) {
-		runPeriod = (char)*argv[6];
-	}
+	char runPeriod = (char)*argv[6]; //If it is MC, then runPeriod does not matter
+	double xSection = (double)*argv[7];
 
 	int nMaxEvents;
-	if(argc == 8) {
-		nMaxEvents = std::stoi(std::string(argv[7]));
+	if(argc == 9) {
+		nMaxEvents = std::stoi(std::string(argv[8]));
 	} else {
 		nMaxEvents = -999;
 	}

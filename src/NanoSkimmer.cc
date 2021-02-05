@@ -11,11 +11,14 @@
 
 NanoSkimmer::NanoSkimmer() {}
 
-NanoSkimmer::NanoSkimmer(const std::string &inFile, const std::string &outFile, const bool &isData, const bool &doSystematics):
+NanoSkimmer::NanoSkimmer(const std::string &inFile, const std::string &outFile, const bool &isData, const bool &doSystematics, const int &era, const char &runPeriod, const double &xSection):
 	inFile(inFile),
 	outFile(outFile),
 	isData(isData),
-	doSystematics(doSystematics)
+	doSystematics(doSystematics),
+	era(era),
+	runPeriod(runPeriod),
+	xSection(xSection)
 	{
 		start = std::chrono::steady_clock::now();
 		std::cout << "Input file for analysis: " + inFile << std::endl;
@@ -60,7 +63,7 @@ void NanoSkimmer::ProgressBar(const int &progress, const int &rate) {
 
 }
 
-void NanoSkimmer::Configure(const int &era, const char &runPeriod, TTreeReader &reader) {
+void NanoSkimmer::Configure(TTreeReader &reader) {
 	for (unsigned int i = 0; i < outputTrees.size(); i++) {
 		producers.push_back({
 			std::shared_ptr<TriggerProducer>(new TriggerProducer(era, runPeriod, reader)),
@@ -89,7 +92,7 @@ void NanoSkimmer::Configure(const int &era, const char &runPeriod, TTreeReader &
 	}
 }
 
-void NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nMaxEvents) {
+void NanoSkimmer::EventLoop(const int &nMaxEvents) {
 	//TTreeReader preperation
 	TFile *inputFile = TFile::Open(inFile.c_str(), "READ");
 	if (inputFile == nullptr) {
@@ -107,7 +110,7 @@ void NanoSkimmer::EventLoop(const int &era, const char &runPeriod, const int &nM
 	else {stepSize = 10000;}
 	int nEvents = eventTree->GetEntries();
 
-	Configure(era, runPeriod, reader);
+	Configure(reader);
 
 	for (CutFlow cutflow : cutflows) {
 		cutflow.hist->Fill("Generated Events", nEvents);
@@ -168,8 +171,19 @@ void NanoSkimmer::WriteOutput() {
 		cutflows.at(i).hist->Write();
 	}
 
+	TTree *metaData = new TTree("MetaData", "MetaData");
+	metaData->SetDirectory(file);
+	metaData->Branch("era", &era);
+	metaData->Branch("isData", &isData);
+	metaData->Branch("runPeriod", &runPeriod);
+	metaData->Branch("sampleName", &outFile);
+	metaData->Branch("xSection", &xSection);
+	metaData->Fill();
+	metaData->Write();
+
 	file->Write(0, TObject::kOverwrite);
 	file->Close();
+
 	delete file;
 
 	end = std::chrono::steady_clock::now();

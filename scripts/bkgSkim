@@ -1,4 +1,4 @@
 #!/bin/bash
-testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root "TTJets_HT_1200to2500" False False 2016 "m" "1" $1
+testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root "TTJets_HT_1200to2500" False False 2016 "m" "1" 0.1194 $1
 #testSkim root://cms-xrd-global.cern.ch//store/mc/RunIISummer16NanoAODv6/TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/NANOAODSIM/PUMoriond17_Nano25Oct2019_102X_mcRun2_asymptotic_v7_ext1-v1/270000/B23AC397-3B0C-F740-8D0F-54A55A4613CB.root "TTJets_HT_1200to2500" False False 2016 "m" "1" $1
 

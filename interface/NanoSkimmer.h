@@ -23,7 +23,9 @@ class NanoSkimmer{
 		//Vector with wished producers
 		std::vector<std::vector<std::shared_ptr<BaseProducer>>> producers;
 
-		int finalNumberOfEvents;
+		int finalNumberOfEvents, era;
+		char runPeriod;
+		double xSection;
 
 		//Output Trees
 		std::vector<TTree*> outputTrees;
@@ -35,12 +37,12 @@ class NanoSkimmer{
 		void ProgressBar(const int &progress, const int &rate);
 
 		//Configure analysis modules
-		void Configure(const int &era, const char &runPeriod, TTreeReader &reader);
+		void Configure(TTreeReader &reader);
 
 
 	public:
 		NanoSkimmer();
-		NanoSkimmer(const std::string &inFile, const std::string &outFile, const bool &isData, const bool &doSystematics);
-		void EventLoop(const int &era = 2016, const char &runPeriod = 'm', const int &nMaxEvents = -999);
+		NanoSkimmer(const std::string &inFile, const std::string &outFile, const bool &isData, const bool &doSystematics, const int &era, const char &runPeriod, const double &xSection);
+		void EventLoop(const int &nMaxEvents = -999);
 		void WriteOutput();
 };

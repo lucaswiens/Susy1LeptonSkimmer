@@ -145,7 +145,7 @@ void NanoSkimmer::EventLoop(const int &nMaxEvents) {
 			ProgressBar(progress, processed / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count());
 		}
 
-		product.clear();// probably not needed
+		product.clear(); // probably not needed
 	}
 
 	ProgressBar(100, processed / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count());
@@ -175,9 +175,26 @@ void NanoSkimmer::WriteOutput() {
 	metaData->SetDirectory(file);
 	metaData->Branch("era", &era);
 	metaData->Branch("isData", &isData);
-	metaData->Branch("runPeriod", &runPeriod);
 	metaData->Branch("sampleName", &outFile);
-	metaData->Branch("xSection", &xSection);
+	if (isData) {
+		metaData->Branch("runPeriod", &runPeriod);
+	} else {
+		metaData->Branch("xSection", &xSection);
+		double luminosity = -999;
+		if (era == 2016) {
+			if (outFile.find("UL16NanoAODAPVv2") != std::string::npos) {
+				luminosity = 19.5; //fb
+			} else if (outFile.find("UL16NanoAODv2") != std::string::npos) {
+				luminosity = 16.5; //fb
+			}
+		} else if (era == 2017) {
+			luminosity = 41.48; //fb
+		} else if (era == 2018) {
+			luminosity = 59.83; //fb
+		}
+		metaData->Branch("luminosity", &luminosity);
+	}
+
 	metaData->Fill();
 	metaData->Write();
 

@@ -11,9 +11,9 @@ int main(int argc, char* argv[]) {
 	std::string outName  = std::string(argv[2]);
 	bool isData          = std::string(argv[3]) == "True" ? true : false;
 	bool doSystematics   = std::string(argv[4]) == "True" ? true : false;
-	int era              = std::stoi(std::string(argv[5]));
+	int era              = std::stoi(argv[5]);
 	char runPeriod = (char)*argv[6]; //If it is MC, then runPeriod does not matter
-	double xSection = (double)*argv[7];
+	double xSection = std::stod(argv[7]);
 
 	int nMaxEvents;
 	if(argc == 9) {

@@ -8,8 +8,9 @@ do
 done
 
 for sample in SingleMuon SingleElectron
+do
 	#echo \#${sample} preVFP > ${sample}.md
 	dasgoclient -query="dataset=/${sample}*/Run2016*UL2016_MiniAODv1_NanoAODv2*/NANOAOD" >> ${sample}.md
 	#echo \#${sample} postVFP >> ${sample}.md
 	#dasgoclient -query="dataset=/${sample}*/Run2016*UL2016_MiniAODv1_NanoAODv2*/NANOAOD" >> ${sample}.md
-do
+done

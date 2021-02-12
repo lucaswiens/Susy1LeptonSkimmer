@@ -1,6 +1,0 @@
-/SingleElectron/Run2016C-UL2016_MiniAODv1_NanoAODv2-v1/NANOAOD
-/SingleElectron/Run2016D-UL2016_MiniAODv1_NanoAODv2-v1/NANOAOD
-/SingleElectron/Run2016E-UL2016_MiniAODv1_NanoAODv2-v1/NANOAOD
-/SingleElectron/Run2016F-UL2016_MiniAODv1_NanoAODv2-v1/NANOAOD
-/SingleElectron/Run2016G-UL2016_MiniAODv1_NanoAODv2-v1/NANOAOD
-/SingleElectron/Run2016H-UL2016_MiniAODv1_NanoAODv2-v1/NANOAOD

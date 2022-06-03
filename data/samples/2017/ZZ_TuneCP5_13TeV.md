@@ -1,0 +1,2 @@
+#ZZ_TuneCP5_13TeV
+/ZZ_TuneCP5_13TeV-pythia8/RunIISummer20UL17NanoAODv9-106X_mc2017_realistic_v9-v1/NANOAODSIM

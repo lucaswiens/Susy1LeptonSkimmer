@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BASEPRODUCER_H
+#define BASEPRODUCER_H
 
 #include <memory>
 #include <map>
@@ -11,78 +12,74 @@
 #include <TH2F.h>
 #include <Rtypes.h>
 #include <Math/Vector4Dfwd.h>
-#include <TTreeReader.h>
-#include <TTreeReaderValue.h>
-#include <TTreeReaderArray.h>
+//#include <TTreeReader.h>
+//#include <TTreeReaderValue.h>
+//#include <TTreeReaderArray.h>
 
 #include <DataFormats/Candidate/interface/Candidate.h>
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/DataReader.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/Utility.h>
 
-//Struct for cutflow
-struct CutFlow {
-	TH1F *hist;
-	Float_t weight = 1.;
-	bool passed = true;
-};
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+namespace pt = boost::property_tree;
 
 class BaseProducer {
 	protected:
 		//File path for SF etc.
 		std::string filePath = std::string(std::getenv("CMSSW_BASE")) + "/src/Susy1LeptonAnalsis/Susy1LeptonSkimmer/data/";
 
-		std::map<int, std::map<char, std::string>> runEras = {
-			{2016,	{
+		std::map<double, std::map<char, std::string>> runEras = { // TODO Remove and maybe put in config if it's still needed
+			{2016.0, {
 					{'B', "BCD"},
 					{'C', "BCD"},
 					{'D', "BCD"},
 					{'E', "EF"},
 					{'F', "EF"},
-					{'G', "GH"},
-					{'H', "GH"}
+				 }
+			},
+			{2016.1, {
+					{'F', "FGH"},
+					{'G', "FGH"},
+					{'H', "FGH"}
 				}
 			},
-			{2017,	{
+			{2017.0, {
 					{'B', "B"},
 					{'C', "C"},
-					{'D', "DE"},
-					{'E', "DE"},
+					{'D', "D"},
+					{'E', "E"},
 					{'F', "F"}
 				}
 			},
-			{2018,	{
+			{2018.0, {
 					{'A', "A"},
 					{'B', "B"},
-					{'C', "CD"},
-					{'D', "CD"}
+					{'C', "C"},
+					{'D', "D"}
 				}
 			}
 		};
-
-		//Collection which are used in several producers if NANO AOD is produced
-		TTreeReader *reader = NULL;
-
-		std::unique_ptr<TTreeReaderValue<unsigned int>> run;
-
-		std::unique_ptr<TTreeReaderArray<float>> trigObjPt, trigObjPhi, trigObjEta;
-		std::unique_ptr<TTreeReaderArray<int>> trigObjID, trigObjFilterBit;
-
-		std::unique_ptr<TTreeReaderArray<float>> genPhi, genEta, genPt, genMass;
-		std::unique_ptr<TTreeReaderArray<int>> genID, genMotherIdx, genStatus, eleGenIdx, muonGenIdx;
 
 		//Check for gen particle if it is last copy
 		int FirstCopy(const int &index, const int &pdgID); //NANOAOD
 
 		//Match Reco to gen particles
-		std::tuple<int, int, int> SetGenParticles(const float &Pt, const float &Eta, const float &Phi, const int &i, const int &pdgID);
+		std::tuple<int, int, int> SetGenParticles(const double &Pt, const double &Eta, const double &Phi, const int &i, const int &pdgID);
 
+		static const int arrayMaxSize = 20;
 	public:
+		std::string Name;
 		virtual ~BaseProducer(){};
 		BaseProducer();
-		BaseProducer(TTreeReader *reader);
-		virtual void BeginJob(TTree *tree, bool &isData, bool &doSystematics) = 0;
-		virtual void Produce(CutFlow &cutflow, Susy1LeptonProduct *product) = 0;
-		virtual void EndJob(TFile *file) = 0;
+		//virtual void BeginJob(std::shared_ptr<TTree> tree, bool &isData, bool &doSystematics) = 0;
+		virtual void Produce(DataReader &dataReader, Susy1LeptonProduct &product) = 0;
+		virtual void EndJob(TFile &file) = 0;
 
-		static float DeltaR(const float &eta1, const float &phi1, const float &eta2, const float &phi2);
 };
+
+#endif
+

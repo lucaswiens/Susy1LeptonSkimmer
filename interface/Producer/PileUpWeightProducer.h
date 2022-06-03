@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PILEUPWEIGHTPRODUCER_H
+#define PILEUPWEIGHTPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
@@ -21,13 +22,16 @@ class PileUpWeightProducer : public BaseProducer {
 		double weight, weightPlus, weightMinus;
 
 		//TTreeReader Values for NANO AOD analysis
-		std::unique_ptr<TTreeReaderValue<float>> pvNumber;
-		std::unique_ptr<TTreeReaderArray<float>> muonPt;
+		//std::unique_ptr<TTreeReaderValue<float>> pvNumber;
+		//std::unique_ptr<TTreeReaderArray<float>> muonPt;
 
 	public:
-		PileUpWeightProducer(const int &era, TTreeReader &reader);
+		std::string Name = "PileUpWeightProducer";
+		PileUpWeightProducer(const int &era);
 
-		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
-		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile *file);
+		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
+		void EndJob(TFile &file);
 };
+
+#endif
+

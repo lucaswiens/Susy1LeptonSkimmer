@@ -1,2 +1,0 @@
-#TTToZ preVFP
-#TTToZ postVFP

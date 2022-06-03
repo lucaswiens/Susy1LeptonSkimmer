@@ -1,0 +1,168 @@
+{
+	"Channel": {
+		"MuonIncl": {
+			"Selection": {
+				"Muon": {
+					"threshold": 1,
+					"operator": ">="
+				}
+			},
+			"Trigger": {
+				"2016PreVFP": [
+					"HLT_IsoTkMu24",
+					"HLT_IsoMu24"
+				],
+
+				"2016PostVFP": [
+					"HLT_IsoTkMu24",
+					"HLT_IsoMu24"
+				],
+
+				"2017": [
+					"HLT_IsoMu27"
+				],
+
+				"2018": [
+					"HLT_IsoMu24"
+				]
+			}
+		},
+		"ElectronIncl": {
+			"Selection": {
+				"Electron": {
+					"threshold": 1,
+					"operator": ">="
+				}
+			},
+			"Trigger": {
+				"2016PreVFP": [
+					"HLT_IsoTkEle24",
+					"HLT_IsoEle24"
+				],
+
+				"2016PostVFP": [
+					"HLT_IsoTkEle24",
+					"HLT_IsoEle24"
+				],
+
+				"2017": [
+					"HLT_IsoEle27"
+				],
+
+				"2018": [
+					"HLT_IsoEle24"
+				]
+			}
+		},
+		"Muon": {
+			"Selection": {
+				"GoodMuon": {
+					"threshold": 1,
+					"operator": "=="
+				},
+				"VetoMuon": {
+					"threshold": 0,
+					"operator": "=="
+				}
+			},
+			"Trigger": {
+				"2016PreVFP": [
+					"HLT_IsoTkMu24",
+					"HLT_IsoMu24"
+				],
+
+				"2016PostVFP": [
+					"HLT_IsoTkMu24",
+					"HLT_IsoMu24"
+				],
+
+				"2017": [
+					"HLT_IsoMu27"
+				],
+
+				"2018": [
+					"HLT_IsoMu24"
+				]
+			}
+		},
+		"Electron": {
+			"Selection": {
+				"GoodElectron": {
+					"threshold": 1,
+					"operator": "=="
+				},
+				"VetoElectron": {
+					"threshold": 0,
+					"operator": "=="
+				}
+			},
+			"Trigger": {
+				"2016PreVFP": [
+					"HLT_IsoTkEle24",
+					"HLT_IsoEle24"
+				],
+
+				"2016PostVFP": [
+					"HLT_IsoTkEle24",
+					"HLT_IsoEle24"
+				],
+
+				"2017": [
+					"HLT_IsoEle27"
+				],
+
+				"2018": [
+					"HLT_IsoEle24"
+				]
+			}
+		}
+
+	},
+	"Producer" : {
+		"Muon": {
+			"Pt" : {
+				"Good": 25,
+				"Veto": 10
+			},
+			"Eta" : 2.4,
+			"Iso" : {
+				"Good": 0.2,
+				"Veto": 0.4,
+				"Anti": 0.2
+			},
+			"CutBasedId" : {
+				"Good": "M",
+				"Veto": "L",
+				"Anti": "M"
+			},
+			"Dxy" : 0.5,
+			"Dz" : 0.5,
+			"Sip3DCut" : 1
+		},
+		"Electron": {
+			"Pt" : {
+				"Good": 25,
+				"Veto": 10
+			},
+			"Eta" : 2.4,
+			"Iso" : {
+				"Good": 0.1,
+				"Veto": 0.4,
+				"Anti": 0.4
+			},
+			"CutBasedId" : {
+				"Good": "T",
+				"Veto": "V",
+				"Anti": {
+					"Is"  : "M",
+					"Not" : "T"
+				}
+			},
+			"NumberOfLostHits" : {
+				"Good" : 0
+			},
+			"Dxy" : 0.5,
+			"Dz" : 0.5
+		}
+	}
+}

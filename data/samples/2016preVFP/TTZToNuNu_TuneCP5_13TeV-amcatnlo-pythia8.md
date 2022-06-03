@@ -1,0 +1,3 @@
+#TTZToNuNu_TuneCP5_13TeV-amcatnlo-pythia8
+/TTZToNuNu_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODAPVv9-106X_mcRun2_asymptotic_preVFP_v11-v1/NANOAODSIM
+/TTZToNuNu_TuneCP5_13TeV-amcatnlo-pythia8/RunIISummer20UL16NanoAODv9-106X_mcRun2_asymptotic_v17-v1/NANOAODSIM

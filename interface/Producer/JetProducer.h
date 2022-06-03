@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JETPRODUCER_H
+#define JETPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
@@ -15,8 +16,12 @@ class JetProducer : public BaseProducer {
 
 	private:
 		//Check if it is data or MC
-		bool isData, doSystematics, isUp, isJERSystematic, isJECSystematic ;
+		bool isData, doSystematics, isUp, isJERSystematic, isJECSystematic, preVFP;
 		char runPeriod;
+		// 2016 Run BCDEF: 2016 = postVFP = noHIPM = noAPV
+		// 2016 Run FGH: 20160 = preVFP = HIPM = APV
+		//int eraSelector;
+
 		//bool isSignal // or maybe make a fastsim flag
 
 		//Classes for reading jet energy SF
@@ -29,8 +34,9 @@ class JetProducer : public BaseProducer {
 		bool isJERsyst = false;
 
 		// JEC map
+		// Using double instead of int because to distringuish APV and noAPV
 		std::map<int, std::vector<std::string>> jecMC, jecFastSim, jerMC, jecData;
-		std::map<int, std::string> jmePtReso, jmeSF, jecUnc;
+		std::map<int, std::string> jmePtReso, jmeSF, jecMCUnc, jecDataUnc;
 
 		// Btag Map
 		std::map<int, std::map<char, float>> deepFlavourBTag, deepCSVBTag;
@@ -39,7 +45,7 @@ class JetProducer : public BaseProducer {
 
 
 		//Cut Variables
-		int era;
+		int era, eraSelector;
 		float ptCut, etaCut, deltaRCut;
 
 		//Vector for the output variables
@@ -57,18 +63,18 @@ class JetProducer : public BaseProducer {
 		unsigned int nJet, nFatJet, nLooseDFBTagJet, nMediumDFBTagJet, nTightDFBTagJet, nLooseCSVBTagJet, nMediumCSVBTagJet, nTightCSVBTagJet;
 
 		//TTreeReader Values
-		std::unique_ptr<TTreeReaderValue<unsigned int>> jetNumber, fatJetNumber;
-		std::unique_ptr<TTreeReaderArray<int>> jetGenIdx, jetFlavour;
-		std::unique_ptr<TTreeReaderArray<float>> jetMass, jetPt, jetEta, jetPhi, jetArea, jetRawFactor, jetCSV, jetDF;
+		//std::unique_ptr<TTreeReaderValue<unsigned int>> jetNumber, fatJetNumber;
+		//std::unique_ptr<TTreeReaderArray<int>> jetGenIdx, jetFlavour;
+		//std::unique_ptr<TTreeReaderArray<float>> jetMass, jetPt, jetEta, jetPhi, jetArea, jetRawFactor, jetCSV, jetDF;
 
-		std::unique_ptr<TTreeReaderArray<float>> genJetPt, genJetEta, genJetPhi, genJetMass;
+		//std::unique_ptr<TTreeReaderArray<float>> genJetPt, genJetEta, genJetPhi, genJetMass;
 
-		std::unique_ptr<TTreeReaderValue<float>> metPhi, metPt, jetRho;
+		//std::unique_ptr<TTreeReaderValue<float>> metPhi, metPt, jetRho;
 
-		std::unique_ptr<TTreeReaderArray<float>> fatJetDeepTagMDH4qvsQCD, fatJetDeepTagMDHbbvsQCD, fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
-			fatJetDeepTagMDZHbbvsQCD, fatJetDeepTagMDZHccvsQCD, fatJetDeepTagMDZbbvsQCD, fatJetDeepTagMDZvsQCD,
-			fatJetDeepTagMDBbvsLight, fatJetDeepTagMDCcvsLight, fatJetDeepTagH, fatJetDeepTagQCD,
-			fatJetDeepTagQCDothers, fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD, fatJetDeepTagZvsQCD;
+		//std::unique_ptr<TTreeReaderArray<float>> fatJetDeepTagMDH4qvsQCD, fatJetDeepTagMDHbbvsQCD, fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
+		//	fatJetDeepTagMDZHbbvsQCD, fatJetDeepTagMDZHccvsQCD, fatJetDeepTagMDZbbvsQCD, fatJetDeepTagMDZvsQCD,
+		//	fatJetDeepTagMDBbvsLight, fatJetDeepTagMDCcvsLight, fatJetDeepTagH, fatJetDeepTagQCD,
+		//	fatJetDeepTagQCDothers, fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD, fatJetDeepTagZvsQCD;
 
 		//Gen Level Information
 		ROOT::Math::PtEtaPhiMVector genJet;
@@ -84,9 +90,12 @@ class JetProducer : public BaseProducer {
 		template <typename T>
 		void SortByIndex(T &var, std::vector<int> idx, unsigned int vectorSize);
 	public:
-		JetProducer(const int &era, const float &ptCut, const float &etaCut, const float &deltaRCut, const char &runPeriod, TTreeReader &reader);
+		std::string Name = "JetProducer";
+		JetProducer(const int &era, const float &ptCut, const float &etaCut, const float &deltaRCut, const bool &preVFP, const char &runPeriod);
 
-		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
-		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile *file);
+		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
+		void EndJob(TFile &file);
 };
+
+#endif
+

@@ -1,2 +1,0 @@
-#TTJets preVFP
-#TTJets postVFP

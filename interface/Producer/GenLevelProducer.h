@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GENLEVELPRODUCER_H
+#define GENLEVELPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
@@ -21,15 +22,18 @@ class GenLevelProducer : public BaseProducer {
 		std::map<int, float> ISRweights_Mar17, ISRweights_ICHEP16, ISRweightssyst_Mar17, ISRweightssyst_ICHEP16;
 
 		//TTreeReader Values for NANO AOD analysis
-		std::unique_ptr<TTreeReaderValue<unsigned int>> nGenPart;
-		std::unique_ptr<TTreeReaderArray<float>> genPartPt, genPartEta, genPartMass, genPartPhi;
-		std::unique_ptr<TTreeReaderArray<int>> genPartIdxMother, genPartPdgId, genPartStatus, genPartStatusFlag;
+		//std::unique_ptr<TTreeReaderValue<unsigned int>> nGenPart;
+		//std::unique_ptr<TTreeReaderArray<float>> genPartPt, genPartEta, genPartMass, genPartPhi;
+		//std::unique_ptr<TTreeReaderArray<int>> genPartIdxMother, genPartPdgId, genPartStatus, genPartStatusFlag;
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
 	public:
-		GenLevelProducer(const int &era, TTreeReader &reader);
+		std::string Name = "GenLevelProducer";
+		GenLevelProducer(const int &era);
 
-		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
-		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile *file);
+		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
+		void EndJob(TFile &file);
 };
+
+#endif
+

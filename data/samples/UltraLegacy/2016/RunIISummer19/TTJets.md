@@ -1,4 +1,0 @@
-#TTJets preVFP
-/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer19UL16NanoAODAPVv2-106X_mcRun2_asymptotic_preVFP_v9-v1/NANOAODSIM
-#TTJets postVFP
-/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIISummer19UL16NanoAODv2-106X_mcRun2_asymptotic_v15-v1/NANOAODSIM

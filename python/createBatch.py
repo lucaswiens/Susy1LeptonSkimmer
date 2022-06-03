@@ -65,7 +65,7 @@ if __name__=="__main__":
 	args = parser.parse_args()
 
 	#Make specific subdirectory depending on input file (expects input file to be path/to/input/inputFile.md)
-	outputDirName = args.input_file.split("/")[-2] + "_" + args.input_file.split("/")[-1][:-3]
+	outputDirName = args.input_file.split("/")[-2] + "_" + args.input_file.split("/")[-1][:-3] + args.input_file.split("/")[-3]
 	args.output = args.output + "/" + outputDirName
 	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim"
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DELTAPHIPRODUCER_H
+#define DELTAPHIPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
@@ -21,15 +22,18 @@ class DeltaPhiProducer : public BaseProducer {
 		std::vector<bool> IsoTrackHadronicDecay;
 		std::vector<int> IsoTrackPdgId;
 
-		std::unique_ptr<TTreeReaderValue<unsigned int>> isoTrackNumber;
-		std::unique_ptr<TTreeReaderArray<float>> isoTrackPt, isoTrackEta, isoTrackPhi, isoTrackMass, isoTrackIso, isoTrackDxy, isoTrackDz, isoTrackSip3d, isoTrackMiniPFRelIsoAll;
-		std::unique_ptr<TTreeReaderArray<int>> isoTrackPdgId, isoTrackCharge;
+		//std::unique_ptr<TTreeReaderValue<unsigned int>> isoTrackNumber;
+		//std::unique_ptr<TTreeReaderArray<float>> isoTrackPt, isoTrackEta, isoTrackPhi, isoTrackMass, isoTrackIso, isoTrackDxy, isoTrackDz, isoTrackSip3d, isoTrackMiniPFRelIsoAll;
+		//std::unique_ptr<TTreeReaderArray<int>> isoTrackPdgId, isoTrackCharge;
 
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
 	public:
-		DeltaPhiProducer(TTreeReader &reader);//TODO reader needeed?
+		std::string Name = "DeltaPhiProducer";
+		DeltaPhiProducer();//TODO reader needeed?
 
-		void BeginJob(TTree *tree, bool &isData, bool &doSystematics);
-		void Produce(CutFlow &cutflow, Susy1LeptonProduct *product);
-		void EndJob(TFile *file);
+		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
+		void EndJob(TFile &file);
 };
+
+#endif
+

@@ -9,8 +9,22 @@ XSECTION=$7
 JOB=$8
 NMAXEVENTS=$9
 
+echo "INFILE        = " $INFILE
+echo "OUT           = " $OUT
+echo "ISDATA        = " $ISDATA
+echo "DOSYSTEMATICS = " $DOSYSTEMATICS
+echo "ERA           = " $ERA
+echo "RUNPERIOD     = " $RUNPERIOD
+echo "XSECTION      = " $XSECTION
+echo "JOB           = " $JOB
+echo "NMAXEVENTS    = " $NMAXEVENTS
+
 mkdir -p $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 cd $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 
 ##Do the skimming
+echo
+echo "Executing:"
+echo "NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION $NMAXEVENTS"
+echo
 NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION $NMAXEVENTS

@@ -64,7 +64,7 @@ class Susy1LeptonProduct {
 
 		int nJet, nFatJet,
 			nDeepCsvBTag, nDeepJetBTag, jetId;
-		double rho, metPt, metPhi;
+		double rho, metPt, metPhi, wBosonMinMass, wBosonMinMassPt, wBosonBestMass, wBosonBestMassPt, topBestMass, topBestMassPt;
 		std::array<double, nMax> jetPt, jetEta, jetPhi, jetMass,
 			jetArea, jetRawFactor,
 			jetDeepCsv, jetDeepJet;

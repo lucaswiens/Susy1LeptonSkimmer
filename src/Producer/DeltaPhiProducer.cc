@@ -43,21 +43,22 @@ float DeltaPhiProducer::DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtE
 
 void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	//Initialize all variables as -999
-	IsoTrackMt2.clear();
-	IsoTrackPt.clear();
-	IsoTrackPdgId.clear();
-	IsoTrackHadronicDecay.clear();
-	IsoTrackVeto = false;
+	//IsoTrackMt2.clear();
+	//IsoTrackPt.clear();
+	//IsoTrackPdgId.clear();
+	//IsoTrackHadronicDecay.clear();
+	//IsoTrackVeto = false;
 
-	HT = -999;
-	LT = -999;
-	LP = -999;
-	deltaPhi = -999;
-	dPhi = -999;
-	wBosonMt = -999;
-	signalRegionCSV = -999;
-	signalRegionDF = -999;
+	//HT = -999;
+	//LT = -999;
+	//LP = -999;
+	//deltaPhi = -999;
+	//dPhi = -999;
+	//wBosonMt = -999;
+	//signalRegionCSV = -999;
+	//signalRegionDF = -999;
 
+	/*
 	if (product.leptonPt != -999 && product.metPt != -999) {
 		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(product.leptonPt, product.leptonEta, product.leptonPhi, product.leptonMass);
 		ROOT::Math::PtEtaPhiMVector metP4 = ROOT::Math::PtEtaPhiMVector(product.metPt, 0, product.metPhi, 0);
@@ -147,6 +148,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 			if (IsoTrackMt2.back() <= isoMt2Cut) { IsoTrackVeto = true; break;}
 		}
 	}
+	*/
 
 	//if (product.leptonPt != -999) {
 	//	std::string cutName("DeltaPhi Calculated!");

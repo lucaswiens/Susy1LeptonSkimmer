@@ -182,6 +182,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	//std::cout << "Pt(After Sorting):\n"; for (int iJet = 0; iJet < jetCounter; iJet++) { std::cout << iJet << "(" << product.jetPt[iJet] << ", " << product.jetEta[iJet] << "); "; } std::cout << std::endl;
 
 	// Jet Cleaning
+	// Remove jets from collection that match to good Leptons
 	double deltaRMin = std::numeric_limits<double>::max();
 	std::vector<int> muonIndices, electronIndices, jetRemovalIndices;;
 	int nearestMuonIndex = -999, nearestElectronIndex = -999;
@@ -201,7 +202,6 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 		if (nearestJetIndex > 0) {
 			muonIndices.push_back(iMuon);
-			std::cout << "Found Jet to be removed: " << nearestJetIndex << std::endl;
 			jetRemovalIndices.push_back(nearestJetIndex);
 		}
 	}
@@ -271,21 +271,33 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.topBestMassPt    = -999;
 	for (int iJet1 = 0; iJet1 < product.nJet; iJet1++) {
 		ROOT::Math::PtEtaPhiMVector jet1P4 = ROOT::Math::PtEtaPhiMVector(product.jetPt.at(iJet1), product.jetEta.at(iJet1), product.jetPhi.at(iJet1), product.jetMass.at(iJet1));
-		if (!product.jetMediumCSVBTag.at(iJet1)) {
-			for (int iJet2 = iJet1 + 1; iJet2 < nJet; iJet2++) {
+		if (!product.jetDeepCsvMediumId.at(iJet1)) {
+			for (int iJet2 = iJet1 + 1; iJet2 < product.nJet; iJet2++) {
 				ROOT::Math::PtEtaPhiMVector jet2P4 = ROOT::Math::PtEtaPhiMVector(product.jetPt.at(iJet2), product.jetEta.at(iJet2), product.jetPhi.at(iJet2), product.jetMass.at(iJet2));
 				ROOT::Math::PtEtaPhiMVector diJetP4 = jet1P4 + jet2P4;
 				double diJetMass = diJetP4.M();
-				if (diJetMass > 30 && diJetMass < wBosonMinMass) { wBosonMinMass = diJetMass; wBosonMinMassPt = diJetP4.Pt();}
-				if (abs(diJetMass - pdgWBosonMass) < abs(wBosonBestMass - pdgWBosonMass)) {
-					wBosonBestMass = diJetMass; wBosonBestMassPt = diJetP4.Pt();
+				if (diJetMass > 30 && diJetMass < product.wBosonMinMass) {
+					product.wBosonMinMass = diJetMass;
+					product.wBosonMinMassPt = diJetP4.Pt();
 				}
-				for (int b = 0; b < nJet; b++) {
-					if (JetMediumCSVBTag.at(b) && (Utility::DeltaR(JetEta.at(b), JetPhi.at(b), jet1P4.Eta(), jet1P4.Phi()) < 0.1 || Utility::DeltaR(JetEta.at(b), JetPhi.at(b), jet2P4.Eta(), jet2P4.Phi()) < 0.1)) {
-						ROOT::Math::PtEtaPhiMVector bJetP4 = ROOT::Math::PtEtaPhiMVector(JetPt.at(j), JetEta.at(j), JetPhi.at(j), JetMass.at(j));
+
+				if (abs(diJetMass - pdgWBosonMass) < abs(product.wBosonBestMass - pdgWBosonMass)) {
+					product.wBosonBestMass = diJetMass;
+					product.wBosonBestMassPt = diJetP4.Pt();
+				}
+
+				for (int iBJet = 0; iBJet < product.nJet; iBJet++) {
+					if (product.jetDeepCsvMediumId.at(iBJet) &&
+							(Utility::DeltaR(product.jetEta.at(iBJet), product.jetPhi.at(iBJet), jet1P4.Eta(), jet1P4.Phi()) < 0.1 ||
+							 Utility::DeltaR(product.jetEta.at(iBJet), product.jetPhi.at(iBJet), jet2P4.Eta(), jet2P4.Phi()) < 0.1)
+					) {
+						ROOT::Math::PtEtaPhiMVector bJetP4 = ROOT::Math::PtEtaPhiMVector(product.jetPt.at(iJet2), product.jetEta.at(iJet2), product.jetPhi.at(iJet2), product.jetMass.at(iJet2));
 						ROOT::Math::PtEtaPhiMVector topP4 = diJetP4 + bJetP4;
 						double topMass = topP4.M();
-						if (abs(topMass - pdgTopMass) < abs(topBestMass - pdgTopMass)) { topBestMass = topMass; topBestMassPt = topP4.Pt();}
+						if (abs(topMass - pdgTopMass) < abs(product.topBestMass - pdgTopMass)) {
+							product.topBestMass = topMass;
+							product.topBestMassPt = topP4.Pt();
+						}
 					}
 				}
 			}

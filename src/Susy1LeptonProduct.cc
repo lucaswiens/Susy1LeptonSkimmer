@@ -177,5 +177,13 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/B");
 		tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/B");
 		tree->Branch("JetDeepJetTightId", jetDeepJetTightId.data(), "JetDeepJetTightId[nJet]/B");
+
+		tree->Branch("wBosonMinMass", &wBosonMinMass);
+		tree->Branch("wBosonMinMassPt", &wBosonMinMassPt);
+		tree->Branch("wBosonBestMass", &wBosonBestMass);
+		tree->Branch("wBosonBestMassPt", &wBosonBestMassPt);
+		tree->Branch("topBestMass", &topBestMass);
+		tree->Branch("topBestMassPt", &topBestMassPt);
+
 	}
 }

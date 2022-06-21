@@ -12,10 +12,10 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 			if (outputFileName.find("UL16NanoAODAPVv") != std::string::npos) {
 				// See Eras: https://twiki.cern.ch/twiki/bin/view/CMS/PdmVDatasetsUL2016
 				this->preVFP = true; // pre-VFP aka HIPM aka APV because let's have 3 names for the exact same thing
-				eraSelector = std::to_string(era * 10);
+				eraSelector = std::to_string(era) + "PreVFP";
 			} else {
 				this->preVFP = false; // aka postVFP, no-HIPM, no-APV which is just default track construction
-				eraSelector = std::to_string(era);
+				eraSelector = std::to_string(era) + "PostVFP";
 			}
 		} else {
 			eraSelector = std::to_string(era);
@@ -61,9 +61,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("nAntiSelectedMuon", &nAntiSelectedMuon);
 
 		tree->Branch("MuonPt", muonPt.data(), "MuonPt[nMuon]/D");
-		tree->Branch("MuonRoccorPt", muonRoccorPt.data(), "MuonRoccorPt[nMuon]/D");
-		tree->Branch("MuonRoccorPtUp", muonRoccorPtUp.data(), "MuonRoccorPtUp[nMuon]/D");
-		tree->Branch("MuonRoccorPtDown", muonRoccorPtDown.data(), "MuonRoccorPtDown[nMuon]/D");
 		tree->Branch("MuonPtVector", &muonPtVector);
 		tree->Branch("MuonEta", muonEta.data(), "MuonEta[nMuon]/D");
 		tree->Branch("MuonPhi", muonPhi.data(), "MuonPhi[nMuon]/D");
@@ -81,6 +78,27 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("MuonPdgId", muonPdgId.data(), "MuonPdgId[nMuon]/I");
 		tree->Branch("MuonGenMatchedIndex", muonMass.data(), "MuonGenMatchedIndex[nMuon]/I");
 		tree->Branch("MuonCutBasedId", muonCutBasedId.data(), "MuonCutBasedId[nMuon]/I");
+
+		if (isData) {
+			tree->Branch("MuonLooseIsoSf", muonLooseIsoSf.data(), "MuonLooseIsoSf[nMuon]/D");
+			tree->Branch("MuonLooseIsoSfUp", muonLooseIsoSfUp.data(), "MuonLooseIsoSfUp[nMuon]/D");
+			tree->Branch("MuonLooseIsoSfDown", muonLooseIsoSfDown.data(), "MuonLooseIsoSfDown[nMuon]/D");
+			tree->Branch("MuonTightIsoSf", muonTightIsoSf.data(), "MuonTightIsoSf[nMuon]/D");
+			tree->Branch("MuonTightIsoSfUp", muonTightIsoSfUp.data(), "MuonTightIsoSfUp[nMuon]/D");
+			tree->Branch("MuonTightIsoSfDown", muonTightIsoSfDown.data(), "MuonTightIsoSfDown[nMuon]/D");
+			tree->Branch("MuonLooseSf", muonLooseSf.data(), "MuonLooseSf[nMuon]/D");
+			tree->Branch("MuonLooseSfUp", muonLooseSfUp.data(), "MuonLooseSfUp[nMuon]/D");
+			tree->Branch("MuonLooseSfDown", muonLooseSfDown.data(), "MuonLooseSfDown[nMuon]/D");
+			tree->Branch("MuonMediumSf", muonMediumSf.data(), "MuonMediumSf[nMuon]/D");
+			tree->Branch("MuonMediumSfUp", muonMediumSfUp.data(), "MuonMediumSfUp[nMuon]/D");
+			tree->Branch("MuonMediumSfDown", muonMediumSfDown.data(), "MuonMediumSfDown[nMuon]/D");
+			tree->Branch("MuonTightSf", muonTightSf.data(), "MuonTightSf[nMuon]/D");
+			tree->Branch("MuonTightSfUp", muonTightSfUp.data(), "MuonTightSfUp[nMuon]/D");
+			tree->Branch("MuonTightSfDown", muonTightSfDown.data(), "MuonTightSfDown[nMuon]/D");
+			tree->Branch("MuonTriggerSf", muonTriggerSf.data(), "MuonTriggerSf[nMuon]/D");
+			tree->Branch("MuonTriggerSfUp", muonTriggerSfUp.data(), "MuonTriggerSfUp[nMuon]/D");
+			tree->Branch("MuonTriggerSfDown", muonTriggerSfDown.data(), "MuonTriggerSfDown[nMuon]/D");
+		}
 
 		tree->Branch("nElectron", &nElectron);
 		tree->Branch("nGoodElectron", &nGoodElectron);
@@ -111,10 +129,53 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("ElectronCutBasedId", electronCutBasedId.data(), "ElectronCutBasedId[nMuon]/I");
 		//tree->Branch("ElectronNLostHits", electronNLostHits.data(), "ElectronNLostHits[nMuon]/I");
 
-		tree->Branch("ElectronTightId", electronTightId.data(), "ElectronTightId[nMuon]/B");
-		tree->Branch("ElectronMediumId", electronMediumId.data(), "ElectronMediumId[nMuon]/B");
 		tree->Branch("ElectronLooseId", electronLooseId.data(), "ElectronLooseId[nMuon]/B");
+		tree->Branch("ElectronMediumId", electronMediumId.data(), "ElectronMediumId[nMuon]/B");
+		tree->Branch("ElectronTightId", electronTightId.data(), "ElectronTightId[nMuon]/B");
 		tree->Branch("ElectronVetoId", electronVetoId.data(), "ElectronVetoId[nMuon]/B");
 		//tree->Branch("ElectronConvVeto", electronConvVeto.data(), "ElectronConvVeto[nMuon]/B");
+
+		if (isData) {
+			tree->Branch("ElectronRecoSf", electronRecoSf.data(), "ElectronRecoSf[nMuon]/D");
+			tree->Branch("ElectronLooseSf", electronLooseSf.data(), "ElectronLooseSf[nMuon]/D");
+			tree->Branch("ElectronMediumSf", electronMediumSf.data(), "ElectronMediumSf[nMuon]/D");
+			tree->Branch("ElectronTightSf", electronTightSf.data(), "ElectronTightSf[nMuon]/D");
+			tree->Branch("ElectronMediumMvaSf", electronMediumMvaSf.data(), "ElectronMediumMvaSf[nMuon]/D");
+			tree->Branch("ElectronTightMvaSf", electronTightMvaSf.data(), "ElectronTightMvaSf[nMuon]/D");
+			tree->Branch("ElectronRecoSfUp", electronRecoSfUp.data(), "ElectronRecoSfUp[nMuon]/D");
+			tree->Branch("ElectronRecoSfDown", electronRecoSfDown.data(), "ElectronRecoSfDown[nMuon]/D");
+			tree->Branch("ElectronLooseSfUp", electronLooseSfUp.data(), "ElectronLooseSfUp[nMuon]/D");
+			tree->Branch("ElectronLooseSfDown", electronLooseSfDown.data(), "ElectronLooseSfDown[nMuon]/D");
+			tree->Branch("ElectronMediumSfUp", electronMediumSfUp.data(), "ElectronMediumSfUp[nMuon]/D");
+			tree->Branch("ElectronMediumSfDown", electronMediumSfDown.data(), "ElectronMediumSfDown[nMuon]/D");
+			tree->Branch("ElectronTightSfUp", electronTightSfUp.data(), "ElectronTightSfUp[nMuon]/D");
+			tree->Branch("ElectronTightSfDown", electronTightSfDown.data(), "ElectronTightSfDown[nMuon]/D");
+			tree->Branch("ElectronMediumMvaSfUp", electronMediumMvaSfUp.data(), "ElectronMediumMvaSfUp[nMuon]/D");
+			tree->Branch("ElectronMediumMvaSfDown", electronMediumMvaSfDown.data(), "ElectronMediumMvaSfDown[nMuon]/D");
+			tree->Branch("ElectronTightMvaSfUp", electronTightMvaSfUp.data(), "ElectronTightMvaSfUp[nMuon]/D");
+			tree->Branch("ElectronTightMvaSfDown", electronTightMvaSfDown.data(), "ElectronTightMvaSfDown[nMuon]/D");
+		}
+
+		tree->Branch("nJet", &nJet);
+		tree->Branch("nFatJet", &nFatJet);
+		tree->Branch("nDeepCSVBTag", &nDeepCsvBTag);
+		tree->Branch("nDeepJetBTag", &nDeepJetBTag);
+		tree->Branch("JetId", &jetId);
+		tree->Branch("MetPt", &metPt);
+		tree->Branch("MetPhi", &metPhi);
+		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/D");
+		tree->Branch("JetEta", jetEta.data(), "JetEta[nJet]/D");
+		tree->Branch("JetPhi", jetPhi.data(), "JetPhi[nJet]/D");
+		tree->Branch("JetMass", jetMass.data(), "JetMass,[nJet]/D");
+		tree->Branch("JetArea", jetArea.data(), "JetArea[nJet]/D");
+		tree->Branch("JetRawFactor", jetRawFactor.data(), "JetRawFactor,[nJet]/D");
+		tree->Branch("JetDeepCSV", jetDeepCsv.data(), "JetDeepCSV[nJet]/D");
+		tree->Branch("JetDeepJet", jetDeepJet.data(), "JetDeepJet,[nJet]/D");
+		tree->Branch("JetDeepCSVLooseId", jetDeepCsvLooseId.data(), "JetDeepCSVLooseId,[nJet]/B");
+		tree->Branch("JetDeepCSVMediumId", jetDeepCsvMediumId.data(), "JetDeepCSVMediumId[nJet]/B");
+		tree->Branch("JetDeepCSVTightId", jetDeepCsvTightId.data(), "JetDeepCSVTightId[nJet]/B");
+		tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/B");
+		tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/B");
+		tree->Branch("JetDeepJetTightId", jetDeepJetTightId.data(), "JetDeepJetTightId[nJet]/B");
 	}
 }

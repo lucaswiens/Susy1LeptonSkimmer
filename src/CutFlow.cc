@@ -40,6 +40,15 @@ void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const
 	} else if(part == "VetoMuon") {
 		cuts.push_back(ConstructCut(product.nVetoMuon, op, threshold));
 		cutNames.push_back("N_{#mu}^{veto} " + op + std::to_string(threshold));
+	} else if(part == "Lepton") {
+		cuts.push_back(ConstructCut(product.nLepton, op, threshold));
+		cutNames.push_back("N_{lep} " + op + std::to_string(threshold) + " (No ID.)");
+	} else if(part == "GoodLepton") {
+		cuts.push_back(ConstructCut(product.nGoodLepton, op, threshold));
+		cutNames.push_back("N_{lep}^{good} " + op + std::to_string(threshold));
+	} else if(part == "VetoLepton") {
+		cuts.push_back(ConstructCut(product.nVetoLepton, op, threshold));
+		cutNames.push_back("N_{lep}^{veto} " + op + std::to_string(threshold));
 	} else if(part == "Jet") {
 		cuts.push_back(ConstructCut(product.nJet, op, threshold));
 		//cutNames.push_back("N_{j} " + op + std::to_string(threshold) + " (Not clean)");
@@ -50,7 +59,7 @@ void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const
 }
 
 bool CutFlow::Passed() {
-	for(std::size_t i = 0; i < cuts.size(); ++i) {
+	for(int i = 0; i < cuts.size(); i++) {
 		if(!cuts[i]()) return false;
 	}
 
@@ -58,7 +67,7 @@ bool CutFlow::Passed() {
 }
 
 void CutFlow::FillCutflow() {
-	for(std::size_t i = 0; i < cuts.size(); ++i) {
+	for(int i = 0; i < cuts.size(); i++) {
 		if(!cuts[i]()) return;
 		hist->Fill(cutNames[i].c_str(), 1);
 	}

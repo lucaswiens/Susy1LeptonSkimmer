@@ -16,6 +16,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/MuonProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/ElectronProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/JetProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/ScaleFactorProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/METFilterProducer.h>
@@ -43,13 +44,13 @@ int main(int argc, char *argv[]) {
 	std::string inputFileName   = std::string(argv[1]);
 	std::string outputFileName  = std::string(argv[2]);
 	bool isData                 = std::string(argv[3]) == "True" ? true : false;
-	bool doSystematics          = std::string(argv[4]) == "True" ? true : false;
+	bool doSystematics          = std::string(argv[4]) == "True" ? true : false; // Maybe use a string instead that can be "Nominal", "Up" or "Down"
 	int era                     = std::stoi(argv[5]);
 	char runPeriod              = (char)*argv[6]; //If it is MC, then runPeriod does not matter but still has to be given (e.g. just use "m")
 	double xSection             = std::stod(argv[7]);
 
 	int nMaxEvents;
-	if(argc == 9) {
+	if (argc == 9) {
 		nMaxEvents = std::stoi(std::string(argv[8]));
 	} else {
 		nMaxEvents = -999;
@@ -73,7 +74,7 @@ int main(int argc, char *argv[]) {
 
 	for (const std::string &channel : channels) {
 		outputFile.mkdir(channel.c_str());
-		if (doSystematics) { // create a tree for each systematic variation
+		if (doSystematics) { // create a tree for each systematic variation #FIXME
 			for (std::string systematic : {"JEC", "JER"}) {
 				for (std::string shift : {"Up", "Down"}) {
 					outputFile.cd(channel.c_str());
@@ -83,20 +84,20 @@ int main(int argc, char *argv[]) {
 
 					cutflows.push_back(CutFlow(outputFile, channel, systematic, shift));
 					std::string path = "Channel." + channel + ".Selection";
-					for(const std::string part : Utility::GetKeys(configTree, path)) {
+					for (const std::string part : Utility::GetKeys(configTree, path)) {
 						cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".operator"), configTree.get<short>(path + "." + part + ".threshold"));
 					}
 				}
 			}
-		} else { // create just the nominal tree
+		} else { // create just the Nominal tree
 			outputFile.cd(channel.c_str());
-			std::shared_ptr<TTree> tree = std::make_shared<TTree>("nominal", "nominal");
+			std::shared_ptr<TTree> tree = std::make_shared<TTree>("Nominal", "Nominal");
 			tree->SetDirectory(outputFile.GetDirectory(channel.c_str()));
 			outputTrees.push_back(tree);
 
-			cutflows.push_back(CutFlow(outputFile, channel, "nominal", ""));
+			cutflows.push_back(CutFlow(outputFile, channel, "Nominal", ""));
 			std::string path = "Channel." + channel + ".Selection";
-			for(const std::string part : Utility::GetKeys(configTree, path)) {
+			for (const std::string part : Utility::GetKeys(configTree, path)) {
 				std::cout << path << ": "<< part << configTree.get<std::string>(path + "." + part + ".operator")<<configTree.get<std::string>(path + "." + part + ".threshold") << std::endl;
 				cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".operator"), configTree.get<short>(path + "." + part + ".threshold"));
 			}
@@ -110,8 +111,9 @@ int main(int argc, char *argv[]) {
 		//std::shared_ptr<METFilterProducer>(new METFilterProducer(era)),
 		//std::shared_ptr<LeptonProducer>(new LeptonProducer(era, vetoLeptonPtCut, etaCut, dxyCut, dzCut, sip3DCut, isoCut, preVFP)),
 		std::shared_ptr<MuonProducer>(new MuonProducer(configTree, scaleFactorTree, product.GetEraSelector())),
-		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree, product.GetEraSelector())),
-		//std::shared_ptr<JetProducer>(new JetProducer(era, jetPtCut, etaCut, deltaRCut, preVFP, runPeriod)), // exclude jet producer for now
+		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree)),
+		std::shared_ptr<JetProducer>(new JetProducer(configTree, scaleFactorTree, product)),
+		//std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector())), // FIXME segmentation violation after code is done.. probably something weird with the correction lib..
 		//std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer()),
 	};
 	if (!isData) {
@@ -120,14 +122,14 @@ int main(int argc, char *argv[]) {
 	}
 
 	DataReader dataReader(inputFileName, "Events");
-	std::size_t nEvents = dataReader.GetEntries();
+	int nEvents = dataReader.GetEntries();
 
 	//ProgressBar(0, 0);
 	std::cout << std::endl << "Starting Event loop with " << nEvents << " Events" << std::endl;
-	for (std::size_t entry = 0; entry < dataReader.GetEntries(); ++entry) {
+	for (int entry = 0; entry < dataReader.GetEntries(); ++entry) {
 		// Stop Events Loop after nMaxEvents
 		if (nMaxEvents > 0 && entry >= nMaxEvents) { break;}
-		if (entry % 50000 == 0) {
+		if (entry % 100000 == 0) {
 			std::cout  << "Processed " << 100*(double)(entry + 1)/(nMaxEvents < 0? nEvents : nMaxEvents) << "% Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
 		}
 
@@ -136,25 +138,25 @@ int main(int argc, char *argv[]) {
 			producer->Produce(dataReader, product);
 		}
 
-		for(std::size_t iTree = 0; iTree < outputTrees.size(); iTree++) {
+		for (int iTree = 0; iTree < outputTrees.size(); iTree++) {
 			cutflows.at(iTree).Count();
 			cutflows.at(iTree).FillCutflow();
-			if(cutflows.at(iTree).Passed()) { outputTrees.at(iTree)->Fill();}
+			if (cutflows.at(iTree).Passed()) { outputTrees.at(iTree)->Fill();}
 		}
 	}
 
-	std::size_t finalNumberOfEvents;
+	int finalNumberOfEvents;
 	std::cout  << "Processed Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
 	for (std::shared_ptr<TTree> tree : outputTrees) {
 		finalNumberOfEvents = tree->GetEntries();
 		if (nMaxEvents > 0) {
-			std::cout << std::setw(20) << tree->GetDirectory()->GetName() << " " << std::setw(10) << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nMaxEvents << " (" << 100*(double)finalNumberOfEvents/nMaxEvents << "%)" << std::endl;
+			std::cout << std::setw(20) << tree->GetDirectory()->GetName() << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nMaxEvents << " (" << 100*(double)finalNumberOfEvents/nMaxEvents << "%)" << std::endl;
 		} else {
-			std::cout << std::setw(20) << tree->GetDirectory()->GetName() << " " << std::setw(10) << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(double)finalNumberOfEvents/nEvents << "%)" << std::endl;
+			std::cout << std::setw(20) << tree->GetDirectory()->GetName() << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(double)finalNumberOfEvents/nEvents << "%)" << std::endl;
 		}
 	}
 
-	for (std::size_t iTree = 0; iTree < outputTrees.size(); iTree++) {
+	for (int iTree = 0; iTree < outputTrees.size(); iTree++) {
 		outputFile.cd(outputTrees.at(iTree)->GetDirectory()->GetName());
 		outputTrees.at(iTree)->Write(0, TObject::kOverwrite);
 		cutflows.at(iTree).WriteOutput();

@@ -1,8 +1,9 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/MuonProducer.h>
 
 MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector) {
+	std::string cmsswBase = std::getenv("CMSSW_BASE");
 	//Name = "MuonProducer";
-	rc.init(std::string(std::getenv("CMSSW_BASE")) + "/src/" + scaleFactorTree.get<std::string>("Muon.Scale." + eraSelector));
+	rc.init(std::string(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon.Scale." + eraSelector)));
 
 	muonGoodPtCut         = configTree.get<double>("Producer.Muon.Pt.Good");
 	muonVetoPtCut         = configTree.get<double>("Producer.Muon.Pt.Veto");
@@ -41,100 +42,101 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 	product.nMuon = dataReader.nMuon;
 	assert(product.nMuon < product.nMax);
 
-	std::size_t muonCounter = 0, goodMuonCounter = 0, vetoMuonCounter = 0, antiSelectedMuonCounter = 0;
-	if (product.nMuon > 0) {
-		for (std::size_t iMuon = 0; iMuon < dataReader.nMuon; iMuon++) {
-			dataReader.GetMuonValues(iMuon);
+	int muonCounter = 0, goodMuonCounter = 0, vetoMuonCounter = 0, antiSelectedMuonCounter = 0;
+	for (int iMuon = 0; iMuon < dataReader.nMuon; iMuon++) {
+		dataReader.GetMuonValues(iMuon);
 
-			// Rochester Correction
-			int muonMatchedGenIndex = -999;
-			double dataScaleFactor = 1., mcScaleFactor = 1., scaleFactorUnc = 0.; // TODO think about how to do this better
-			if (!product.GetIsData()) {
-				muonMatchedGenIndex = dataReader.GetGenMatchedIndex(dataReader.muonPt, dataReader.muonPhi, dataReader.muonEta, 13, 0.4, 0.4);
-				if(muonMatchedGenIndex < 0){
-					dataReader.alreadyMatchedIndex.push_back(muonMatchedGenIndex);
-					dataReader.GetGenPartValues(muonMatchedGenIndex);
+		// Rochester Correction
+		int muonMatchedGenIndex = -999;
+		double dataScaleFactor = 1., mcScaleFactor = 1., scaleFactorUnc = 0.; // TODO think about how to do this better
+		if (!product.GetIsData()) {
+			muonMatchedGenIndex = dataReader.GetGenMatchedIndex(dataReader.muonPt, dataReader.muonPhi, dataReader.muonEta, 13, 0.4, 0.4);
+			if(muonMatchedGenIndex > 0){
+				dataReader.alreadyMatchedIndex.push_back(muonMatchedGenIndex);
+				dataReader.GetGenValues(muonMatchedGenIndex);
 
-					mcScaleFactor = rc.kSpreadMC(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.genPt, 0, 0);
-					scaleFactorUnc = rc.kSpreadMCerror(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.genPt);
-				} else {
-					mcScaleFactor = rc.kSmearMC(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.muonNTrackerLayers, dataReader.muonRandomNumber, 0, 0);
-					scaleFactorUnc = rc.kSmearMCerror(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.muonNTrackerLayers, dataReader.muonRandomNumber);
-				}
+				mcScaleFactor = rc.kSpreadMC(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.genPt, 0, 0);
+				scaleFactorUnc = rc.kSpreadMCerror(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.genPt);
 			} else {
-				dataScaleFactor = rc.kScaleDT(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, 0, 0);
+
+				mcScaleFactor = rc.kSmearMC(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.muonNTrackerLayers, dataReader.muonRandomNumber, 0, 0);
+				scaleFactorUnc = rc.kSmearMCerror(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, dataReader.muonNTrackerLayers, dataReader.muonRandomNumber);
 			}
-
-			double muonPt      = dataReader.muonPt * (product.GetIsData() ? dataScaleFactor : mcScaleFactor),
-				muonPtUp   = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor + scaleFactorUnc) : (mcScaleFactor + scaleFactorUnc)),
-				muonPtDown = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor - scaleFactorUnc) : (mcScaleFactor - scaleFactorUnc));
-
-			if (muonPt < muonVetoPtCut ||
-					abs(dataReader.muonEta) > muonEtaCut ||
-					//dataReader.muonDxy > muonDxyCut ||
-					//dataReader.muonDz > muonDzCut ||
-					//dataReader.muonSip3d > muonSip3dCut ||
-					//dataReader.muonMiniIso > muonVetoIsoCut ||
-					!dataReader.muonIsPfCand)
-			{continue; }
-
-			product.muonPtVector.push_back(muonPt);
-			product.muonPt[muonCounter] = dataReader.muonPt;
-			product.muonRoccorPt[muonCounter] = muonPt;
-			product.muonRoccorPtUp[muonCounter] = muonPtUp;
-			product.muonRoccorPtDown[muonCounter] = muonPtDown;
-			product.muonEta[muonCounter] = dataReader.muonEta;
-			product.muonPhi[muonCounter] = dataReader.muonPhi;
-			product.muonMass[muonCounter] = dataReader.muonMass;
-			product.muonCharge[muonCounter] = dataReader.muonCharge;
-			product.muonMiniIso[muonCounter] = dataReader.muonMiniIso;
-			product.muonPdgId[muonCounter] = dataReader.muonPdgId;
-			product.muonGenMatchedIndex[muonCounter] = muonMatchedGenIndex;
-
-			product.muonLooseId[muonCounter]    = dataReader.muonLooseId;
-			product.muonMediumId[muonCounter]   = dataReader.muonMediumId;
-			product.muonLooseId[muonCounter]    = dataReader.muonLooseId;
-			product.muonCutBasedId[muonCounter] = dataReader.muonTightId ? 4 : dataReader.muonMediumId ? 3 : dataReader.muonLooseId ? 2 : 1;
-
-			product.muonIsGood[muonCounter] = muonPt > muonGoodPtCut &&
-								dataReader.muonMiniIso < muonGoodIsoCut &&
-								(muonGoodCutBasedIdCut == 'T'?  dataReader.muonTightId :
-								muonGoodCutBasedIdCut  == 'M'? dataReader.muonMediumId :
-								muonGoodCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
-
-			product.muonIsVeto[muonCounter] = muonPt <= muonGoodPtCut &&
-								dataReader.muonMiniIso < muonVetoIsoCut &&
-								(muonVetoCutBasedIdCut == 'T'?  dataReader.muonTightId :
-								muonVetoCutBasedIdCut  == 'M'? dataReader.muonMediumId :
-								muonVetoCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
-
-			product.muonIsAntiSelected[muonCounter] = dataReader.muonMiniIso >= muonAntiIsoCut &&
-								(muonAntiCutBasedIdCut == 'T'?  dataReader.muonTightId :
-								muonAntiCutBasedIdCut  == 'M'? dataReader.muonMediumId :
-								muonAntiCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
-
-			if (product.muonIsGood[muonCounter]) { goodMuonCounter++;}
-			if (product.muonIsVeto[muonCounter]) { vetoMuonCounter++;}
-			if (product.muonIsAntiSelected[muonCounter]) { antiSelectedMuonCounter++;}
-			muonCounter++;
+		} else {
+			dataScaleFactor = rc.kScaleDT(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, 0, 0);
 		}
 
-		//Overwrite number of leptons by excluding leptons that do not survive the cuts
-		product.nMuon = muonCounter;
-		product.nGoodMuon = goodMuonCounter;
-		product.nVetoMuon = vetoMuonCounter;
+		double muonPt      = dataReader.muonPt * (product.GetIsData() ? dataScaleFactor : mcScaleFactor),
+			muonPtUp   = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor + scaleFactorUnc) : (mcScaleFactor + scaleFactorUnc)),
+			muonPtDown = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor - scaleFactorUnc) : (mcScaleFactor - scaleFactorUnc));
 
-		/*
-		if (product.nLepton!=0 && false) { //nLepton can be 0 since unselected leptons are not counted
-			ROOT::Math::PtEtaPhiMVector leadingLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(0), Eta.at(0), Phi.at(0), Mass.at(0));
-			for (std::size_t i = 1; i < product.nLepton; i++){
-				ROOT::Math::PtEtaPhiMVector otherLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(i), Eta.at(i), Phi.at(i), Mass.at(i));
-				ROOT::Math::PtEtaPhiMVector diLeptonP4 = leadingLeptonP4 + otherLeptonP4;
-				dileptonMass[muonCounter] = diLeptonP4.M();
-			}
-		}
-		*/
+		if (muonPt < muonVetoPtCut ||
+				abs(dataReader.muonEta) > muonEtaCut ||
+				//dataReader.muonDxy > muonDxyCut ||
+				//dataReader.muonDz > muonDzCut ||
+				//dataReader.muonSip3d > muonSip3dCut ||
+				//dataReader.muonMiniIso > muonVetoIsoCut ||
+				!dataReader.muonIsPfCand)
+		{continue; }
+
+
+		product.muonPtVector.push_back(muonPt);
+		product.muonPt[muonCounter] = muonPt;
+		product.muonEta[muonCounter] = dataReader.muonEta;
+		product.muonPhi[muonCounter] = dataReader.muonPhi;
+		product.muonMass[muonCounter] = dataReader.muonMass;
+		product.muonCharge[muonCounter] = dataReader.muonCharge;
+		product.muonMiniIso[muonCounter] = dataReader.muonMiniIso;
+		product.muonPdgId[muonCounter] = dataReader.muonPdgId;
+		product.muonGenMatchedIndex[muonCounter] = muonMatchedGenIndex;
+
+		product.muonLooseId[muonCounter]    = dataReader.muonLooseId;
+		product.muonMediumId[muonCounter]   = dataReader.muonMediumId;
+		product.muonLooseId[muonCounter]    = dataReader.muonLooseId;
+		product.muonCutBasedId[muonCounter] = dataReader.muonTightId ? 4 : dataReader.muonMediumId ? 3 : dataReader.muonLooseId ? 2 : 1;
+
+		product.muonIsGood[muonCounter] = muonPt > muonGoodPtCut &&
+							dataReader.muonMiniIso < muonGoodIsoCut &&
+							dataReader.muonIdMap.at(muonGoodCutBasedIdCut);
+							//(muonGoodCutBasedIdCut == 'T'?  dataReader.muonTightId :
+							//muonGoodCutBasedIdCut  == 'M'? dataReader.muonMediumId :
+							//muonGoodCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
+
+		product.muonIsVeto[muonCounter] = muonPt <= muonGoodPtCut &&
+							dataReader.muonMiniIso < muonVetoIsoCut &&
+							dataReader.muonIdMap.at(muonVetoCutBasedIdCut);
+							//(muonVetoCutBasedIdCut == 'T'?  dataReader.muonTightId :
+							//muonVetoCutBasedIdCut  == 'M'? dataReader.muonMediumId :
+							//muonVetoCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
+
+		product.muonIsAntiSelected[muonCounter] = dataReader.muonMiniIso >= muonAntiIsoCut &&
+							dataReader.muonIdMap.at(muonAntiCutBasedIdCut);
+							//(muonAntiCutBasedIdCut == 'T'?  dataReader.muonTightId :
+							//muonAntiCutBasedIdCut  == 'M'? dataReader.muonMediumId :
+							//muonAntiCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
+
+		if (product.muonIsGood[muonCounter]) { goodMuonCounter++;}
+		if (product.muonIsVeto[muonCounter]) { vetoMuonCounter++;}
+		if (product.muonIsAntiSelected[muonCounter]) { antiSelectedMuonCounter++;}
+		muonCounter++;
 	}
+
+	//Overwrite number of leptons by excluding leptons that do not survive the cuts
+	product.nMuon = muonCounter;
+	product.nGoodMuon = goodMuonCounter;
+	product.nVetoMuon = vetoMuonCounter;
+
+	/*
+	if (product.nLepton!=0 && false) { //nLepton can be 0 since unselected leptons are not counted
+		ROOT::Math::PtEtaPhiMVector leadingLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(0), Eta.at(0), Phi.at(0), Mass.at(0));
+		for (int i = 1; i < product.nLepton; i++){
+			ROOT::Math::PtEtaPhiMVector otherLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(i), Eta.at(i), Phi.at(i), Mass.at(i));
+			ROOT::Math::PtEtaPhiMVector diLeptonP4 = leadingLeptonP4 + otherLeptonP4;
+			dileptonMass[muonCounter] = diLeptonP4.M();
+		}
+	}
+	*/
+
 }
 
 void MuonProducer::EndJob(TFile &file) {

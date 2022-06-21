@@ -14,17 +14,17 @@ class DataReader {
 		std::shared_ptr<TTree> inputTree;
 
 		// Event Number
-		std::size_t entry;
+		int entry;
 
 		// MetaData Leafs
 		TLeaf *processNameLeaf;
-		// Muons Leafs
+		// Muon Leafs
 		TLeaf *nMuonLeaf,
 			*muonPtLeaf, *muonEtaLeaf, *muonPhiLeaf, *muonMassLeaf, *muonIsoLeaf, *muonDxyLeaf, *muonDzLeaf, *muonSip3dLeaf, *muonMiniIsoLeaf,
 			*muonPdgIdLeaf, *muonChargeLeaf, *muonNTrackerLayersLeaf,
 			*muonLooseIdLeaf, *muonMediumIdLeaf, *muonTightIdLeaf, *muonMvaIdLeaf, *muonIsPfCandLeaf;
 
-		// Electrons Leafs
+		// Electron Leafs
 		TLeaf *nElectronLeaf,
 			*electronPtLeaf, *electronEtaLeaf, *electronPhiLeaf, *electronMassLeaf,
 			*electronDxyLeaf, *electronDzLeaf,
@@ -37,28 +37,52 @@ class DataReader {
 			*electronEnergyScaleUpLeaf, *electronEnergyScaleDownLeaf,
 			*electronEnergySigmaUpLeaf, *electronEnergySigmaDownLeaf;
 
+		// Jet Leafs
+		TLeaf *nJetLeaf, *nFatJetLeaf,
+			//*jetFlavourLeaf,
+			*jetIdLeaf,
+			*jetMassLeaf, *jetPtLeaf, *jetEtaLeaf, *jetPhiLeaf,
+			*jetAreaLeaf, *jetRawFactorLeaf,
+			*jetDeepCsvLeaf, *jetDeepJetLeaf,
+			*rhoLeaf,
+			*metPhiLeaf, *metPtLeaf;
+			//*fatJet_deepTagMD_H4qvsQCDLeaf, *fatJet_deepTagMD_HbbvsQCDLeaf, *fatJet_deepTagMD_TvsQCDLeaf, *fatJet_deepTagMD_WvsQCDLeaf,
+			//*fatJet_deepTagMD_ZHbbvsQCDLeaf, *fatJet_deepTagMD_ZHccvsQCDLeaf, *fatJet_deepTagMD_ZbbvsQCDLeaf, *fatJet_deepTagMD_ZvsQCDLeaf,
+			//*fatJet_deepTagMD_bbvsLightLeaf, *fatJet_deepTagMD_ccvsLightLeaf,
+			//*fatJet_deepTag_HLeaf, *fatJet_deepTag_QCDLeaf, *fatJet_deepTag_QCDothersLeaf,
+			//*fatJet_deepTag_TvsQCDLeaf, *fatJet_deepTag_WvsQCDLeaf, *fatJet_deepTag_ZvsQCDLeaf;
+
+		// GenJet for smearing
+		TLeaf *nGenJetLeaf, *nGenFatJetLeaf,
+			*genJetPtLeaf, *genJetEtaLeaf, *genJetPhiLeaf,
+			*genFatJetPtLeaf, *genFatJetEtaLeaf, *genFatJetPhiLeaf;
+
+
+
 		// Generator Particle Leafs
 		TLeaf *nGenPartLeaf,
 			*genPDGLeaf, *genMotherIndexLeaf,
 			*genPtLeaf, *genEtaLeaf, *genPhiLeaf, *genMassLeaf;
+
 	public:
 		DataReader(const std::string &fileName, const std::string &treeName);
 
 		// Event entry information
-		std::size_t GetEntries(){return inputTree->GetEntries();}
-		void SetEntry(const std::size_t &entry){this->entry = entry;}
+		int GetEntries(){return inputTree->GetEntries();}
+		void SetEntry(const int &entry){this->entry = entry;}
 
 		// Muon
 		void ReadMuonEntry();
-		void GetMuonValues(const std::size_t &index);
+		void GetMuonValues(const int &index);
 		int nMuon;
 		double muonPt, muonEta, muonPhi, muonMass, muonIso, muonDxy, muonDz, muonSip3d, muonMiniIso, muonRandomNumber;
 		int muonPdgId, muonCharge, muonMvaId, muonNTrackerLayers;
 		bool muonLooseId, muonMediumId, muonTightId, muonIsPfCand;
+		std::map<char, bool> muonIdMap;
 
 		// Electron
 		void ReadElectronEntry();
-		void GetElectronValues(const std::size_t &index);
+		void GetElectronValues(const int &index);
 		int nElectron;
 		double electronPt, electronEta, electronPhi, electronMass,
 			electronDxy, electronDz,
@@ -68,10 +92,34 @@ class DataReader {
 			electronEnergySigmaUp, electronEnergySigmaDown;
 		int electronCharge, electronCutBasedId, electronConvVeto, electronNLostHits;
 		bool electronLooseMvaId, electronMediumMvaId, electronTightMvaId;
+		std::map<char, bool> electronIdMap;
+
+		// Jet
+		void ReadJetEntry();
+		void GetJetValues(const int &index);
+		int nJet, nFatJet,
+			jetId;
+			//jetFlavour;
+		double jetMass, jetPt, jetEta, jetPhi,
+			jetArea, jetRawFactor,
+			jetDeepCsv, jetDeepJet,
+			rho,
+			metPhi, metPt;
+
+		// Gen Jet for Smearing
+		void ReadGenJetEntry();
+		void GetGenJetValues(const int &index);
+		int nGenJet;
+		double genJetPt, genJetEta, genJetPhi;
+		void ReadGenFatJetEntry();
+		void GetGenFatJetValues(const int &index);
+		int nGenFatJet;
+		double genFatJetPt, genFatJetEta, genFatJetPhi;
+
 
 		// Generator Particle
-		void ReadGenPartEntry();
-		void GetGenPartValues(const std::size_t &index);
+		void ReadGenEntry();
+		void GetGenValues(const int &index);
 		int nGenPart;
 		int genPDG, genMotherIndex;
 		double genPt, genEta, genPhi, genMass;

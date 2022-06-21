@@ -22,18 +22,25 @@ def prepareArguments(sample):
 	year = "unknown"
 	runPeriod = "m"
 	isFastSim = False
-	if "RunIISummer16" in str(sample) or "Run2016" in str(sample):
+	if "RunIISummer20UL16" in str(sample) or "Run2016" in str(sample):
 		year = 2016
-		if "PUSummer16v3Fast" in str(sample):
+		if "PUSummer16v3Fast" in str(sample): #TODO FIXME
 			isFastSim == True
 		else:
 			isFastSim == False
-	elif "RunIIFall17" in str(sample) or "Run2017" in str(sample):
+	elif "RunIISummer20UL17" in str(sample):
 		year = 2017
-		if "TuneCP2" in str(sample):
+		if "TuneCP2" in str(sample): #TODO FIXME
 			isFastSim == True
 		else:
 			isFastSim == False
+	elif "RunIISummer20UL18" in str(sample):
+		year = 2018
+		if "TuneCP2" in str(sample): #TODO FIXME
+			isFastSim == True
+		else:
+			isFastSim == False
+
 	if "/NANOAODSIM" in sample:
 		isData = False
 	if "/SMS-T1tttt" in sample:
@@ -47,12 +54,12 @@ def GetOSVariable(Var):
 	try:
 		variable = os.environ[Var]
 	except KeyError:
-		print "Please set the environment variable " + Var
+		print("Please set the environment variable " + Var)
 		sys.exit(1)
 	return variable
 
 if __name__=="__main__":
-	date = subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).replace("\n", "")
+	date = GetOSVariable("DATE")#subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).replace("\n", "")
 	cmsswBase = GetOSVariable("CMSSW_BASE")
 	#redirector = "root://cms-xrd-global.cern.ch/"
 	redirector = "root://xrootd-cms.infn.it/"
@@ -69,7 +76,9 @@ if __name__=="__main__":
 	args.output = args.output + "/" + outputDirName
 	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim"
 
-	if  os.path.exists(args.output):
+	print(args.output)
+	#if  os.path.exists(args.output):
+	if False:
 		keepDirectory = raw_input("Output directory already exists: " + str(args.output) + " Do you want to remove it [y/n]: ")
 		if ( "y" in keepDirectory or "Y" in keepDirectory or "Yes" in keepDirectory or "yes" in keepDirectory):
 			shutil.rmtree(str(args.output))
@@ -77,14 +86,16 @@ if __name__=="__main__":
 			os.makedirs(str(args.output) + "/logs")
 			os.makedirs(str(args.output) + "/error")
 			os.makedirs(str(args.output) + "/output")
-		elif ( "N" in keepDirectory or  "n" in keepDirectory or  "No" in keepDirectory or "no" in keepDirectory): print str(args.output) , "will be ovewritten by the job output -- take care"
+		elif ( "N" in keepDirectory or  "n" in keepDirectory or  "No" in keepDirectory or "no" in keepDirectory): print(str(args.output) , "will be ovewritten by the job output -- take care")
 		else:
 			raise ValueError( "invalid input, answer with \"Yes\" or \"No\"")
-	else:
+	try:
 		os.makedirs(str(args.output))
 		os.makedirs(str(args.output) + "/logs")
 		os.makedirs(str(args.output) + "/error")
 		os.makedirs(str(args.output) + "/output")
+	except:
+		print("Output Dir already exists")
 
 
 	submitFileContent = open(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/condor.submit", "r").read()
@@ -105,10 +116,11 @@ if __name__=="__main__":
 			sampleName = sample.replace("/", "_")[1:]
 
 			for filename in fileList:
-				argumentFile.write(redirector + filename + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
+				print(filename.decode('utf-8'))
+				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
 	sampleFile.close()
 	argumentFile.close()
 
-	print "Condor submission file created. Can be submitted via:"
-	print "cd " + args.output
-	print "condor_submit condor.submit"
+	print("Condor submission file created. Can be submitted via:")
+	print("cd " + args.output)
+	print("condor_submit condor.submit")

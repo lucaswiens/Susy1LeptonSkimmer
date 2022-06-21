@@ -28,3 +28,5 @@ echo "Executing:"
 echo "NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION $NMAXEVENTS"
 echo
 NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION $NMAXEVENTS
+
+cd $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer

@@ -66,6 +66,7 @@ float GenLevelProducer::DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtE
 //}
 
 void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
+	/*
 	//Initialize all variables as -999
 	GenDeltaPhiLepWSum.clear();
 	GenDeltaPhiLepWDirect.clear();
@@ -261,6 +262,7 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 
 	product.nGenPart = NGenPart;
 	//cutflow.hist->Fill("GenLevelProducer", cutflow.weight);
+	*/
 }
 
 void GenLevelProducer::EndJob(TFile &file) {}

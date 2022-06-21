@@ -7,7 +7,7 @@
 class Susy1LeptonProduct {
 	private:
 		int era;
-		bool preVFP, isData;
+		bool preVFP, isData, isUp;
 		std::string eraSelector, sampleName;
 		char runPeriod;
 		double xSection, luminosity;
@@ -19,16 +19,23 @@ class Susy1LeptonProduct {
 		std::string GetEraSelector() { return eraSelector;}
 		bool GetIsPreVFP() {return preVFP;}
 		bool GetIsData() {return isData;}
+		char GetRunPeriod() {return runPeriod;}
 
 		// Max value for static arrays, should use assert to enforce nObject < nMax
 		static const std::size_t nMax = 20;
 
 		// Lepton Information
-		int nLepton;
+		int nLepton, nGoodLepton, nVetoLepton;
 
 		// Muons Inforamtion
 		int nMuon, nGoodMuon, nVetoMuon, nAntiSelectedMuon;
-		std::array<double, nMax> muonPt, muonRoccorPt, muonRoccorPtUp, muonRoccorPtDown, muonEta, muonPhi, muonMass, muonMiniIso, muonDxy, muonDz, muonSip3d;
+		std::array<double, nMax> muonPt, muonEta, muonPhi, muonMass, muonMiniIso, muonDxy, muonDz, muonSip3d,
+			muonLooseIsoSf, muonLooseIsoSfUp, muonLooseIsoSfDown,
+			muonTightIsoSf, muonTightIsoSfUp, muonTightIsoSfDown,
+			muonLooseSf, muonLooseSfUp, muonLooseSfDown,
+			muonMediumSf, muonMediumSfUp, muonMediumSfDown,
+			muonTightSf, muonTightSfUp, muonTightSfDown,
+			muonTriggerSf, muonTriggerSfUp, muonTriggerSfDown;
 		std::array<int, nMax> muonPdgId, muonCharge, muonCutBasedId, muonGenMatchedIndex;
 		std::array<bool, nMax> muonTightId, muonMediumId, muonLooseId,
 			muonMvaId, muonIsPfCand,
@@ -41,52 +48,28 @@ class Susy1LeptonProduct {
 			electronECorr,
 			electronMiniIso, electronIso03, electronIso04, electronRelJetIso,
 			electronEnergyScaleUp, electronEnergyScaleDown,
-			electronEnergySigmaUp, electronEnergySigmaDown;
+			electronEnergySigmaUp, electronEnergySigmaDown,
+			electronRecoSf, electronRecoSfUp, electronRecoSfDown,
+			electronVetoSf, electronVetoSfUp, electronVetoSfDown,
+			electronLooseSf, electronLooseSfUp, electronLooseSfDown,
+			electronMediumSf, electronMediumSfUp, electronMediumSfDown,
+			electronTightSf, electronTightSfUp, electronTightSfDown,
+			electronMediumMvaSf, electronMediumMvaSfUp, electronMediumMvaSfDown,
+			electronTightMvaSf, electronTightMvaSfUp, electronTightMvaSfDown;
 		std::array<int, nMax> electronCharge, electronCutBasedId, electronNLostHits;
 		std::array<bool, nMax> electronLooseMvaId, electronMediumMvaId, electronTightMvaId,
 			electronTightId, electronMediumId, electronLooseId, electronVetoId,
-			electronLoose, electronMedium, electronTight,
 			electronIsGood, electronIsVeto, electronIsAntiSelected,
 			electronConvVeto;
 
-		// FIXME Old Info Delete Later
-		float leptonPt = -999;
-		float leptonEta = -999;
-		float leptonPhi = -999;
-		float leptonMass = -999;
-		int leptonPdgId = -999;
-		int leptonCharge = -999;
-
-		int nJet = 0;
-		int nLooseCSVBTagJet = 0;
-		int nMediumCSVBTagJet = 0;
-		int nTightCSVBTagJet = 0;
-		int nLooseDFBTagJet = 0;
-		int nMediumDFBTagJet = 0;
-		int nTightDFBTagJet = 0;
-		std::vector<float> jetPt;
-		std::vector<float> jetPhi;
-		std::vector<float> jetEta;
-		std::vector<float> jetMass;
-		std::vector<bool> jetMediumCSVBTag;
-		std::vector<bool> jetMediumDFBTag;
-		//Required for Signal Region Flag
-
-		float metPt = -999;
-		float metPhi = -999;
-
-		int nGenPart = -999;
-		int nGenWBoson = -999;
-		std::vector<float> genWBosonPt;
-		std::vector<float> genWBosonEta;
-		std::vector<float> genWBosonPhi;
-		std::vector<float> genWBosonMass;
-
-		int nGenTop = -999;
-		std::vector<float> genTopPt;
-		std::vector<float> genTopEta;
-		std::vector<float> genTopPhi;
-		std::vector<float> genTopMass;
+		int nJet, nFatJet,
+			nDeepCsvBTag, nDeepJetBTag, jetId;
+		double rho, metPt, metPhi;
+		std::array<double, nMax> jetPt, jetEta, jetPhi, jetMass,
+			jetArea, jetRawFactor,
+			jetDeepCsv, jetDeepJet;
+		std::array<bool, nMax> jetDeepCsvTightId, jetDeepCsvMediumId, jetDeepCsvLooseId,
+			jetDeepJetTightId, jetDeepJetMediumId, jetDeepJetLooseId;
 };
 
 #endif

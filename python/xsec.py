@@ -11,7 +11,7 @@ def GetOSVariable(Var):
 	try:
 		variable = os.environ[Var]
 	except KeyError:
-		print "Please set the environment variable " + Var
+		print("Please set the environment variable " + Var)
 		sys.exit(1)
 	return variable
 

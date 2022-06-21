@@ -14,13 +14,13 @@
 class ElectronProducer : public BaseProducer {
 	private:
 		//Cut Variables
-		int era, eraSelector;
+		int era;
 		double electronGoodPtCut, electronVetoPtCut, electronEtaCut, electronGoodIsoCut, electronVetoIsoCut, electronAntiIsoCut;
 		int electronGoodNumberOfLostHitsCut;
 		char electronGoodCutBasedIdCut, electronVetoCutBasedIdCut, electronAntiIsCutBasedIdCut, electronAntiIsNotCutBasedIdCut;
 	public:
 		std::string Name = "ElectronProducer";
-		ElectronProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);
+		ElectronProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
 		void EndJob(TFile &file);

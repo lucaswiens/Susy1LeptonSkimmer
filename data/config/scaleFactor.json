@@ -1,82 +1,124 @@
 {
 	"Jet": {
-		"JEC": {
-			"MC": {
-				"2016PreVFP": [
-					"/JEC/2016/UL/Summer19UL16_V7_MC_L1FastJet_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16_V7_MC_L2Relative_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16_V7_MC_L3Absolute_&PFchs.txt"
-				],
-
-				"2016PostVFP": [
-					"/JEC/2016/UL/Summer19UL16_V7_MC_L1FastJet_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16_V7_MC_L2Relative_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16_V7_MC_L3Absolute_&PFchs.txt"
-				],
-
-				"2017": [
-					"/JEC/2017/UL/Summer19UL17_V5_MC_L1FastJet_&PFchs.txt",
-					"/JEC/2017/UL/Summer19UL17_V5_MC_L2Relative_&PFchs.txt",
-					"/JEC/2017/UL/Summer19UL17_V5_MC_L3Absolute_&PFchs.txt"
-				],
-
-				"2018": [
-					"/JEC/2018/UL/Summer19UL18_V5_MC_L1FastJet_&PFchs.txt",
-					"/JEC/2018/UL/Summer19UL18_V5_MC_L2Relative_&PFchs.txt",
-					"/JEC/2018/UL/Summer19UL18_V5_MC_L3Absolute_&PFchs.txt"
-				]
+		"JERC": {
+			"2016PreVFP": {
+				"Era"  : "Summer19UL16APV",
+				"MC"   : "V7_MC",
+				"DATA" : "V7_DATA",
+				"JER"  : "JRV3_MC",
+				"RunPeriod" : {
+					"M" : "M",
+					"B" : "BCD",
+					"C" : "BCD",
+					"D" : "BCD",
+					"E" : "EF",
+					"F" : "EF"
+				},
+				"AK4" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2016postVFP_UL/jet_jerc.json",
+					"Algorithm" : "AK4PFchs"
+				},
+				"AK8" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2016postVFP_UL/fatJet_jerc.json",
+					"Algorithm" : "AK8PFPuppi"
+				},
+				"JME" : {
+					"JSON" : "jsonpog-integration/POG/JME/2016postVFP_UL/jmar.json"
+				}
 			},
-
-			"Data": {
-				"2016PreVFP": [
-					"/JEC/2016/UL/Summer19UL16APV_Run@_V7_DATA_L1FastJet_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16APV_Run@_V7_DATA_L2Relative_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16APV_Run@_V7_DATA_L3Absolute_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16APV_Run@_V7_DATA_L2L3Residual_&PFchs.txt"
-				],
-
-				"2016PostVFP": [
-					"/JEC/2016/UL/Summer19UL16_Run@_V7_DATA_L1FastJet_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16_Run@_V7_DATA_L2Relative_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16_Run@_V7_DATA_L3Absolute_&PFchs.txt",
-					"/JEC/2016/UL/Summer19UL16_Run@_V7_DATA_L2L3Residual_&PFchs.txt"
-				],
-
-				"2017": [
-					"/JEC/2017/UL/Summer19UL17_Run@_V5_DATA_L1FastJet_&PFchs.txt",
-					"/JEC/2017/UL/Summer19UL17_Run@_V5_DATA_L2Relative_&PFchs.txt",
-					"/JEC/2017/UL/Summer19UL17_Run@_V5_DATA_L3Absolute_&PFchs.txt",
-					"/JEC/2017/UL/Summer19UL17_Run@_V5_DATA_L2L3Residual_&PFchs.txt"
-				],
-
-				"2018": [
-					"/JEC/2018/UL/Summer19UL18_Run@_V5_DATA_L1FastJet_&PFchs.txt",
-					"/JEC/2018/UL/Summer19UL18_Run@_V5_DATA_L2Relative_&PFchs.txt",
-					"/JEC/2018/UL/Summer19UL18_Run@_V5_DATA_L3Absolute_&PFchs.txt",
-					"/JEC/2018/UL/Summer19UL18_Run@_V5_DATA_L2L3Residual_&PFchs.txt"
-				]
+			"2016PostVFP": {
+				"Era"  : "Summer19UL16",
+				"MC"   : "V7_MC",
+				"DATA" : "V7_DATA",
+				"JER"  : "JRV3_MC",
+				"RunPeriod" : {
+					"M" : "M",
+					"F" : "FGH",
+					"G" : "FGH",
+					"H" : "FGH"
+				},
+				"AK4" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2016postVFP_UL/jet_jerc.json",
+					"Algorithm" : "AK4PFchs"
+				},
+				"AK8" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2016postVFP_UL/fatJet_jerc.json",
+					"Algorithm" : "AK8PFPuppi"
+				},
+				"JME" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2016postVFP_UL/jmar.json"
+				}
+			},
+			"2017": {
+				"Era"  : "Summer19UL17",
+				"MC"   : "V5_MC",
+				"DATA" : "V5_DATA",
+				"JER"  : "JRV2_MC",
+				"RunPeriod" : {
+					"M" : "M",
+					"B" : "B",
+					"C" : "C",
+					"D" : "D",
+					"E" : "E",
+					"F" : "F"
+				},
+				"AK4" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2017_UL/jet_jerc.json",
+					"Algorithm" : "AK4PFchs"
+				},
+				"AK8" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2017_UL/fatJet_jerc.json",
+					"Algorithm" : "AK8PFPuppi"
+				},
+				"JME" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2017_UL/jmar.json"
+				}
+			},
+			"2018": {
+				"Era"  : "Summer19UL18",
+				"MC"   : "V5_MC",
+				"DATA" : "V5_DATA",
+				"JER"  : "JRV2_MC",
+				"RunPeriod" : {
+					"M" : "M",
+					"A" : "A",
+					"B" : "B",
+					"C" : "C",
+					"D" : "D"
+				},
+				"AK4" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2018_UL/jet_jerc.json",
+					"Algorithm" : "AK4PFchs"
+				},
+				"AK8" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2018_UL/fatJet_jerc.json",
+					"Algorithm" : "AK8PFPuppi"
+				},
+				"JMAR" : {
+					"JSON"      : "jsonpog-integration/POG/JME/2018_UL/jmar.json"
+				}
 			}
 		},
 
 		"JECUNC": {
-			"2016PreVFP": "/JEC/2016/UL/Summer19UL16_V7_MC_UncertaintySources_&PFchs.txt",
-			"2016PostVFP": "/JEC/2016/UL/Summer19UL16_V7_MC_UncertaintySources_&PFchs.txt",
-			"2017": "/JEC/2017/UL/Summer19UL17_V5_MC_UncertaintySources_&PFchs.txt",
-			"2018": "/JEC/2018/UL/Summer19UL18_V5_MC_UncertaintySources_&PFchs.txt"
+			"2016PreVFP": "JECDatabase/textFiles/Summer19UL16APV_V7_MC/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt",
+			"2016PostVFP": "JECDatabase/textFiles/Summer19UL16_V7_MC/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt",
+			"2017": "JECDatabase/textFiles/Summer19UL17_V5_MC/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt",
+			"2018": "JECDatabase/textFiles/Summer19UL18_V5_MC/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt"
 		},
 
 		"JME": {
-			"2016PreVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_&PFchs.txt",
-			"2016PostVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_&PFchs.txt",
-			"2017": "/JME/2017/UL/Summer19UL17_JRV2_MC_SF_&PFchs.txt",
-			"2018": "/JME/2018/UL/Summer19UL18_JRV2_MC_SF_&PFchs.txt"
+			"2016PreVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt",
+			"2016PostVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt",
+			"2017": "/JME/2017/UL/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt",
+			"2018": "/JME/2018/UL/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt"
 		},
 
 		"JMEPtReso": {
-			"2016PreVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_PtResolution_&PFchs.txt",
-			"2016PostVFP": "/JME/2016/UL/Summer20UL16_JRV3_MC_PtResolution_&PFchs.txt",
-			"2017": "/JME/2017/UL/Summer19UL17_JRV2_MC_PtResolution_&PFchs.txt",
-			"2018": "/JME/2018/UL/Summer19UL18_JRV2_MC_PtResolution_&PFchs.txt"
+			"2016PreVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt",
+			"2016PostVFP": "/JME/2016/UL/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt",
+			"2017": "/JME/2017/UL/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt",
+			"2018": "/JME/2018/UL/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"
 		},
 
 		"BTag": {

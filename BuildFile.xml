@@ -3,6 +3,7 @@
 <use name="rootcore"/>
 <use name="rootphysics"/>
 <use name="rootgraphics"/>
+<use name="correctionlib"/>
 
 <use name="CondFormats/BTauObjects"/>
 <use name="CondTools/BTau"/>

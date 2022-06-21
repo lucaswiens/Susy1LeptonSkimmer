@@ -19,17 +19,14 @@ source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
 module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cd $9
-export SCRAM_ARCH=slc6_amd64_gcc700
 eval `scramv1 runtime -sh` #cmsenv
 
 export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
 
 #Do the skimming
-cd /tmp
-xrdcp $INFILE inputFile.root
-NanoSkim inputFile.root ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION
-### NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION
-
 mkdir -p $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
-mv ${OUT}_${JOB}.root $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
-rm inputFile.root
+cd $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
+pwd
+echo NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION
+NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION
+

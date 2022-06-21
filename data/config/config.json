@@ -21,7 +21,6 @@
 				"2017": [
 					"HLT_IsoMu27"
 				],
-
 				"2018": [
 					"HLT_IsoMu24"
 				]
@@ -60,7 +59,7 @@
 					"threshold": 1,
 					"operator": "=="
 				},
-				"VetoMuon": {
+				"VetoLepton": {
 					"threshold": 0,
 					"operator": "=="
 				}
@@ -91,7 +90,7 @@
 					"threshold": 1,
 					"operator": "=="
 				},
-				"VetoElectron": {
+				"VetoLepton": {
 					"threshold": 0,
 					"operator": "=="
 				}
@@ -154,8 +153,8 @@
 				"Good": "T",
 				"Veto": "V",
 				"Anti": {
-					"Is"  : "M",
-					"Not" : "T"
+					"Is"  : "V",
+					"Not" : "M"
 				}
 			},
 			"NumberOfLostHits" : {
@@ -163,6 +162,55 @@
 			},
 			"Dxy" : 0.5,
 			"Dz" : 0.5
+		},
+		"Jet": {
+			"Pt" : 20,
+			"Eta" : 2.4,
+			"DeepCSV" : {
+				"2016PreVFP": {
+					"Loose"  : 0.2027,
+					"Medium" : 0.6001,
+					"Tight"  : 0.8819
+				},
+				"2016PostVFP": {
+					"Loose"  : 0.1918,
+					"Medium" : 0.5847,
+					"Tight"  : 0.8767
+				},
+				"2017": {
+					"Loose"  : 0.1355,
+					"Medium" : 0.4506,
+					"Tight"  : 0.7738
+				},
+				"2018": {
+					"Loose"  : 0.1208,
+					"Medium" : 0.4168,
+					"Tight"  : 0.7665
+				}
+			},
+			"DeepJet" : {
+				"2016PreVFP": {
+					"Loose"  : 0.0508,
+					"Medium" : 0.2598,
+					"Tight"  : 0.6502
+				},
+				"2016PostVFP": {
+					"Loose"  : 0.0480,
+					"Medium" : 0.2489,
+					"Tight"  : 0.6377
+				},
+				"2017": {
+					"Loose"  : 0.0532,
+					"Medium" : 0.3040,
+					"Tight"  : 0.7476
+				},
+				"2018": {
+					"Loose"  : 0.0490,
+					"Medium" : 0.2783,
+					"Tight"  : 0.7100
+				}
+			}
 		}
+
 	}
 }

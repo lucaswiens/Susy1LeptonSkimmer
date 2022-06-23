@@ -51,7 +51,6 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName)
 
 	// Jets
 	nJetLeaf        = inputTree->GetLeaf("nJet");
-	nFatJetLeaf     = inputTree->GetLeaf("nFatJet");
 	jetMassLeaf     = inputTree->GetLeaf("Jet_mass");
 	jetPtLeaf       = inputTree->GetLeaf("Jet_pt");
 	jetEtaLeaf      = inputTree->GetLeaf("Jet_eta");
@@ -65,13 +64,28 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName)
 	//jetPUIDLeaf     = inputTree->GetLeaf("Jet_puId");
 	rhoLeaf         = inputTree->GetLeaf("fixedGridRhoFastjetAll");
 
+	// Fat Jet
+	nFatJetLeaf               = inputTree->GetLeaf("nFatJet");
+	fatJetMassLeaf            = inputTree->GetLeaf("FatJet_mass");
+	fatJetPtLeaf              = inputTree->GetLeaf("FatJet_pt");
+	fatJetEtaLeaf             = inputTree->GetLeaf("FatJet_eta");
+	fatJetPhiLeaf             = inputTree->GetLeaf("FatJet_phi");
+	fatJetAreaLeaf            = inputTree->GetLeaf("FatJet_area");
+	fatJetRawFactorLeaf       = inputTree->GetLeaf("FatJet_rawFactor");
+	fatJetIdLeaf              = inputTree->GetLeaf("FatJet_jetId");
+	fatJetDeepTagMDTvsQCDLeaf = inputTree->GetLeaf("FatJet_deepTagMD_TvsQCD");
+	fatJetDeepTagMDWvsQCDLeaf = inputTree->GetLeaf("FatJet_deepTagMD_WvsQCD");
+	fatJetDeepTagTvsQCDLeaf   = inputTree->GetLeaf("FatJet_deepTag_TvsQCD");
+	fatJetDeepTagWvsQCDLeaf   = inputTree->GetLeaf("FatJet_deepTag_WvsQCD");
+
+
 	// Gen Jet for Smearing
 	nGenJetLeaf = inputTree->GetLeaf("nGenJet");
 	genJetPtLeaf = inputTree->GetLeaf("GenJet_pt");
 	genJetEtaLeaf = inputTree->GetLeaf("GenJet_eta");
 	genJetPhiLeaf = inputTree->GetLeaf("GenJet_phi");
 
-	nGenJetLeaf = inputTree->GetLeaf("nGenJetAK8");
+	nGenFatJetLeaf = inputTree->GetLeaf("nGenJetAK8");
 	genFatJetPtLeaf = inputTree->GetLeaf("GenJetAK8_pt");
 	genFatJetEtaLeaf = inputTree->GetLeaf("GenJetAK8_eta");
 	genFatJetPhiLeaf = inputTree->GetLeaf("GenJetAK8_phi");
@@ -215,9 +229,6 @@ void DataReader::ReadJetEntry() {
 	nJetLeaf->GetBranch()->GetEntry(entry);
 	nJet = nJetLeaf->GetValue();
 
-	nFatJetLeaf->GetBranch()->GetEntry(entry);
-	nFatJet = nFatJetLeaf->GetValue();
-
 	// Rho
 	rhoLeaf->GetBranch()->GetEntry(entry);
 	rho = rhoLeaf->GetValue();
@@ -251,9 +262,42 @@ void DataReader::GetJetValues(const int &index) {
 	jetDeepJet = jetDeepJetLeaf->GetValue(index);
 	//jetPartFlav = jetPartFlavLeaf->GetValue(index);
 	jetRawFactor = jetRawFactorLeaf->GetValue(index);
-	jetId = jetIdLeaf->GetBranch()->GetEntry(entry);
+	jetId = jetIdLeaf->GetValue(index);
 	//jetPUID = jetPUIDLeaf->GetValue(index);
 }
+
+void DataReader::ReadFatJetEntry() {
+	if (nFatJetLeaf->GetBranch()->GetReadEntry() == entry) { return;}
+	nFatJetLeaf->GetBranch()->GetEntry(entry);
+	nFatJet = (int)nFatJetLeaf->GetValue();
+
+	fatJetMassLeaf->GetBranch()->GetEntry(entry);
+	fatJetPtLeaf->GetBranch()->GetEntry(entry);
+	fatJetEtaLeaf->GetBranch()->GetEntry(entry);
+	fatJetPhiLeaf->GetBranch()->GetEntry(entry);
+	fatJetAreaLeaf->GetBranch()->GetEntry(entry);
+	fatJetRawFactorLeaf->GetBranch()->GetEntry(entry);
+	fatJetIdLeaf->GetBranch()->GetEntry(entry);
+	fatJetDeepTagMDTvsQCDLeaf->GetBranch()->GetEntry(entry);
+	fatJetDeepTagMDWvsQCDLeaf->GetBranch()->GetEntry(entry);
+	fatJetDeepTagTvsQCDLeaf->GetBranch()->GetEntry(entry);
+	fatJetDeepTagWvsQCDLeaf->GetBranch()->GetEntry(entry);
+}
+
+void DataReader::GetFatJetValues(const int &index) {
+	fatJetMass = fatJetMassLeaf->GetValue(index);
+	fatJetPt = fatJetPtLeaf->GetValue(index);
+	fatJetEta = fatJetEtaLeaf->GetValue(index);
+	fatJetPhi = fatJetPhiLeaf->GetValue(index);
+	fatJetArea = fatJetAreaLeaf->GetValue(index);
+	fatJetRawFactor = fatJetRawFactorLeaf->GetValue(index);
+	fatJetId = fatJetIdLeaf->GetValue(index);
+	fatJetDeepTagMDTvsQCD = fatJetDeepTagMDTvsQCDLeaf->GetValue(index);
+	fatJetDeepTagMDWvsQCD = fatJetDeepTagMDWvsQCDLeaf->GetValue(index);
+	fatJetDeepTagTvsQCD   = fatJetDeepTagTvsQCDLeaf->GetValue(index);
+	fatJetDeepTagWvsQCD   = fatJetDeepTagWvsQCDLeaf->GetValue(index);
+}
+
 
 void DataReader::ReadGenJetEntry() {
 	if(nGenJetLeaf->GetBranch()->GetReadEntry() == entry) return;

@@ -62,7 +62,7 @@ class Susy1LeptonProduct {
 			electronIsGood, electronIsVeto, electronIsAntiSelected,
 			electronConvVeto;
 
-		int nJet, nFatJet,
+		int nJet,
 			nDeepCsvBTag, nDeepJetBTag, jetId;
 		double rho, metPt, metPhi, wBosonMinMass, wBosonMinMassPt, wBosonBestMass, wBosonBestMassPt, topBestMass, topBestMassPt;
 		std::array<double, nMax> jetPt, jetEta, jetPhi, jetMass,
@@ -70,6 +70,14 @@ class Susy1LeptonProduct {
 			jetDeepCsv, jetDeepJet;
 		std::array<bool, nMax> jetDeepCsvTightId, jetDeepCsvMediumId, jetDeepCsvLooseId,
 			jetDeepJetTightId, jetDeepJetMediumId, jetDeepJetLooseId;
+
+		int nFatJet;
+		std::array<int, nMax> fatJetId;
+		std::array<double, nMax> fatJetMass, fatJetPt, fatJetEta, fatJetPhi,
+			fatJetArea, fatJetRawFactor,
+			fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
+			fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD;
+
 };
 
 #endif

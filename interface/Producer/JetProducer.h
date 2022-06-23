@@ -46,7 +46,7 @@ class JetProducer : public BaseProducer {
 		//void SetCorrector(const char &runPeriod);
 
 		double CorrectEnergy(const double &pt, const double &eta, const double &rho, const double &area);
-		double SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const double &coneSize);
+		double SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const bool &isAk4);
 
 		template <typename T>
 		void SortByIndex(T &array, std::vector<int> indices, int size);

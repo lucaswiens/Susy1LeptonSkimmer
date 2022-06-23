@@ -38,7 +38,7 @@ class DataReader {
 			*electronEnergySigmaUpLeaf, *electronEnergySigmaDownLeaf;
 
 		// Jet Leafs
-		TLeaf *nJetLeaf, *nFatJetLeaf,
+		TLeaf *nJetLeaf,
 			//*jetFlavourLeaf,
 			*jetIdLeaf,
 			*jetMassLeaf, *jetPtLeaf, *jetEtaLeaf, *jetPhiLeaf,
@@ -46,11 +46,13 @@ class DataReader {
 			*jetDeepCsvLeaf, *jetDeepJetLeaf,
 			*rhoLeaf,
 			*metPhiLeaf, *metPtLeaf;
-			//*fatJet_deepTagMD_H4qvsQCDLeaf, *fatJet_deepTagMD_HbbvsQCDLeaf, *fatJet_deepTagMD_TvsQCDLeaf, *fatJet_deepTagMD_WvsQCDLeaf,
-			//*fatJet_deepTagMD_ZHbbvsQCDLeaf, *fatJet_deepTagMD_ZHccvsQCDLeaf, *fatJet_deepTagMD_ZbbvsQCDLeaf, *fatJet_deepTagMD_ZvsQCDLeaf,
-			//*fatJet_deepTagMD_bbvsLightLeaf, *fatJet_deepTagMD_ccvsLightLeaf,
-			//*fatJet_deepTag_HLeaf, *fatJet_deepTag_QCDLeaf, *fatJet_deepTag_QCDothersLeaf,
-			//*fatJet_deepTag_TvsQCDLeaf, *fatJet_deepTag_WvsQCDLeaf, *fatJet_deepTag_ZvsQCDLeaf;
+		// Fat Jet Leafs
+		TLeaf *nFatJetLeaf,
+			*fatJetIdLeaf,
+			*fatJetMassLeaf, *fatJetPtLeaf, *fatJetEtaLeaf, *fatJetPhiLeaf,
+			*fatJetAreaLeaf, *fatJetRawFactorLeaf,
+			*fatJetDeepTagMDTvsQCDLeaf, *fatJetDeepTagMDWvsQCDLeaf,
+			*fatJetDeepTagTvsQCDLeaf, *fatJetDeepTagWvsQCDLeaf;
 
 		// GenJet for smearing
 		TLeaf *nGenJetLeaf, *nGenFatJetLeaf,
@@ -97,7 +99,7 @@ class DataReader {
 		// Jet
 		void ReadJetEntry();
 		void GetJetValues(const int &index);
-		int nJet, nFatJet,
+		int nJet,
 			jetId;
 			//jetFlavour;
 		double jetMass, jetPt, jetEta, jetPhi,
@@ -105,6 +107,15 @@ class DataReader {
 			jetDeepCsv, jetDeepJet,
 			rho,
 			metPhi, metPt;
+
+		void ReadFatJetEntry();
+		void GetFatJetValues(const int &index);
+		int nFatJet,
+			fatJetId;
+		double fatJetMass, fatJetPt, fatJetEta, fatJetPhi,
+			fatJetArea, fatJetRawFactor,
+			fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
+			fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD;
 
 		// Gen Jet for Smearing
 		void ReadGenJetEntry();

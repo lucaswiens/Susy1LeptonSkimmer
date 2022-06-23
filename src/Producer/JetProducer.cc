@@ -9,12 +9,12 @@
 JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product) {
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 
-	era          = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".Era");
-	dataType     = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + (product.GetIsData()? ".DATA" : ".MC"));
-	runPeriod    = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + "M");
-	jerVersion   = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".JER");
-	ak4Algorithm = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK4.Algorithm");
-	ak8Algorithm = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK8.Algorithm");
+	era              = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".Era");
+	dataType         = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + (product.GetIsData()? ".DATA" : ".MC"));
+	runPeriod        = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + "M");
+	jerVersion       = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".JER");
+	ak4Algorithm     = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK4.Algorithm");
+	ak8Algorithm     = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK8.Algorithm");
 	ak4CorrectionSet = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK4.JSON"));
 	ak8CorrectionSet = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK8.JSON"));
 	jmeCorrectionSet = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".JME.JSON"));
@@ -26,6 +26,14 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 		jetCorrectionUncertainty = std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.JECUNC." + product.GetEraSelector()), "Total"));
 	}
 
+
+	/*################################################################################
+	#   Definition of Working Points come from                                       #
+	#   https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL16preVFP    #
+	#   https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL16postVFP   #
+	#   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation106XUL17      #
+	#   https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL16postVFP   #
+	################################################################################*/
 	deepCsvBTagMap = {
 		{'L', configTree.get<double>("Producer.Jet.DeepCSV." + product.GetEraSelector() + ".Loose")},
 		{'M', configTree.get<double>("Producer.Jet.DeepCSV." + product.GetEraSelector() + ".Medium")},
@@ -38,15 +46,15 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 		{'T', configTree.get<double>("Producer.Jet.DeepJet." + product.GetEraSelector() + ".Tight")},
 	};
 
-	jetPtCut    = configTree.get<double>("Producer.Jet.Pt");
-	jetEtaCut   = configTree.get<double>("Producer.Jet.Eta");
+	jetPtCut  = configTree.get<double>("Producer.Jet.Pt");
+	jetEtaCut = configTree.get<double>("Producer.Jet.Eta");
 	std::cout << std::endl <<
 		"The following cuts are applied to Jets:"   << std::endl <<
 		"|Eta| < " << jetEtaCut << std::endl <<
 		"|Pt|  > " << jetPtCut << std::endl;
 }
 
-// For Testing TODO Delete this
+// keep for backup, but shouldn't be needed anymore
 // https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
 /*
 double JetProducer::CorrectEnergy(const double &pt, const double &eta, const double &rho, const double &area) {
@@ -61,13 +69,16 @@ double JetProducer::CorrectEnergy(const double &pt, const double &eta, const dou
 
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
 // https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_25/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h#L203-L263
-double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const double &coneSize) {
-	double resolution = ak4CorrectionSet->at(era + "_" + jerVersion + "_PtResolution_" + ak4Algorithm)->evaluate({dataReader.jetEta, jetPtCorrected, dataReader.rho});
+double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const bool &isAk4) {
+	double coneSize = isAk4 ? 0.2 : 0.4;
+	double jetEta = isAk4 ? dataReader.jetEta : dataReader.fatJetEta;
+	double jetPhi = isAk4 ? dataReader.jetPhi : dataReader.fatJetPhi;
+	double resolution = ak4CorrectionSet->at(era + "_" + jerVersion + "_PtResolution_" + ak4Algorithm)->evaluate({jetEta, jetPtCorrected, dataReader.rho});
 	double resolutionSF;
 	if (isJERSystematic) {
-		resolutionSF = isUp ? ak4CorrectionSet->at(era + "_" + jerVersion + "_ScaleFactor_" + ak4Algorithm)->evaluate({dataReader.jetEta, "up"}) : ak4CorrectionSet->at(era + "_" + jerVersion + "_ScaleFactor_" + ak4Algorithm)->evaluate({dataReader.jetEta, "down"});
+		resolutionSF = isUp ? ak4CorrectionSet->at(era + "_" + jerVersion + "_ScaleFactor_" + ak4Algorithm)->evaluate({jetEta, "up"}) : ak4CorrectionSet->at(era + "_" + jerVersion + "_ScaleFactor_" + ak4Algorithm)->evaluate({jetEta, "down"});
 	} else {
-		resolutionSF = ak4CorrectionSet->at(era + "_" + jerVersion + "_ScaleFactor_" + ak4Algorithm)->evaluate({dataReader.jetEta, "nom"});
+		resolutionSF = ak4CorrectionSet->at(era + "_" + jerVersion + "_ScaleFactor_" + ak4Algorithm)->evaluate({jetEta, "nom"});
 	}
 
 	/*#############################################################################################
@@ -76,20 +87,34 @@ double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorre
 	#   Also the deltaPt criterion is different as it does not take the resolution into account   #
 	#############################################################################################*/
 	bool isMatched = false;
-	double deltaR, deltaPt, genJetPt,
+	double deltaR, deltaPt, matchedGenJetPt,
 		deltaRMin = std::numeric_limits<double>::max(),
 		deltaPtMin = std::numeric_limits<double>::max();
-	dataReader.ReadGenJetEntry();
-	for(int iGen = 0; iGen < dataReader.nGenJet; iGen++) {
-		dataReader.GetGenJetValues(iGen);
 
-		deltaR  = Utility::DeltaR(dataReader.jetEta, dataReader.jetPhi, dataReader.genJetEta, dataReader.genJetPhi);
-		deltaPt = std::abs(dataReader.genJetPt - jetPtCorrected) / jetPtCorrected;
+	if (isAk4) {
+		dataReader.ReadGenJetEntry();
+	} else {
+		dataReader.ReadGenFatJetEntry();
+	}
+
+	int nGenJet = isAk4 ? dataReader.nGenJet : dataReader.nGenFatJet;
+	for(int iGen = 0; iGen < nGenJet; iGen++) {
+		if (isAk4) {
+			dataReader.GetGenJetValues(iGen);
+		} else {
+			dataReader.GetGenFatJetValues(iGen);
+		}
+
+		double genJetPt = isAk4 ? dataReader.genJetPt : dataReader.genFatJetPt;
+		double genJetEta = isAk4 ? dataReader.genJetEta : dataReader.genFatJetEta;
+		double genJetPhi = isAk4 ? dataReader.genJetPhi : dataReader.genFatJetPhi;
+		deltaR  = Utility::DeltaR(jetEta, jetPhi, genJetEta, genJetPhi);
+		deltaPt = std::abs(genJetPt - jetPtCorrected) / jetPtCorrected;
 
 		if (deltaR > deltaRMin) { continue;}
 
-		if (deltaR < coneSize / 2 && deltaPt < 3 * resolution * jetPtCorrected) {
-			genJetPt = dataReader.genJetPt;
+		if (deltaR < coneSize && deltaPt < 3 * resolution * jetPtCorrected) {
+			matchedGenJetPt = genJetPt;
 			deltaRMin = deltaR;
 			isMatched = true;
 		}
@@ -97,7 +122,7 @@ double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorre
 
 	double smearFactor = 1.0;
 	if (isMatched) {
-		smearFactor = 1. + (resolutionSF - 1) * (jetPtCorrected - dataReader.genJetPt) / jetPtCorrected;
+		smearFactor = 1. + (resolutionSF - 1) * (jetPtCorrected - matchedGenJetPt) / jetPtCorrected;
 	} else if (resolutionSF > 1.) {
 		std::default_random_engine generator; std::normal_distribution<> gaus(0, resolution * std::sqrt(resolutionSF * resolutionSF - 1));
 		smearFactor = 1. + gaus(generator);
@@ -118,7 +143,8 @@ double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorre
 void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.jetPt.fill(0); // This might not be needed but it makes testing a lot easier
 	dataReader.ReadJetEntry();
-	int jetCounter = 0, fatJetCounter =0,
+	assert(0 <= dataReader.nJet && dataReader.nJet < product.nMax);
+	int jetCounter = 0,
 		looseCSVBTagCounter = 0, mediumCSVBTagCounter = 0, tightCSVBTagCounter = 0,
 		looseDeepJetBTagCounter = 0, mediumDeepJetBTagCounter = 0, tightDeepJetBTagCounter = 0;
 
@@ -130,7 +156,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		if (!product.GetIsData()) { dataReader.ReadGenEntry();}
 
 		// Missing runPeriod for data
-		double correctionFactor = ak4CorrectionSet->at(era + "_" + dataType + "_L1FastJet_"    + ak4Algorithm)->evaluate({dataReader.jetArea, dataReader.jetEta, dataReader.jetPt, dataReader.rho}) *
+		double correctionFactor = ak4CorrectionSet->at(era + "_" + dataType + "_L1FastJet_" + ak4Algorithm)->evaluate({dataReader.jetArea, dataReader.jetEta, dataReader.jetPt, dataReader.rho}) *
 			ak4CorrectionSet->at(era + "_" + dataType + "_L2Relative_"   + ak4Algorithm)->evaluate({dataReader.jetEta, dataReader.jetPt}) *
 			ak4CorrectionSet->at(era + "_" + dataType + "_L3Absolute_"   + ak4Algorithm)->evaluate({dataReader.jetEta, dataReader.jetPt}) *
 			ak4CorrectionSet->at(era + "_" + dataType + "_L2L3Residual_" + ak4Algorithm)->evaluate({dataReader.jetEta, dataReader.jetPt});
@@ -145,7 +171,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		}
 
 		// Smearing TODO(maybe?) only implemented for AK4
-		const double &smearFactor = product.GetIsData() ? 1.0 : JetProducer::SmearEnergy(dataReader, correctionFactor * dataReader.jetPt, 0.4); // FIXE maybe do something more elegant for coneSize argument
+		const double &smearFactor = product.GetIsData() ? 1.0 : JetProducer::SmearEnergy(dataReader, correctionFactor * dataReader.jetPt, true);
 
 		const double &jetPtCorrected = dataReader.jetPt * correctionFactor * smearFactor;
 		if (jetPtCorrected > jetPtCut && abs(dataReader.jetEta) > jetEtaCut) { continue;}
@@ -188,12 +214,12 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	int nearestMuonIndex = -999, nearestElectronIndex = -999;
 	for (int iMuon = 0; iMuon < product.nMuon; iMuon++) {
 		if (!product.muonIsGood[iMuon]) { continue;}
-		if (std::find(muonIndices.begin(), muonIndices.end(),iMuon)!=muonIndices.end()) { continue;}
+		if (std::find(muonIndices.begin(), muonIndices.end(), iMuon)!=muonIndices.end()) { continue;}
 		int nearestJetIndex = -999;
 		for (int iJet = 0; iJet < jetCounter; iJet++) {
 			if (std::find(jetRemovalIndices.begin(), jetRemovalIndices.end(),iJet)!=jetRemovalIndices.end()) { continue;}
 			double deltaR = Utility::DeltaR(product.jetEta[iJet], product.jetPhi[iJet], product.muonEta[iMuon], product.muonPhi[iMuon]);
-			if (deltaR < deltaRMin && deltaR < 0.4) { // FIXME change 0.4 do configureable param
+			if (deltaR < deltaRMin && deltaR < 0.4) { // FIXME change 0.4 do configurable param
 				deltaRMin = deltaR;
 				nearestMuonIndex = iMuon;
 				nearestJetIndex = iJet;
@@ -212,7 +238,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		for (int iJet = 0; iJet < jetCounter; iJet++) {
 			if (std::find(jetRemovalIndices.begin(), jetRemovalIndices.end(),iJet)!=jetRemovalIndices.end()) { continue;}
 			double deltaR = Utility::DeltaR(product.jetEta[iJet], product.jetPhi[iJet], product.electronEta[iElectron], product.electronPhi[iElectron]);
-			if (deltaR < deltaRMin && deltaR < 0.4) { // FIXME change 0.4 do configureable param
+			if (deltaR < deltaRMin && deltaR < 0.4) { // FIXME change 0.4 do configurable param
 				deltaRMin = deltaR;
 				nearestElectronIndex = iElectron;
 				nearestJetIndex = iJet;
@@ -225,7 +251,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		}
 	}
 
-	int removeCounter = 0;
+	int removeCounter = 0; // Since the index positions shift after removing one entry, one has to adjust for this
 	for (int iRemove : jetRemovalIndices) {
 		for (std::array<double, 20> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
 			RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
@@ -241,29 +267,11 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 	product.nJet = jetCounter;
 
-	for (int iFatJet = 0; iFatJet < dataReader.nFatJet; iFatJet++) {
-		//FatJetDeepTagMD_H4qvsQCD.push_back(fatJetDeepTagMDH4qvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_HbbvsQCD.push_back(fatJetDeepTagMDHbbvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_TvsQCD.push_back(fatJetDeepTagMDTvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_WvsQCD.push_back(fatJetDeepTagMDWvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_ZHbbvsQCD.push_back(fatJetDeepTagMDZHbbvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_ZHccvsQCD.push_back(fatJetDeepTagMDZHccvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_ZbbvsQCD.push_back(fatJetDeepTagMDZbbvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_ZvsQCD.push_back(fatJetDeepTagMDZvsQCD->At(iFatJet));
-		//FatJetDeepTagMD_bbvsLiFatJetght.push_back(fatJetDeepTagMDBbvsLiFatJetght->At(iFatJet));
-		//FatJetDeepTagMD_ccvsLiFatJetght.push_back(fatJetDeepTagMDCcvsLiFatJetght->At(i));
-		//FatJetDeepTag_H.push_back(fatJetDeepTagH->At(i));
-		//FatJetDeepTag_QCD.push_back(fatJetDeepTagQCD->At(iFatJet));
-		//FatJetDeepTag_QCDothers.push_back(fatJetDeepTagQCDothers->At(iFatJet));
-		//FatJetDeepTag_TvsQCD.push_back(fatJetDeepTagTvsQCD->At(iFatJet));
-		//FatJetDeepTag_WvsQCD.push_back(fatJetDeepTagWvsQCD->At(iFatJet));
-		//FatJetDeepTag_ZvsQCD.push_back(fatJetDeepTagZvsQCD->At(iFatJet));
-	}
-
 	product.metPt  = std::sqrt(std::pow(metPx, 2) + std::pow(metPy, 2));
 	product.metPhi = std::atan2(metPy, metPx);
 
-	product.wBosonMinMass    = 999,
+	// This is not strictly needed but was done in previous analysis FIXME Maybe delete this? Or Save index information
+	product.wBosonMinMass    =  999,
 	product.wBosonMinMassPt  = -999,
 	product.wBosonBestMass   = -999,
 	product.wBosonBestMassPt = -999,
@@ -303,6 +311,34 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 			}
 		}
 	}
+
+	int fatJetCounter = 0;
+	dataReader.ReadFatJetEntry();
+	assert(0 <= dataReader.nJet && dataReader.nJet < product.nMax);
+	for (int iFatJet = 0; iFatJet < dataReader.nFatJet; iFatJet++) {
+		dataReader.GetFatJetValues(iFatJet);
+
+		double correctionFactor = ak8CorrectionSet->at(era + "_" + dataType + "_L1FastJet_" + ak8Algorithm)->evaluate({dataReader.fatJetArea, dataReader.fatJetEta, dataReader.fatJetPt, dataReader.rho}) *
+			ak8CorrectionSet->at(era + "_" + dataType + "_L2Relative_"   + ak8Algorithm)->evaluate({dataReader.fatJetEta, dataReader.fatJetPt}) *
+			ak8CorrectionSet->at(era + "_" + dataType + "_L3Absolute_"   + ak8Algorithm)->evaluate({dataReader.fatJetEta, dataReader.fatJetPt}) *
+			ak8CorrectionSet->at(era + "_" + dataType + "_L2L3Residual_" + ak8Algorithm)->evaluate({dataReader.fatJetEta, dataReader.fatJetPt});
+
+		const double &smearFactor = product.GetIsData() ? 1.0 : JetProducer::SmearEnergy(dataReader, correctionFactor * dataReader.fatJetPt, false);
+
+		product.fatJetMass[fatJetCounter]            = dataReader.fatJetMass * correctionFactor * smearFactor;
+		product.fatJetPt[fatJetCounter]              = dataReader.fatJetPt * correctionFactor * smearFactor;
+		product.fatJetEta[fatJetCounter]             = dataReader.fatJetEta;
+		product.fatJetPhi[fatJetCounter]             = dataReader.fatJetPhi;
+		product.fatJetArea[fatJetCounter]            = dataReader.fatJetArea;
+		product.fatJetRawFactor[fatJetCounter]       = dataReader.fatJetRawFactor;
+		product.fatJetId[fatJetCounter]              = dataReader.fatJetId;
+		product.fatJetDeepTagMDTvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDTvsQCD;
+		product.fatJetDeepTagMDWvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDWvsQCD;
+		product.fatJetDeepTagTvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD;
+		product.fatJetDeepTagWvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagWvsQCD;
+		fatJetCounter++;
+	}
+	product.nFatJet = fatJetCounter;
 }
 
 template <typename T>

@@ -157,7 +157,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		}
 
 		tree->Branch("nJet", &nJet);
-		tree->Branch("nFatJet", &nFatJet);
 		tree->Branch("nDeepCSVBTag", &nDeepCsvBTag);
 		tree->Branch("nDeepJetBTag", &nDeepJetBTag);
 		tree->Branch("JetId", &jetId);
@@ -177,7 +176,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/B");
 		tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/B");
 		tree->Branch("JetDeepJetTightId", jetDeepJetTightId.data(), "JetDeepJetTightId[nJet]/B");
-
 		tree->Branch("wBosonMinMass", &wBosonMinMass);
 		tree->Branch("wBosonMinMassPt", &wBosonMinMassPt);
 		tree->Branch("wBosonBestMass", &wBosonBestMass);
@@ -185,5 +183,17 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("topBestMass", &topBestMass);
 		tree->Branch("topBestMassPt", &topBestMassPt);
 
+		tree->Branch("nFatJet", &nFatJet);
+		tree->Branch("FatJetMass", fatJetMass.data(), "FatJetMass[nFatJet]/D");
+		tree->Branch("FatJetPt", fatJetPt.data(), "FatJetPt[nFatJet]/D");
+		tree->Branch("FatJetEta", fatJetEta.data(), "FatJetEta[nFatJet]/D");
+		tree->Branch("FatJetPhi", fatJetPhi.data(), "FatJetPhi[nFatJet]/D");
+		tree->Branch("FatJetArea", fatJetArea.data(), "FatJetArea[nFatJet]/D");
+		tree->Branch("FatJetRawFactor", fatJetRawFactor.data(), "FatJetRawFactor[nFatJet]/D");
+		tree->Branch("FatJetId", fatJetId.data(), "FatJetId[nFatJet]/D");
+		tree->Branch("FatJetDeepTagMDTvsQCD", fatJetDeepTagMDTvsQCD.data(), "FatJetDeepTagMDTvsQCD[nFatJet]/D");
+		tree->Branch("FatJetDeepTagMDWvsQCD", fatJetDeepTagMDWvsQCD.data(), "FatJetDeepTagMDWvsQCD[nFatJet]/D");
+		tree->Branch("FatJetDeepTagTvsQCD", fatJetDeepTagTvsQCD.data(), "FatJetDeepTagTvsQCD[nFatJet]/D");
+		tree->Branch("FatJetDeepTagWvsQCD", fatJetDeepTagWvsQCD.data(), "FatJetDeepTagWvsQCD[nFatJet]/D");
 	}
 }

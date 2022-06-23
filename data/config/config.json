@@ -62,6 +62,14 @@
 				"VetoLepton": {
 					"threshold": 0,
 					"operator": "=="
+				},
+				"GoodElectron": {
+					"threshold": 0,
+					"operator": "=="
+				},
+				"Jet": {
+					"threshold": 3,
+					"operator": ">="
 				}
 			},
 			"Trigger": {
@@ -93,6 +101,14 @@
 				"VetoLepton": {
 					"threshold": 0,
 					"operator": "=="
+				},
+				"GoodMuon": {
+					"threshold": 0,
+					"operator": "=="
+				},
+				"Jet": {
+					"threshold": 3,
+					"operator": ">="
 				}
 			},
 			"Trigger": {

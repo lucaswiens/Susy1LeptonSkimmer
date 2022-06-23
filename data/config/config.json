@@ -226,6 +226,12 @@
 					"Tight"  : 0.7100
 				}
 			}
+		},
+		"IsoTrack": {
+			"Mt2" : {
+				"Hadronic": 60,
+				"Leptonic": 80
+			}
 		}
 
 	}

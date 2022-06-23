@@ -21,8 +21,8 @@ class Susy1LeptonProduct {
 		bool GetIsData() {return isData;}
 		char GetRunPeriod() {return runPeriod;}
 
-		// Max value for static arrays, should use assert to enforce nObject < nMax
-		static const std::size_t nMax = 20;
+		// Max value for static arrays, should use assert to enforce nObject < nMax, otherwise the arrays are not big enough
+		static const int nMax = 30;
 
 		// Lepton Information
 		int nLepton, nGoodLepton, nVetoLepton;
@@ -42,6 +42,7 @@ class Susy1LeptonProduct {
 			muonIsGood, muonIsVeto, muonIsAntiSelected;
 		std::vector<double> muonPtVector;
 
+		// Electron Inforamtion
 		int nElectron, nGoodElectron, nVetoElectron, nAntiSelectedElectron;
 		std::array<double, nMax> electronPt, electronEta, electronPhi, electronMass,
 			electronDxy, electronDz,
@@ -62,8 +63,11 @@ class Susy1LeptonProduct {
 			electronIsGood, electronIsVeto, electronIsAntiSelected,
 			electronConvVeto;
 
+		// Jet Inforamtion
 		int nJet,
-			nDeepCsvBTag, nDeepJetBTag, jetId;
+			nDeepCsvLooseBTag, nDeepCsvMediumBTag, nDeepCsvTightBTag,
+			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
+			jetId;
 		double rho, metPt, metPhi, wBosonMinMass, wBosonMinMassPt, wBosonBestMass, wBosonBestMassPt, topBestMass, topBestMassPt;
 		std::array<double, nMax> jetPt, jetEta, jetPhi, jetMass,
 			jetArea, jetRawFactor,
@@ -71,12 +75,26 @@ class Susy1LeptonProduct {
 		std::array<bool, nMax> jetDeepCsvTightId, jetDeepCsvMediumId, jetDeepCsvLooseId,
 			jetDeepJetTightId, jetDeepJetMediumId, jetDeepJetLooseId;
 
+		// FatJet Inforamtion
 		int nFatJet;
 		std::array<int, nMax> fatJetId;
 		std::array<double, nMax> fatJetMass, fatJetPt, fatJetEta, fatJetPhi,
 			fatJetArea, fatJetRawFactor,
 			fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
 			fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD;
+
+		// High Level Inforamtion
+		double HT, LT, LP, deltaPhi, absoluteDeltaPhi, wBosonMt;
+		bool isSignalRegion;
+
+		// IsolatedTrack Information
+		int nIsoTrack;
+		bool isoTrackVeto;
+		std::array<double, nMax> isoTrackMt2, isoTrackPt;
+		std::array<bool, nMax> isoTrackIsHadronicDecay;
+		std::array<int, nMax> isoTrackPdgId;
+
+
 
 };
 

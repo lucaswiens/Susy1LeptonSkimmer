@@ -53,7 +53,12 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 
 
 void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees) {
-	// Set Branches of output tree
+	/*#########################################################################################
+	#   Set Branches of output tree                                                           #
+	#   See the following link for type definitions                                           #
+	#   https://root.cern.ch/doc/master/classTBranch.html#ac0412c423e6c8388b42247e0410cf822   #
+	#########################################################################################*/
+
 	for (const std::shared_ptr<TTree> &tree : outputTrees) {
 		tree->Branch("nMuon", &nMuon);
 		tree->Branch("nGoodMuon", &nGoodMuon);
@@ -67,12 +72,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("MuonMass", muonMass.data(), "MuonMass[nMuon]/D");
 		tree->Branch("MuonMiniIso", muonMiniIso.data(), "MuonMiniIso[nMuon]/D");
 
-		tree->Branch("MuonLooseId", muonLooseId.data(), "MuonLooseId[nMuon]/B");
-		tree->Branch("MuonMediumId", muonMediumId.data(), "MuonMediumId[nMuon]/B");
-		tree->Branch("MuonTightId", muonTightId.data(), "MuonTightId[nMuon]/B");
-		tree->Branch("MuonIsGood", muonIsGood.data(), "MuonIsGood[nMuon]/B");
-		tree->Branch("MuonIsVeto", muonIsVeto.data(), "MuonIsVeto[nMuon]/B");
-		tree->Branch("MuonIsAntiSelected", muonIsAntiSelected.data(), "MuonIsAntiSelected[nMuon]/B");
+		tree->Branch("MuonLooseId", muonLooseId.data(), "MuonLooseId[nMuon]/O");
+		tree->Branch("MuonMediumId", muonMediumId.data(), "MuonMediumId[nMuon]/O");
+		tree->Branch("MuonTightId", muonTightId.data(), "MuonTightId[nMuon]/O");
+		tree->Branch("MuonIsGood", muonIsGood.data(), "MuonIsGood[nMuon]/O");
+		tree->Branch("MuonIsVeto", muonIsVeto.data(), "MuonIsVeto[nMuon]/O");
+		tree->Branch("MuonIsAntiSelected", muonIsAntiSelected.data(), "MuonIsAntiSelected[nMuon]/O");
 
 		tree->Branch("MuonCharge", muonCharge.data(), "MuonCharge[nMuon]/I");
 		tree->Branch("MuonPdgId", muonPdgId.data(), "MuonPdgId[nMuon]/I");
@@ -121,19 +126,19 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("ElectronEnergySigmaUp", electronEnergySigmaUp.data(), "ElectronEnergySigmaUp[nMuon]/D");
 		tree->Branch("ElectronEnergySigmaDown", electronEnergySigmaDown.data(), "ElectronEnergySigmaDown[nMuon]/D");
 
-		tree->Branch("ElectronLooseMvaId", electronLooseMvaId.data(), "ElectronLooseMvaId[nMuon]/B");
-		tree->Branch("ElectronMediumMvaId", electronMediumMvaId.data(), "ElectronMediumMvaId[nMuon]/B");
-		tree->Branch("ElectronTightMvaId", electronTightMvaId.data(), "ElectronTightMvaId[nMuon]/B");
+		tree->Branch("ElectronLooseMvaId", electronLooseMvaId.data(), "ElectronLooseMvaId[nMuon]/O");
+		tree->Branch("ElectronMediumMvaId", electronMediumMvaId.data(), "ElectronMediumMvaId[nMuon]/O");
+		tree->Branch("ElectronTightMvaId", electronTightMvaId.data(), "ElectronTightMvaId[nMuon]/O");
 
 		tree->Branch("ElectronCharge", electronCharge.data(), "ElectronCharge[nMuon]/I");
 		tree->Branch("ElectronCutBasedId", electronCutBasedId.data(), "ElectronCutBasedId[nMuon]/I");
 		//tree->Branch("ElectronNLostHits", electronNLostHits.data(), "ElectronNLostHits[nMuon]/I");
 
-		tree->Branch("ElectronLooseId", electronLooseId.data(), "ElectronLooseId[nMuon]/B");
-		tree->Branch("ElectronMediumId", electronMediumId.data(), "ElectronMediumId[nMuon]/B");
-		tree->Branch("ElectronTightId", electronTightId.data(), "ElectronTightId[nMuon]/B");
-		tree->Branch("ElectronVetoId", electronVetoId.data(), "ElectronVetoId[nMuon]/B");
-		//tree->Branch("ElectronConvVeto", electronConvVeto.data(), "ElectronConvVeto[nMuon]/B");
+		tree->Branch("ElectronLooseId", electronLooseId.data(), "ElectronLooseId[nMuon]/O");
+		tree->Branch("ElectronMediumId", electronMediumId.data(), "ElectronMediumId[nMuon]/O");
+		tree->Branch("ElectronTightId", electronTightId.data(), "ElectronTightId[nMuon]/O");
+		tree->Branch("ElectronVetoId", electronVetoId.data(), "ElectronVetoId[nMuon]/O");
+		//tree->Branch("ElectronConvVeto", electronConvVeto.data(), "ElectronConvVeto[nMuon]/O");
 
 		if (isData) {
 			tree->Branch("ElectronRecoSf", electronRecoSf.data(), "ElectronRecoSf[nMuon]/D");
@@ -157,8 +162,13 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		}
 
 		tree->Branch("nJet", &nJet);
-		tree->Branch("nDeepCSVBTag", &nDeepCsvBTag);
-		tree->Branch("nDeepJetBTag", &nDeepJetBTag);
+		tree->Branch("nDeepCsvLooseBTag", &nDeepCsvLooseBTag);
+		tree->Branch("nDeepCsvMediumBTag", &nDeepCsvMediumBTag);
+		tree->Branch("nDeepCsvTightBTag", &nDeepCsvTightBTag);
+		tree->Branch("nDeepJetLooseBTag", &nDeepJetLooseBTag);
+		tree->Branch("nDeepJetMediumBTag", &nDeepJetMediumBTag);
+		tree->Branch("nDeepJetTightBTag", &nDeepJetTightBTag);
+
 		tree->Branch("JetId", &jetId);
 		tree->Branch("MetPt", &metPt);
 		tree->Branch("MetPhi", &metPhi);
@@ -170,12 +180,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetRawFactor", jetRawFactor.data(), "JetRawFactor,[nJet]/D");
 		tree->Branch("JetDeepCSV", jetDeepCsv.data(), "JetDeepCSV[nJet]/D");
 		tree->Branch("JetDeepJet", jetDeepJet.data(), "JetDeepJet,[nJet]/D");
-		tree->Branch("JetDeepCSVLooseId", jetDeepCsvLooseId.data(), "JetDeepCSVLooseId,[nJet]/B");
-		tree->Branch("JetDeepCSVMediumId", jetDeepCsvMediumId.data(), "JetDeepCSVMediumId[nJet]/B");
-		tree->Branch("JetDeepCSVTightId", jetDeepCsvTightId.data(), "JetDeepCSVTightId[nJet]/B");
-		tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/B");
-		tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/B");
-		tree->Branch("JetDeepJetTightId", jetDeepJetTightId.data(), "JetDeepJetTightId[nJet]/B");
+		tree->Branch("JetDeepCSVLooseId", jetDeepCsvLooseId.data(), "JetDeepCSVLooseId,[nJet]/O");
+		tree->Branch("JetDeepCSVMediumId", jetDeepCsvMediumId.data(), "JetDeepCSVMediumId[nJet]/O");
+		tree->Branch("JetDeepCSVTightId", jetDeepCsvTightId.data(), "JetDeepCSVTightId[nJet]/O");
+		tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/O");
+		tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/O");
+		tree->Branch("JetDeepJetTightId", jetDeepJetTightId.data(), "JetDeepJetTightId[nJet]/O");
 		tree->Branch("wBosonMinMass", &wBosonMinMass);
 		tree->Branch("wBosonMinMassPt", &wBosonMinMassPt);
 		tree->Branch("wBosonBestMass", &wBosonBestMass);
@@ -195,5 +205,20 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("FatJetDeepTagMDWvsQCD", fatJetDeepTagMDWvsQCD.data(), "FatJetDeepTagMDWvsQCD[nFatJet]/D");
 		tree->Branch("FatJetDeepTagTvsQCD", fatJetDeepTagTvsQCD.data(), "FatJetDeepTagTvsQCD[nFatJet]/D");
 		tree->Branch("FatJetDeepTagWvsQCD", fatJetDeepTagWvsQCD.data(), "FatJetDeepTagWvsQCD[nFatJet]/D");
+
+		tree->Branch("HT", &HT);
+		tree->Branch("LT", &LT);
+		tree->Branch("LP", &LP);
+		tree->Branch("DeltaPhi", &deltaPhi);
+		tree->Branch("AbsoluteDeltaPhi", &absoluteDeltaPhi);
+		tree->Branch("WBosonMt", &wBosonMt);
+
+		tree->Branch("IsSignalRegion", &isSignalRegion);
+		tree->Branch("nIsoTrack", &nIsoTrack);
+		tree->Branch("IsoTrackVeto", &isoTrackVeto);
+		tree->Branch("IsoTrackPdgId", isoTrackPdgId.data(), "IsoTrackPdgId[nIsoTrack]/I");
+		tree->Branch("IsoTrackPt", isoTrackPt.data(), "IsoTrackPt[nIsoTrack]/D");
+		tree->Branch("IsoTrackMt2", isoTrackMt2.data(), "IsoTrackMt2[nIsoTrack]/D");
+		tree->Branch("IsoTrackIsHadronicDecay", isoTrackIsHadronicDecay.data(), "IsoTrackIsHadronicDecay[nIsoTrack]/O");
 	}
 }

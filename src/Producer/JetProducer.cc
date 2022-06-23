@@ -143,10 +143,8 @@ double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorre
 void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.jetPt.fill(0); // This might not be needed but it makes testing a lot easier
 	dataReader.ReadJetEntry();
-	assert(0 <= dataReader.nJet && dataReader.nJet < product.nMax);
-	int jetCounter = 0,
-		looseCSVBTagCounter = 0, mediumCSVBTagCounter = 0, tightCSVBTagCounter = 0,
-		looseDeepJetBTagCounter = 0, mediumDeepJetBTagCounter = 0, tightDeepJetBTagCounter = 0;
+	assert(dataReader.nJet < product.nMax);
+	int jetCounter = 0;
 
 	double metPx = dataReader.metPt * std::cos(dataReader.metPhi),
 		metPy = dataReader.metPt * std::sin(dataReader.metPhi);
@@ -174,7 +172,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		const double &smearFactor = product.GetIsData() ? 1.0 : JetProducer::SmearEnergy(dataReader, correctionFactor * dataReader.jetPt, true);
 
 		const double &jetPtCorrected = dataReader.jetPt * correctionFactor * smearFactor;
-		if (jetPtCorrected > jetPtCut && abs(dataReader.jetEta) > jetEtaCut) { continue;}
+		if (jetPtCorrected > jetPtCut && std::abs(dataReader.jetEta) > jetEtaCut) { continue;}
 
 		metPx += jetPtCorrected * std::cos(dataReader.jetPhi) - jetPtCorrected * std::cos(dataReader.jetPhi);
 		metPy += jetPtCorrected * std::sin(dataReader.jetPhi) - jetPtCorrected * std::sin(dataReader.jetPhi);
@@ -199,10 +197,10 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	std::vector<int> indices(jetCounter);
 	std::iota(indices.begin(), indices.end(), 0);
 	std::stable_sort(indices.begin(), indices.end(), [&](int i1, int i2) {return product.jetPt[i1] > product.jetPt[i2];});
-	for (std::array<double, 20> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
+	for (std::array<double, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
 		SortByIndex(*jetVariable, indices, jetCounter);
 	}
-	for (std::array<bool, 20> *jetVariable : {&product.jetDeepCsvLooseId, &product.jetDeepCsvMediumId, &product.jetDeepCsvTightId, &product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
+	for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepCsvLooseId, &product.jetDeepCsvMediumId, &product.jetDeepCsvTightId, &product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
 		SortByIndex(*jetVariable, indices, jetCounter);
 	}
 	//std::cout << "Pt(After Sorting):\n"; for (int iJet = 0; iJet < jetCounter; iJet++) { std::cout << iJet << "(" << product.jetPt[iJet] << ", " << product.jetEta[iJet] << "); "; } std::cout << std::endl;
@@ -253,10 +251,10 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 	int removeCounter = 0; // Since the index positions shift after removing one entry, one has to adjust for this
 	for (int iRemove : jetRemovalIndices) {
-		for (std::array<double, 20> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
+		for (std::array<double, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
 			RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
 		}
-		for (std::array<bool, 20> *jetVariable : {&product.jetDeepCsvLooseId, &product.jetDeepCsvMediumId, &product.jetDeepCsvTightId, &product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
+		for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepCsvLooseId, &product.jetDeepCsvMediumId, &product.jetDeepCsvTightId, &product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
 			RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
 		}
 		removeCounter++;
@@ -289,7 +287,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 					product.wBosonMinMassPt = diJetP4.Pt();
 				}
 
-				if (abs(diJetMass - pdgWBosonMass) < abs(product.wBosonBestMass - pdgWBosonMass)) {
+				if (std::abs(diJetMass - pdgWBosonMass) < std::abs(product.wBosonBestMass - pdgWBosonMass)) {
 					product.wBosonBestMass = diJetMass;
 					product.wBosonBestMassPt = diJetP4.Pt();
 				}
@@ -302,7 +300,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 						ROOT::Math::PtEtaPhiMVector bJetP4 = ROOT::Math::PtEtaPhiMVector(product.jetPt.at(iJet2), product.jetEta.at(iJet2), product.jetPhi.at(iJet2), product.jetMass.at(iJet2));
 						ROOT::Math::PtEtaPhiMVector topP4 = diJetP4 + bJetP4;
 						double topMass = topP4.M();
-						if (abs(topMass - pdgTopMass) < abs(product.topBestMass - pdgTopMass)) {
+						if (std::abs(topMass - pdgTopMass) < std::abs(product.topBestMass - pdgTopMass)) {
 							product.topBestMass = topMass;
 							product.topBestMassPt = topP4.Pt();
 						}
@@ -314,7 +312,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 	int fatJetCounter = 0;
 	dataReader.ReadFatJetEntry();
-	assert(0 <= dataReader.nJet && dataReader.nJet < product.nMax);
+	assert(dataReader.nFatJet < product.nMax);
 	for (int iFatJet = 0; iFatJet < dataReader.nFatJet; iFatJet++) {
 		dataReader.GetFatJetValues(iFatJet);
 

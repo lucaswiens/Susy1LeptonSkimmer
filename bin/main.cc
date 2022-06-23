@@ -113,8 +113,8 @@ int main(int argc, char *argv[]) {
 		std::shared_ptr<MuonProducer>(new MuonProducer(configTree, scaleFactorTree, product.GetEraSelector())),
 		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree)),
 		std::shared_ptr<JetProducer>(new JetProducer(configTree, scaleFactorTree, product)),
+		std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(configTree, scaleFactorTree)),
 		//std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector())), // FIXME segmentation violation after code is done.. probably something weird with the correction lib..
-		//std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer()),
 	};
 	if (!isData) {
 		//producers.push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era))),

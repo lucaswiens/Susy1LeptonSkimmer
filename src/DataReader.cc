@@ -78,6 +78,12 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName)
 	fatJetDeepTagTvsQCDLeaf   = inputTree->GetLeaf("FatJet_deepTag_TvsQCD");
 	fatJetDeepTagWvsQCDLeaf   = inputTree->GetLeaf("FatJet_deepTag_WvsQCD");
 
+	// Isolated Tracks
+	nIsoTrackLeaf     = inputTree->GetLeaf("nIsoTrack");
+	isoTrackPdgIdLeaf = inputTree->GetLeaf("IsoTrack_pdgId");
+	isoTrackPtLeaf    = inputTree->GetLeaf("IsoTrack_pt");
+	isoTrackEtaLeaf   = inputTree->GetLeaf("IsoTrack_eta");
+	isoTrackPhiLeaf   = inputTree->GetLeaf("IsoTrack_phi");
 
 	// Gen Jet for Smearing
 	nGenJetLeaf = inputTree->GetLeaf("nGenJet");
@@ -269,7 +275,7 @@ void DataReader::GetJetValues(const int &index) {
 void DataReader::ReadFatJetEntry() {
 	if (nFatJetLeaf->GetBranch()->GetReadEntry() == entry) { return;}
 	nFatJetLeaf->GetBranch()->GetEntry(entry);
-	nFatJet = (int)nFatJetLeaf->GetValue();
+	nFatJet = nFatJetLeaf->GetValue();
 
 	fatJetMassLeaf->GetBranch()->GetEntry(entry);
 	fatJetPtLeaf->GetBranch()->GetEntry(entry);
@@ -298,6 +304,23 @@ void DataReader::GetFatJetValues(const int &index) {
 	fatJetDeepTagWvsQCD   = fatJetDeepTagWvsQCDLeaf->GetValue(index);
 }
 
+void DataReader::ReadIsoTrackEntry() {
+	if (nIsoTrackLeaf->GetBranch()->GetReadEntry() == entry) { return;}
+	nIsoTrackLeaf->GetBranch()->GetEntry(entry);
+	nIsoTrack = nIsoTrackLeaf->GetValue();
+
+	isoTrackPdgIdLeaf->GetBranch()->GetEntry(entry);
+	isoTrackPtLeaf->GetBranch()->GetEntry(entry);
+	isoTrackEtaLeaf->GetBranch()->GetEntry(entry);
+	isoTrackPhiLeaf->GetBranch()->GetEntry(entry);
+}
+
+void DataReader::GetIsoTrackValues(const int &index) {
+	isoTrackPdgId = isoTrackPdgIdLeaf->GetValue(index);
+	isoTrackPt = isoTrackPtLeaf->GetValue(index);
+	isoTrackEta = isoTrackEtaLeaf->GetValue(index);
+	isoTrackPhi = isoTrackPhiLeaf->GetValue(index);
+}
 
 void DataReader::ReadGenJetEntry() {
 	if(nGenJetLeaf->GetBranch()->GetReadEntry() == entry) return;

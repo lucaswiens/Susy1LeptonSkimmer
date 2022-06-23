@@ -71,7 +71,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 			muonPtDown = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor - scaleFactorUnc) : (mcScaleFactor - scaleFactorUnc));
 
 		if (muonPt < muonVetoPtCut ||
-				abs(dataReader.muonEta) > muonEtaCut ||
+				std::abs(dataReader.muonEta) > muonEtaCut ||
 				//dataReader.muonDxy > muonDxyCut ||
 				//dataReader.muonDz > muonDzCut ||
 				//dataReader.muonSip3d > muonSip3dCut ||
@@ -125,6 +125,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 	product.nMuon = muonCounter;
 	product.nGoodMuon = goodMuonCounter;
 	product.nVetoMuon = vetoMuonCounter;
+	product.nAntiSelectedMuon = vetoMuonCounter;
 
 	/*
 	if (product.nLepton!=0 && false) { //nLepton can be 0 since unselected leptons are not counted

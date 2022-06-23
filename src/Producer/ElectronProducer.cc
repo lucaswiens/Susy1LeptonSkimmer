@@ -92,6 +92,7 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		product.nElectron = electronCounter;
 		product.nGoodElectron = goodElectronCounter;
 		product.nVetoElectron = vetoElectronCounter;
+		product.nAntiSelectedElectron = antiSelectedElectronCounter;
 
 		product.nLepton = product.nMuon + product.nElectron;
 		product.nGoodLepton = product.nGoodMuon + product.nGoodElectron;

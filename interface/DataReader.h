@@ -54,6 +54,11 @@ class DataReader {
 			*fatJetDeepTagMDTvsQCDLeaf, *fatJetDeepTagMDWvsQCDLeaf,
 			*fatJetDeepTagTvsQCDLeaf, *fatJetDeepTagWvsQCDLeaf;
 
+		// IsoTrack Leafs
+		TLeaf *nIsoTrackLeaf,
+			*isoTrackPdgIdLeaf,
+			*isoTrackPtLeaf, *isoTrackEtaLeaf, *isoTrackPhiLeaf;
+
 		// GenJet for smearing
 		TLeaf *nGenJetLeaf, *nGenFatJetLeaf,
 			*genJetPtLeaf, *genJetEtaLeaf, *genJetPhiLeaf,
@@ -117,6 +122,13 @@ class DataReader {
 			fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
 			fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD;
 
+		// Isolated Tracks
+		void ReadIsoTrackEntry();
+		void GetIsoTrackValues(const int &index);
+		int nIsoTrack,
+			isoTrackPdgId;
+		double isoTrackPt, isoTrackEta, isoTrackPhi;
+
 		// Gen Jet for Smearing
 		void ReadGenJetEntry();
 		void GetGenJetValues(const int &index);
@@ -126,7 +138,6 @@ class DataReader {
 		void GetGenFatJetValues(const int &index);
 		int nGenFatJet;
 		double genFatJetPt, genFatJetEta, genFatJetPhi;
-
 
 		// Generator Particle
 		void ReadGenEntry();

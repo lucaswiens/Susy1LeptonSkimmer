@@ -27,10 +27,10 @@ void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const
 		cutNames.push_back("N_{e} " + op + std::to_string(threshold) + " (No ID.)");
 	} else if(part == "GoodElectron") {
 		cuts.push_back(ConstructCut(product.nGoodElectron, op, threshold));
-		cutNames.push_back("N_{e}^{good} " + op + std::to_string(threshold) + " (No ID.)");
+		cutNames.push_back("N_{e}^{good} " + op + std::to_string(threshold));
 	} else if(part == "VetoElectron") {
 		cuts.push_back(ConstructCut(product.nVetoElectron, op, threshold));
-		cutNames.push_back("N_{e}^{veto} " + op + std::to_string(threshold) + " (No ID.)");
+		cutNames.push_back("N_{e}^{veto} " + op + std::to_string(threshold));
 	} else if(part == "Muon") {
 		cuts.push_back(ConstructCut(product.nMuon, op, threshold));
 		cutNames.push_back("N_{#mu} " + op + std::to_string(threshold) + " (No ID.)");

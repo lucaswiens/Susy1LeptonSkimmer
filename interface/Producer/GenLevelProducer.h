@@ -29,7 +29,7 @@ class GenLevelProducer : public BaseProducer {
 		float DeltaPhi(ROOT::Math::PtEtaPhiMVector v1, ROOT::Math::PtEtaPhiMVector v2);
 	public:
 		std::string Name = "GenLevelProducer";
-		GenLevelProducer(const int &era);
+		GenLevelProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
 		void EndJob(TFile &file);

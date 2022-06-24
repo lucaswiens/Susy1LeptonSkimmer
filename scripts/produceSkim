@@ -9,6 +9,16 @@ ERA=$5
 RUNPERIOD=$6
 XSECTION=$7
 JOB=$8
+echo INFILE         $INFILE
+echo OUT            $OUT
+echo ISDATA         $ISDATA
+echo DOSYSTEMATICS  $DOSYSTEMATICS
+echo ERA            $ERA
+echo RUNPERIOD      $RUNPERIOD
+echo XSECTION       $XSECTION
+echo JOB            $JOB
+
+
 
 echo "Processing ${INFILE} for Job ${OUT}_${JOB}"
 

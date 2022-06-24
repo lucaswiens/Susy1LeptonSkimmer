@@ -27,8 +27,6 @@ class JetProducer : public BaseProducer {
 			pdgWBosonMass = 80.379;
 
 		// JEC and JER from json library
-		// https://github.com/cms-nanoAOD/correctionlib
-		// https://gitlab.cern.ch/cms-nanoAOD/jsonpog-integration/-/tree/master
 		std::unique_ptr<correction::CorrectionSet> ak4CorrectionSet, ak8CorrectionSet, jmeCorrectionSet;
 		std::string era, dataType, runPeriod, jerVersion, ak4Algorithm, ak8Algorithm;
 

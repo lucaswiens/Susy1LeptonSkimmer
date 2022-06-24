@@ -1,7 +1,7 @@
 {
-	"Jet": {
-		"JERC": {
-			"2016PreVFP": {
+	"Jet" : {
+		"JERC" : {
+			"2016PreVFP" : {
 				"Era"  : "Summer19UL16APV",
 				"MC"   : "V7_MC",
 				"DATA" : "V7_DATA",
@@ -26,7 +26,7 @@
 					"JSON" : "jsonpog-integration/POG/JME/2016postVFP_UL/jmar.json"
 				}
 			},
-			"2016PostVFP": {
+			"2016PostVFP" : {
 				"Era"  : "Summer19UL16",
 				"MC"   : "V7_MC",
 				"DATA" : "V7_DATA",
@@ -49,7 +49,7 @@
 					"JSON"      : "jsonpog-integration/POG/JME/2016postVFP_UL/jmar.json"
 				}
 			},
-			"2017": {
+			"2017" : {
 				"Era"  : "Summer19UL17",
 				"MC"   : "V5_MC",
 				"DATA" : "V5_DATA",
@@ -74,7 +74,7 @@
 					"JSON"      : "jsonpog-integration/POG/JME/2017_UL/jmar.json"
 				}
 			},
-			"2018": {
+			"2018" : {
 				"Era"  : "Summer19UL18",
 				"MC"   : "V5_MC",
 				"DATA" : "V5_DATA",
@@ -100,89 +100,105 @@
 			}
 		},
 
-		"JECUNC": {
-			"2016PreVFP": "JECDatabase/textFiles/Summer19UL16APV_V7_MC/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt",
-			"2016PostVFP": "JECDatabase/textFiles/Summer19UL16_V7_MC/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt",
-			"2017": "JECDatabase/textFiles/Summer19UL17_V5_MC/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt",
-			"2018": "JECDatabase/textFiles/Summer19UL18_V5_MC/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt"
+		"JECUNC" : {
+			"2016PreVFP" : "JECDatabase/textFiles/Summer19UL16APV_V7_MC/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt",
+			"2016PostVFP" : "JECDatabase/textFiles/Summer19UL16_V7_MC/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt",
+			"2017" : "JECDatabase/textFiles/Summer19UL17_V5_MC/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt",
+			"2018" : "JECDatabase/textFiles/Summer19UL18_V5_MC/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt"
 		},
 
-		"JME": {
-			"2016PreVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt",
-			"2016PostVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt",
-			"2017": "/JME/2017/UL/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt",
-			"2018": "/JME/2018/UL/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt"
+		"JME" : {
+			"2016PreVFP" : "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt",
+			"2016PostVFP" : "/JME/2016/UL/Summer20UL16APV_JRV3_MC_SF_AK4PFchs.txt",
+			"2017" : "/JME/2017/UL/Summer19UL17_JRV2_MC_SF_AK4PFchs.txt",
+			"2018" : "/JME/2018/UL/Summer19UL18_JRV2_MC_SF_AK4PFchs.txt"
 		},
 
-		"JMEPtReso": {
-			"2016PreVFP": "/JME/2016/UL/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt",
-			"2016PostVFP": "/JME/2016/UL/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt",
-			"2017": "/JME/2017/UL/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt",
-			"2018": "/JME/2018/UL/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"
+		"JMEPtReso" : {
+			"2016PreVFP" : "/JME/2016/UL/Summer20UL16APV_JRV3_MC_PtResolution_AK4PFchs.txt",
+			"2016PostVFP" : "/JME/2016/UL/Summer20UL16_JRV3_MC_PtResolution_AK4PFchs.txt",
+			"2017" : "/JME/2017/UL/Summer19UL17_JRV2_MC_PtResolution_AK4PFchs.txt",
+			"2018" : "/JME/2018/UL/Summer19UL18_JRV2_MC_PtResolution_AK4PFchs.txt"
 		},
 
-		"BTag": {
-			"2016PreVFP": "/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json",
-			"2016PostVFP": "/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json",
-			"2017": "/jsonpog-integration/POG/BTV/2017_UL/btagging.json",
-			"2018": "/jsonpog-integration/POG/BTV/2018_UL/btagging.json"
+		"BTag" : {
+			"2016PreVFP" : "/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json",
+			"2016PostVFP" : "/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json",
+			"2017" : "/jsonpog-integration/POG/BTV/2017_UL/btagging.json",
+			"2018" : "/jsonpog-integration/POG/BTV/2018_UL/btagging.json"
 		}
 	},
-
-	"Electron": {
-		"2016PreVFP": {
-			"file": "/jsonpog-integration/POG/EGM/2016preVFP_UL/electron.json",
-			"eraAlias": "2016preVFP"
+	"Electron" : {
+		"2016PreVFP" : {
+			"JSON" : "/jsonpog-integration/POG/EGM/2016preVFP_UL/electron.json",
+			"eraAlias" : "2016preVFP"
 		},
 
-		"2016PostVFP": {
-			"file": "/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json",
-			"eraAlias": "2016postVFP"
+		"2016PostVFP" : {
+			"JSON" : "/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json",
+			"eraAlias" : "2016postVFP"
 		},
 
-		"2017": {
-			"file": "/jsonpog-integration/POG/EGM/2017_UL/electron.json",
-			"eraAlias": "2017"
+		"2017" : {
+			"JSON" : "/jsonpog-integration/POG/EGM/2017_UL/electron.json",
+			"eraAlias" : "2017"
 		},
 
-		"2018": {
-			"file": "/jsonpog-integration/POG/EGM/2018_UL/electron.json",
-			"eraAlias": "2018"
+		"2018" : {
+			"JSON" : "/jsonpog-integration/POG/EGM/2018_UL/electron.json",
+			"eraAlias" : "2018"
 		}
 	},
-
-	"Muon": {
-		"SF": {
-			"2016PreVFP": {
-				"file": "/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json",
-				"eraAlias": "2016preVFP_UL",
-				"triggerName": "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+	"Muon" : {
+		"2016PreVFP" : {
+			"ScaleFactor" : {
+				"JSON" : "/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json",
+				"eraAlias" : "2016preVFP_UL",
+				"triggerName" : "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
 			},
-
-			"2016PostVFP": {
-				"file": "/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json",
-				"eraAlias": "2016postVFP_UL",
-				"triggerName": "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
-			},
-
-			"2017": {
-				"file": "/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json",
-				"eraAlias": "2017_UL",
-				"triggerName": "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight"
-			},
-
-			"2018": {
-				"file": "/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json",
-				"eraAlias": "2018_UL",
-				"triggerName": "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight"
-			}
+			"RoccoR" : "/RoccoR/RoccoR2016aUL.txt"
 		},
-
-		"Scale": {
-			"2016PreVFP": "/RoccoR/RoccoR2016aUL.txt",
-			"2016PostVFP": "/RoccoR/RoccoR2016bUL.txt",
-			"2017": "/RoccoR/RoccoR2017.txt",
-			"2018": "/RoccoR/RoccoR2018.txt"
+		"2016PostVFP" : {
+			"ScaleFactor" : {
+				"JSON" : "/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json",
+				"eraAlias" : "2016postVFP_UL",
+				"triggerName" : "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+			},
+			"RoccoR" : "/RoccoR/RoccoR2016bUL.txt"
+		},
+		"2017" : {
+			"ScaleFactor" : {
+				"JSON" : "/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json",
+				"eraAlias" : "2017_UL",
+				"triggerName" : "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight"
+			},
+			"RoccoR" : "/RoccoR/RoccoR2017.txt"
+		},
+		"2018" : {
+			"ScaleFactor" : {
+				"JSON" : "/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json",
+				"eraAlias" : "2018_UL",
+				"triggerName" : "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+			},
+			"RoccoR" : "/RoccoR/RoccoR2018.txt"
+		}
+	},
+	"PileUp" : {
+		"2016PreVFP" : {
+			"JSON" : "jsonpog-integration/POG/LUM/2016postVFP_UL/puWeights.json",
+			"GoldenJSON" : "Collisions16_UltraLegacy_goldenJSON"
+		},
+		"2016PostVFP" : {
+			"JSON" : "jsonpog-integration/POG/LUM/2016preVFP_UL/puWeights.json",
+			"GoldenJSON" : "Collisions16_UltraLegacy_goldenJSON"
+		},
+		"2017" : {
+			"JSON" : "jsonpog-integration/POG/LUM/2017_UL/puWeights.json",
+			"GoldenJSON" : "Collisions17_UltraLegacy_goldenJSON"
+		},
+		"2018" : {
+			"JSON" : "jsonpog-integration/POG/LUM/2018_UL/puWeights.json",
+			"GoldenJSON" : "Collisions18_UltraLegacy_goldenJSON"
 		}
 	}
 }

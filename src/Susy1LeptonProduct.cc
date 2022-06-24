@@ -5,8 +5,7 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 	isData(isData),
 	sampleName(sampleName),
 	runPeriod(runPeriod),
-	xSection(xSection)
-	{
+	xSection(xSection) {
 		std::string outputFileName = outputFile.GetName();
 		if (era == 2016) {
 			if (outputFileName.find("UL16NanoAODAPVv") != std::string::npos) {
@@ -22,7 +21,6 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 			this->preVFP = false; // aka postVFP, no-HIPM, no-APV which is just default track construction
 		}
 
-		//metaData = std::make_shared<TTree>("MetaData", "MetaData");
 		TTree metaData("MetaData", "MetaData");
 		metaData.Branch("era", &this->era);
 		metaData.Branch("preVFP", &this->preVFP);
@@ -220,5 +218,19 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("IsoTrackPt", isoTrackPt.data(), "IsoTrackPt[nIsoTrack]/D");
 		tree->Branch("IsoTrackMt2", isoTrackMt2.data(), "IsoTrackMt2[nIsoTrack]/D");
 		tree->Branch("IsoTrackIsHadronicDecay", isoTrackIsHadronicDecay.data(), "IsoTrackIsHadronicDecay[nIsoTrack]/O");
+
+		if (!isData) {
+			tree->Branch("nPdfWeight", &nPdfWeight);
+			tree->Branch("nScaleWeight", &nScaleWeight);
+			tree->Branch("nTrueInt", &nTrueInt);
+			tree->Branch("PileUpWeight", &pileUpWeight);
+			tree->Branch("PileUpWeightUp", &pileUpWeightUp);
+			tree->Branch("PileUpWeightDown", &pileUpWeightDown);
+			tree->Branch("PreFireWeight", &preFire);
+			tree->Branch("PreFireWeightUp", &preFireUp);
+			tree->Branch("PreFireWeightDown", &preFireDown);
+			tree->Branch("LHEPdfWeight", pdfWeight.data(), "pdfWeight[nPdfWeight]/D");
+			tree->Branch("LHEScaleWeight", scaleWeight.data(), "scaleWeight[nScaleWeight]/D");
+		}
 	}
 }

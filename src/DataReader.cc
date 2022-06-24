@@ -100,10 +100,22 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName)
 	metPtLeaf  = inputTree->GetLeaf("MET_pt");
 	metPhiLeaf = inputTree->GetLeaf("MET_phi");
 
+	// PileUp
+	nTrueIntLeaf     = inputTree->GetLeaf("Pileup_nTrueInt");
+	nPdfWeightLeaf   = inputTree->GetLeaf("nLHEPdfWeight");
+	pdfWeightLeaf    = inputTree->GetLeaf("LHEPdfWeight");
+	nScaleWeightLeaf = inputTree->GetLeaf("nLHEScaleWeight");
+	scaleWeightLeaf  = inputTree->GetLeaf("LHEScaleWeight");
+	preFireLeaf      = inputTree->GetLeaf("L1PreFiringWeight_Nom");
+	preFireUpLeaf    = inputTree->GetLeaf("L1PreFiringWeight_Up");
+	preFireDownLeaf  = inputTree->GetLeaf("L1PreFiringWeight_Dn");
+
 	//Gen part related
 	nGenPartLeaf       = inputTree->GetLeaf("nGenPart");
-	genPDGLeaf         = inputTree->GetLeaf("GenPart_pdgId");
+	genPdgIdLeaf       = inputTree->GetLeaf("GenPart_pdgId");
 	genMotherIndexLeaf = inputTree->GetLeaf("GenPart_genPartIdxMother");
+	genStatusLeaf      = inputTree->GetLeaf("GenPart_status");
+	genStatusFlagsLeaf = inputTree->GetLeaf("GenPart_statusFlags");
 	genPtLeaf          = inputTree->GetLeaf("GenPart_pt");
 	genPhiLeaf         = inputTree->GetLeaf("GenPart_phi");
 	genEtaLeaf         = inputTree->GetLeaf("GenPart_eta");
@@ -322,6 +334,39 @@ void DataReader::GetIsoTrackValues(const int &index) {
 	isoTrackPhi = isoTrackPhiLeaf->GetValue(index);
 }
 
+
+void DataReader::ReadPileUpEntry() {
+	if(nPdfWeightLeaf->GetBranch()->GetReadEntry() == entry){ return;}
+	nTrueIntLeaf->GetBranch()->GetEntry(entry);
+	nTrueInt = nTrueIntLeaf->GetValue();
+
+	nPdfWeightLeaf->GetBranch()->GetEntry(entry);
+	nPdfWeight = nPdfWeightLeaf->GetValue();
+
+	nScaleWeightLeaf->GetBranch()->GetEntry(entry);
+	nScaleWeight = nScaleWeightLeaf->GetValue();
+
+	pdfWeightLeaf->GetBranch()->GetEntry(entry);
+	scaleWeightLeaf->GetBranch()->GetEntry(entry);
+	preFireLeaf->GetBranch()->GetEntry(entry);
+	preFireUpLeaf->GetBranch()->GetEntry(entry);
+	preFireDownLeaf->GetBranch()->GetEntry(entry);
+}
+
+void DataReader::GetPileUpValues() {
+	for (int iPdf = 0; iPdf < nPdfWeight; iPdf++) {
+		pdfWeight[iPdf] = pdfWeightLeaf->GetValue(iPdf);
+	}
+
+	for (int iScale = 0; iScale < nScaleWeight; iScale++) {
+		scaleWeight [iScale] = scaleWeightLeaf->GetValue(iScale);
+	}
+
+	preFire     = preFireLeaf->GetValue();
+	preFireUp   = preFireUpLeaf->GetValue();
+	preFireDown = preFireDownLeaf->GetValue();
+}
+
 void DataReader::ReadGenJetEntry() {
 	if(nGenJetLeaf->GetBranch()->GetReadEntry() == entry) return;
 	nGenJetLeaf->GetBranch()->GetEntry(entry);
@@ -358,8 +403,10 @@ void DataReader::GetGenFatJetValues(const int &index){
 void DataReader::ReadGenEntry() {
 	if (nGenPartLeaf->GetBranch()->GetReadEntry() == entry) { return;}
 	nGenPartLeaf->GetBranch()->GetEntry(entry);
-	genPDGLeaf->GetBranch()->GetEntry(entry);
+	genPdgIdLeaf->GetBranch()->GetEntry(entry);
 	genMotherIndexLeaf->GetBranch()->GetEntry(entry);
+	genStatusLeaf->GetBranch()->GetEntry(entry);
+	genStatusFlagsLeaf->GetBranch()->GetEntry(entry);
 	genPtLeaf->GetBranch()->GetEntry(entry);
 	genPhiLeaf->GetBranch()->GetEntry(entry);
 	genEtaLeaf->GetBranch()->GetEntry(entry);
@@ -369,8 +416,10 @@ void DataReader::ReadGenEntry() {
 }
 
 void DataReader::GetGenValues(const int &index) {
-	genPDG         = genPDGLeaf->GetValue(index);
+	genPdgId       = genPdgIdLeaf->GetValue(index);
 	genMotherIndex = genMotherIndexLeaf->GetValue(index);
+	genStatus      = genStatusLeaf->GetValue(index);
+	genStatusFlags = genStatusFlagsLeaf->GetValue(index);
 	genPt          = genPtLeaf->GetValue(index);
 	genPhi         = genPhiLeaf->GetValue(index);
 	genEta         = genEtaLeaf->GetValue(index);
@@ -381,12 +430,12 @@ int DataReader::LastGenCopy(const int& index){
 	GetGenValues(index);
 
 	int partIndex = index, motherIndex = genMotherIndex;
-	int partPDG = genPDG;
+	int partPDG = genPdgId;
 
 	while(true){
 		GetGenValues(motherIndex);
 
-		if (partPDG == genPDG){
+		if (partPDG == genPdgId){
 			partIndex = motherIndex;
 			motherIndex = genMotherIndex;
 		}
@@ -413,7 +462,7 @@ int DataReader::GetGenMatchedIndex(const double &recoPt, const double &recoPhi, 
 
 		if (deltaR > deltaRCut || deltaPt > deltaPtCut) continue;
 
-		if (deltaR < deltaRMin && deltaPt < deltaPtMin && recoPDG == std::abs(genPDG)){
+		if (deltaR < deltaRMin && deltaPt < deltaPtMin && recoPDG == std::abs(genPdgId)){
 			int index = LastGenCopy(iGen);
 			if (std::find(alreadyMatchedIndex.begin(), alreadyMatchedIndex.end(), index) != alreadyMatchedIndex.end()) continue;
 

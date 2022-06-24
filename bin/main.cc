@@ -28,11 +28,11 @@
 
 namespace pt = boost::property_tree;
 
-/*
-	This is a skimmer for the 1 Lepton Delta Phi Analysis.
-	The current design is designed to work on UltraLegacy samples:
-	https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis
-*/
+/*#####################################################################
+#   This is a skimmer for the 1 Lepton Delta Phi Analysis.            #
+#   The current design is designed to work on UltraLegacy samples:    #
+#   https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis   #
+#####################################################################*/
 
 int main(int argc, char *argv[]) {
 	//Extract informations of command line
@@ -109,7 +109,6 @@ int main(int argc, char *argv[]) {
 	std::vector<std::shared_ptr<BaseProducer>> producers = {
 		//std::shared_ptr<TriggerProducer>(new TriggerProducer(era, runPeriod)), // trigger names need update
 		//std::shared_ptr<METFilterProducer>(new METFilterProducer(era)),
-		//std::shared_ptr<LeptonProducer>(new LeptonProducer(era, vetoLeptonPtCut, etaCut, dxyCut, dzCut, sip3DCut, isoCut, preVFP)),
 		std::shared_ptr<MuonProducer>(new MuonProducer(configTree, scaleFactorTree, product.GetEraSelector())),
 		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree)),
 		std::shared_ptr<JetProducer>(new JetProducer(configTree, scaleFactorTree, product)),
@@ -117,8 +116,8 @@ int main(int argc, char *argv[]) {
 		//std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector())), // FIXME segmentation violation after code is done.. probably something weird with the correction lib..
 	};
 	if (!isData) {
-		//producers.push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(era))),
-		//producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(era)));
+		producers.push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(configTree, scaleFactorTree, product.GetEraSelector())));
+		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 	}
 
 	DataReader dataReader(inputFileName, "Events");
@@ -129,7 +128,7 @@ int main(int argc, char *argv[]) {
 	for (int entry = 0; entry < dataReader.GetEntries(); ++entry) {
 		// Stop Events Loop after nMaxEvents
 		if (nMaxEvents > 0 && entry >= nMaxEvents) { break;}
-		if (entry % 100000 == 0) {
+		if (entry % 20000 == 0) {
 			std::cout  << "Processed " << 100*(double)(entry + 1)/(nMaxEvents < 0? nEvents : nMaxEvents) << "% Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
 		}
 

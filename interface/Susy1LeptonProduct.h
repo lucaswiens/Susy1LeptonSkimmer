@@ -11,7 +11,6 @@ class Susy1LeptonProduct {
 		std::string eraSelector, sampleName;
 		char runPeriod;
 		double xSection, luminosity;
-		//std::shared_ptr<TTree> metaData;
 	public:
 		Susy1LeptonProduct(const int &era, const bool &isData, const std::string &sampleName, const char &runPeriod, const double &xSection, TFile &outputFile);
 		void RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees);
@@ -21,7 +20,7 @@ class Susy1LeptonProduct {
 		bool GetIsData() {return isData;}
 		char GetRunPeriod() {return runPeriod;}
 
-		// Max value for static arrays, should use assert to enforce nObject < nMax, otherwise the arrays are not big enough
+		// Max value for static arrays, should use assert to enforce nObject < nMax, so you know when to increase nMax
 		static const int nMax = 30;
 
 		// Lepton Information
@@ -94,8 +93,13 @@ class Susy1LeptonProduct {
 		std::array<bool, nMax> isoTrackIsHadronicDecay;
 		std::array<int, nMax> isoTrackPdgId;
 
-
-
+		// PileUp Weights
+		int nPdfWeight, nScaleWeight;
+		double nTrueInt,
+			preFire, preFireUp, preFireDown,
+			pileUpWeight, pileUpWeightUp, pileUpWeightDown;
+		std::array<double, 103> pdfWeight; // size is fixed
+		std::array<double, 9> scaleWeight; // size is fixed
 };
 
 #endif

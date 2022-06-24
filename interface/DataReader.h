@@ -64,12 +64,17 @@ class DataReader {
 			*genJetPtLeaf, *genJetEtaLeaf, *genJetPhiLeaf,
 			*genFatJetPtLeaf, *genFatJetEtaLeaf, *genFatJetPhiLeaf;
 
-
+		// PileUp Leafs
+		TLeaf *nTrueIntLeaf,
+			*nPdfWeightLeaf, *pdfWeightLeaf,
+			*nScaleWeightLeaf, *scaleWeightLeaf,
+			*preFireLeaf, *preFireUpLeaf, *preFireDownLeaf;
 
 		// Generator Particle Leafs
 		TLeaf *nGenPartLeaf,
-			*genPDGLeaf, *genMotherIndexLeaf,
-			*genPtLeaf, *genEtaLeaf, *genPhiLeaf, *genMassLeaf;
+			*genPdgIdLeaf, *genMotherIndexLeaf,
+			*genPtLeaf, *genEtaLeaf, *genPhiLeaf, *genMassLeaf,
+			*genStatusLeaf, *genStatusFlagsLeaf;
 
 	public:
 		DataReader(const std::string &fileName, const std::string &treeName);
@@ -139,11 +144,21 @@ class DataReader {
 		int nGenFatJet;
 		double genFatJetPt, genFatJetEta, genFatJetPhi;
 
+		// PileUp
+		void ReadPileUpEntry();
+		void GetPileUpValues();
+		int nPdfWeight, nScaleWeight;
+		double nTrueInt,
+			preFire, preFireUp, preFireDown;
+		std::array<double, 103> pdfWeight; // size is fixed
+		std::array<double, 9> scaleWeight; // size is fixed
+
 		// Generator Particle
 		void ReadGenEntry();
 		void GetGenValues(const int &index);
-		int nGenPart;
-		int genPDG, genMotherIndex;
+		int nGenPart,
+			genPdgId, genMotherIndex,
+			genStatus, genStatusFlags;
 		double genPt, genEta, genPhi, genMass;
 
 		int GetGenMatchedIndex(const double &recoPt, const double &recoPhi, const double &recoEta, const int& recoPDG, const double &deltaRCut, const double &deltaPtCut);

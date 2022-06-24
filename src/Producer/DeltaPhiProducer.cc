@@ -37,13 +37,13 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		}
 		isGoodMuon  = true;
 	} else {
-		isGoodMuon  = false;
 		for (int iElectron = 0; iElectron < product.nElectron; iElectron++) {
 			if (product.electronIsGood[iElectron]){
 				goodElectronIndex = iElectron;
 				break;
 			}
 		}
+		isGoodMuon  = false;
 	}
 
 	product.LT = -999;

@@ -3,7 +3,7 @@
 MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector) {
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 	//Name = "MuonProducer";
-	rc.init(std::string(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon.Scale." + eraSelector)));
+	rc.init(std::string(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".RoccoR")));
 
 	muonGoodPtCut         = configTree.get<double>("Producer.Muon.Pt.Good");
 	muonVetoPtCut         = configTree.get<double>("Producer.Muon.Pt.Veto");

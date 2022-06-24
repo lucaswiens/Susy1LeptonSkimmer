@@ -9,6 +9,12 @@
 JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product) {
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 
+	/*################################################################################################
+	#   https://github.com/cms-nanoAOD/correctionlib                                                 #
+	#   https://gitlab.cern.ch/cms-nanoAOD/jsonpog-integration/-/tree/master                         #
+	#   Instructions:                                                                                #
+	#   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite   #
+	################################################################################################*/
 	era              = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".Era");
 	dataType         = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + (product.GetIsData()? ".DATA" : ".MC"));
 	runPeriod        = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + "M");
@@ -20,7 +26,6 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 	jmeCorrectionSet = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".JME.JSON"));
 
 	// Set object to get JEC uncertainty
-	// TODO JSON format not avialable yet
 	bool isJECSysteamtic = true; //FIXME maybe make this part of the product?
 	if (isJECSystematic) {
 		jetCorrectionUncertainty = std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.JECUNC." + product.GetEraSelector()), "Total"));
@@ -54,21 +59,10 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 		"|Pt|  > " << jetPtCut << std::endl;
 }
 
-// keep for backup, but shouldn't be needed anymore
-// https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
-/*
-double JetProducer::CorrectEnergy(const double &pt, const double &eta, const double &rho, const double &area) {
-	jetCorrector->setJetPt(pt);
-	jetCorrector->setJetEta(eta);
-	jetCorrector->setRho(rho);
-	jetCorrector->setJetA(area);
-	return jetCorrector->getCorrection();
-}
-*/
-
-
-// https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures
-// https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_25/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h#L203-L263
+/*#######################################################################################################################
+#   https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#Smearing_procedures                                      #
+#   https://github.com/cms-sw/cmssw/blob/CMSSW_8_0_25/PhysicsTools/PatUtils/interface/SmearedJetProducerT.h#L203-L263   #
+#######################################################################################################################*/
 double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const bool &isAk4) {
 	double coneSize = isAk4 ? 0.2 : 0.4;
 	double jetEta = isAk4 ? dataReader.jetEta : dataReader.fatJetEta;
@@ -153,7 +147,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		dataReader.GetJetValues(iJet);
 		if (!product.GetIsData()) { dataReader.ReadGenEntry();}
 
-		// Missing runPeriod for data
+		// FIXME Missing runPeriod for data
 		double correctionFactor = ak4CorrectionSet->at(era + "_" + dataType + "_L1FastJet_" + ak4Algorithm)->evaluate({dataReader.jetArea, dataReader.jetEta, dataReader.jetPt, dataReader.rho}) *
 			ak4CorrectionSet->at(era + "_" + dataType + "_L2Relative_"   + ak4Algorithm)->evaluate({dataReader.jetEta, dataReader.jetPt}) *
 			ak4CorrectionSet->at(era + "_" + dataType + "_L3Absolute_"   + ak4Algorithm)->evaluate({dataReader.jetEta, dataReader.jetPt}) *
@@ -174,8 +168,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		const double &jetPtCorrected = dataReader.jetPt * correctionFactor * smearFactor;
 		if (jetPtCorrected > jetPtCut && std::abs(dataReader.jetEta) > jetEtaCut) { continue;}
 
-		metPx += jetPtCorrected * std::cos(dataReader.jetPhi) - jetPtCorrected * std::cos(dataReader.jetPhi);
-		metPy += jetPtCorrected * std::sin(dataReader.jetPhi) - jetPtCorrected * std::sin(dataReader.jetPhi);
+		metPx += dataReader.jetPt * std::cos(dataReader.jetPhi) - jetPtCorrected * std::cos(dataReader.jetPhi);
+		metPy += dataReader.jetPt * std::sin(dataReader.jetPhi) - jetPtCorrected * std::sin(dataReader.jetPhi);
 
 		product.jetPt[jetCounter]   = jetPtCorrected;
 		product.jetEta[jetCounter]  = dataReader.jetEta;
@@ -192,8 +186,6 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		jetCounter++;
 	}
 
-	//std::cout << "\nPt(Before Sorting):\n"; for (int iJet = 0; iJet < jetCounter; iJet++) { std::cout << iJet << "(" << product.jetPt[iJet] << ", " << product.jetEta[iJet] << "); "; } std::cout << std::endl;
-
 	std::vector<int> indices(jetCounter);
 	std::iota(indices.begin(), indices.end(), 0);
 	std::stable_sort(indices.begin(), indices.end(), [&](int i1, int i2) {return product.jetPt[i1] > product.jetPt[i2];});
@@ -203,10 +195,11 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepCsvLooseId, &product.jetDeepCsvMediumId, &product.jetDeepCsvTightId, &product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
 		SortByIndex(*jetVariable, indices, jetCounter);
 	}
-	//std::cout << "Pt(After Sorting):\n"; for (int iJet = 0; iJet < jetCounter; iJet++) { std::cout << iJet << "(" << product.jetPt[iJet] << ", " << product.jetEta[iJet] << "); "; } std::cout << std::endl;
 
-	// Jet Cleaning
-	// Remove jets from collection that match to good Leptons
+	/*############################################################
+	#   Jet Cleaning                                             #
+	#   Remove jets from collection that match to good Leptons   #
+	############################################################*/
 	double deltaRMin = std::numeric_limits<double>::max();
 	std::vector<int> muonIndices, electronIndices, jetRemovalIndices;;
 	int nearestMuonIndex = -999, nearestElectronIndex = -999;
@@ -260,8 +253,6 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		removeCounter++;
 	}
 	jetCounter -= removeCounter;
-
-	//std::cout << "Pt(After Cleaning):\n"; for (int iJet = 0; iJet < jetCounter; iJet++) { std::cout << iJet << "(" << product.jetPt[iJet] << ", " << product.jetEta[iJet] << "); "; } std::cout << std::endl;
 
 	product.nJet = jetCounter;
 

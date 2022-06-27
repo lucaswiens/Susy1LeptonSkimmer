@@ -1,0 +1,49 @@
+#!/bin/sh
+YEAR=${1}
+
+# Missing samples.. Use SAMPLE_TuneCP5_13TeV samples for now until more is available.
+# WWToLNuQQ
+# WZTo1L1Nu2Q
+# WZTo1L3Nu
+# WZTo2L2Q
+# ZZTo2Q2Nu
+# ZZTo2Q2L
+
+for sample in DYJetsToLL_M-50_HT TTTo2L2Nu_TuneCP5_13TeV TTToSemiLeptonic_TuneCP5_13TeV TTJets WJetsToLNu_HT QCD_HT ST_tW ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV ST_s-channel_4f_leptonDecays_TuneCP5_13TeV TTZToNuNu_TuneCP5_13TeV-amcatnlo-pythia8 TTZToQQ_TuneCP5_13TeV TTWJetsToLNu_TuneCP5_13TeV TTWJetsToQQ_TuneCP5_13TeV WWTo2L2Nu_TuneCP5_13TeV WW_TuneCP5_13TeV WZ_TuneCP5_13TeV ZZ_TuneCP5_13TeV ZZTo2L2Nu tZq_ll_4f_ckm_NLO_TuneCP5
+do
+	#dataset=/*/RunIISummer20UL1*NanoAOD*v9-106X*/NANOAODSIM
+	echo \#${sample} >> ${sample}.txt
+	#The QCD samples exist normally and with a bgenfilter, we will use the normal ones
+	if [ ${YEAR} == "2018" ]; then
+		dasgoclient -query="dataset=/${sample}*/RunIISummer20UL18*NanoAOD*v9-106X*/NANOAODSIM" | grep -v BGenFilter >> ${sample}.txt
+	elif [ ${YEAR} == "2017" ]; then
+		dasgoclient -query="dataset=/${sample}*/RunIISummer20UL17*NanoAOD*v9-106X*/NANOAODSIM" | grep -v BGenFilter >> ${sample}.txt
+	elif [ ${YEAR} == "2016preVFP" ]; then
+		dasgoclient -query="dataset=/${sample}*/RunIISummer20UL16*NanoAOD*v9-106X*/NANOAODSIM" | grep -v BGenFilter >> ${sample}.txt
+	elif [ ${YEAR} == "2016postVFP" ]; then
+		dasgoclient -query="dataset=/${sample}*/RunIISummer20UL16*NanoAOD*v9-106X*/NANOAODSIM" | grep -v BGenFilter >> ${sample}.txt
+	else
+		echo "INVALID YEAR ${YEAR}! Use 2016preVFP, 2016postVFP, 2017 or 2018!"
+	fi
+done
+
+cat *md > MC.txt
+
+for sample in SingleMuon SingleElectron MET
+do
+	#dataset=/SingleElectron/Run2016*UL2016_MiniAODv2_NanoAODv9-v1/NANOAOD
+	echo \#${sample} > ${sample}.txt
+	if [ ${YEAR} == "2018" ]; then
+		dasgoclient -query="dataset=/${sample}*/Run${YEAR}*UL${YEAR}*NanoAODv9*/NANOAOD" >> ${sample}.txt
+	elif [ ${YEAR} == "2017" ]; then
+		dasgoclient -query="dataset=/${sample}*/Run${YEAR}*UL${YEAR}*NanoAODv9*/NANOAOD" >> ${sample}.txt
+	elif [ ${YEAR} == "2016preVFP" ]; then
+		dasgoclient -query="dataset=/${sample}*/Run${YEAR::4}*UL${YEAR::4}*NanoAODv9*/NANOAOD" >> ${sample}.txt
+	elif [ ${YEAR} == "2016postVFP" ]; then
+		echo "#For data, run BCDEF are preVFP and FGH are postVFP. Run F is split, 31 samples are pre, 7 are post.. But this depends on run number, thus it will be handled later." >> ${sample}.txt
+	else
+		echo "INVALID YEAR ${YEAR}! Use 2016preVFP, 2016postVFP, 2017 or 2018!"
+	fi
+done
+
+cat SingleMuon.txt SingleElectron.txt MET.txt > Data.txt

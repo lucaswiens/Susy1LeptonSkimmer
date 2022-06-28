@@ -5,123 +5,145 @@ GenLevelProducer::GenLevelProducer(const pt::ptree &configTree, const pt::ptree 
 }
 
 void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
-	/*
 	ROOT::Math::PtEtaPhiMVector leptonP4;
 	ROOT::Math::PtEtaPhiMVector neutrinoP4;
-	for (int i = 0; i < NGenPart; i++){
-		const double &leptonPt = -999;//genPartPt->At(i);
-		if (leptonPt > maxLeptonPt) {maxLeptonPt = leptonPt;}
+	double maxLeptonPt;
+	int genPartCounter = 0, genLeptonCounter = 0, genTauCounter = 0, genLeptonFromTauCounter = 0, genWCounter = 0, genMatchedWCounter = 0, genNeutrinoCounter = 0, genTopCounter = 0;
+	std::vector<int> tauLeptonIndices;
+	dataReader.ReadGenEntry();
+	for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
+		dataReader.GetGenValues(iGen);
+		const double leptonPt = dataReader.genPt;
 
-		if (dataReader.genMotherIndex >= 0) { //store daughter indices for nISR
-			nDaughters++;
-			idxDaughter.push_back(i);
-			//GenTauMotherId.push_back(motherId);
+
+		/*#################################################################################################
+		#   Meaning of genStatus                                                                          #
+		#   https://cms-nanoaod-integration.web.cern.ch/integration/master-106X/mc102X_doc.html#GenPart   #
+		#################################################################################################*/
+		if (std::abs(dataReader.genPdgId) == 14 || std::abs(dataReader.genPdgId) == 12) {
+			product.genNeutrinoPt[genNeutrinoCounter] = dataReader.genPt;
+			genNeutrinoCounter++;
 		}
 
-		if (abs(dataReader.genPdgId) == 14 || abs(dataReader.genPdgId) == 12) {
-			NGenNeutrino++;
-			GenNeutrinoPt.push_back(-999);
-		}//genPartPt->At(i));
-		if ((abs(dataReader.genPdgId) == 13 || abs(dataReader.genPdgId) == 11 ) && dataReader.genMotherIndex >= 0) { // 13:Muon, 11:Electron
-			if (dataReader.StatusFlag == 2) { // 2 : isTauDecayProduct
-				NGenLeptonFromTau++;
-				NGenTau++;
-				idxTauLepton.push_back(i);
+		if ((std::abs(dataReader.genPdgId) == 13 || std::abs(dataReader.genPdgId) == 11 ) && dataReader.genMotherIndex >= 0) { // 13:Muon, 11:Electron and mother exists
+			if (leptonPt > maxLeptonPt) { maxLeptonPt = leptonPt;}
+			if (dataReader.genStatus == 2) { // 2 : isTauDecayProduct
+				tauLeptonIndices.push_back(iGen);
+				const int motherIndex = dataReader.genMotherIndex;
+				dataReader.GetGenValues(motherIndex); // Read Mother Info
+				const int motherPdgId = dataReader.genPdgId;
+				const int grandMotherIndex = dataReader.genMotherIndex;
+				dataReader.GetGenValues(motherIndex); // Read GrandMother Info
+				const int grandMotherPdgId = dataReader.genPdgId;
+				product.genTauMotherPdgId[genTauCounter] = motherPdgId;
+				product.genTauGrandMotherPdgId[genTauCounter] = grandMotherPdgId;
+				genLeptonFromTauCounter++;
+				genTauCounter++;
 			} else {
-				NGenLepton++;
-				//const int &motherStatus = genPartStatus->At(dataReader.genMotherIndex);
-				const int &motherId = -999;//genPartPdgId->At(dataReader.genMotherIndex);
-				const int &idxGrandMother = -999;//genPartIdxMother->At(dataReader.genMotherIndex);
-				GenLepMotherId.push_back(motherId);
-				if(idxGrandMother > 0){
-					const int &grandMotherId = -999;//genPartPdgId->At(idxGrandMother);
-					GenLepGrandMotherId.push_back(grandMotherId);
-				}
+				// lepton Pt already read
+				const double leptonPhi  = dataReader.genPhi;
+				const double leptonEta  = dataReader.genEta;
+				const double leptonMass = dataReader.genMass;
+				const int leptonStatus = dataReader.genStatus;
 
-				if (abs(motherId) == 24 && dataReader.genStatus == 23) { // genLep is outgoing and has W as mother
-					const double &motherPt = -999;//genPartPt->At(dataReader.genMotherIndex);
-					const double &motherPhi = -999;//genPartPhi->At(dataReader.genMotherIndex);
-					const double &motherEta = -999;//genPartEta->At(dataReader.genMotherIndex);
-					const double &motherMass = -999;//genPartMass->At(dataReader.genMotherIndex);
+				const int motherIndex = dataReader.genMotherIndex;
+				dataReader.GetGenValues(motherIndex); // Read Mother Info
+				const double motherPt   = dataReader.genPt;
+				const double motherPhi  = dataReader.genPhi;
+				const double motherEta  = dataReader.genEta;
+				const double motherMass = dataReader.genMass;
+				const int motherStatus  = dataReader.genStatus;
+				const int motherPdgId   = dataReader.genPdgId;
+				product.genLepMotherPdgId[genLeptonCounter] = motherPdgId;
 
+				const int grandMotherIndex = dataReader.genMotherIndex;
+				dataReader.GetGenValues(grandMotherIndex); // Read GrandMother Info
+				const double grandMotherPt   = dataReader.genPt;
+				const double grandMotherPhi  = dataReader.genPhi;
+				const double grandMotherEta  = dataReader.genEta;
+				const double grandMotherMass = dataReader.genMass;
+				const int grandMotherStatus  = dataReader.genStatus;
+				const int grandMotherPdgId   = dataReader.genPdgId;
+				product.genLepGrandMotherPdgId[genLeptonCounter] = grandMotherPdgId;
+
+				if (std::abs(motherPdgId) == 24 && leptonStatus == 23) { // genLep is outgoing and has W as mother
 					ROOT::Math::PtEtaPhiMVector motherP4(motherPt, motherEta, motherPhi, motherMass);
-					product.genWBosonPt.push_back(motherPt);
-					product.genWBosonEta.push_back(motherEta);
-					product.genWBosonPhi.push_back(motherPhi);
-					product.genWBosonMass.push_back(motherMass);
-					GenWDirectMass.push_back(motherMass);
+					product.genWDirectMass[genWCounter] = motherMass;
 
-					if(idxGrandMother > 0 && abs(GenLepGrandMotherId.back()) == 6){
-						//Used for sytematic variations, store in product for now
-						const double &grandMotherPt = -999;//genPartPt->At(idxGrandMother);
-						const double &grandMotherPhi = -999;//genPartPhi->At(idxGrandMother);
-						const double &grandMotherEta = -999;//genPartEta->At(idxGrandMother);
-						const double &grandMotherMass = -999;//genPartMass->At(idxGrandMother);
-						product.genTopPt.push_back(grandMotherPt);
-						product.genTopEta.push_back(grandMotherEta);
-						product.genTopPhi.push_back(grandMotherPhi);
-						product.genTopMass.push_back(grandMotherMass);
+					if (grandMotherIndex > 0 && std::abs(grandMotherPdgId) == 6) {
+						genTopCounter++;
 					}
 
-					for (int j = i+1; j < NGenPart; j++){
-						const int &idxNeutrinoMother = -999;//genPartIdxMother->At(j);
-						const int &statusNeutrino = -999;//genPartStatus->At(j);
-						if (idxNeutrinoMother == dataReader.genMotherIndex && statusNeutrino == 23) {
-							NGenMatchedW++;
-							//leptonPt already read
-							const double &leptonPhi = -999;//genPartPhi->At(i);
-							const double &leptonEta = -999;//genPartEta->At(i);
-							const double &leptonMass = -999;//genPartMass->At(i);
-
-							const double &neutrinoPt = -999;//genPartPt->At(j);
-							const double &neutrinoPhi = -999;//genPartPhi->At(j);
-							const double &neutrinoEta = -999;//genPartEta->At(j);
-							const double &neutrinoMass = -999;//genPartMass->At(j);
+					for (int iGen2 = iGen + 1; iGen2 < dataReader.nGenPart; iGen2++) {
+						dataReader.GetGenValues(iGen2);
+						const int neutrinoMotherIndex = dataReader.genMotherIndex;
+						const int statusNeutrino = dataReader.genStatus;
+						if (neutrinoMotherIndex == motherIndex && statusNeutrino == 23) { // Has the same mother as the lepton and the neutrino status
+							const double neutrinoPt   = dataReader.genPt;
+							const double neutrinoPhi  = dataReader.genPhi;
+							const double neutrinoEta  = dataReader.genEta;
+							const double neutrinoMass = dataReader.genMass;
 
 							leptonP4 = ROOT::Math::PtEtaPhiMVector(leptonPt, leptonEta, leptonPhi, leptonMass);
 							neutrinoP4 = ROOT::Math::PtEtaPhiMVector(neutrinoPt, neutrinoEta, neutrinoPhi, neutrinoMass);
 							ROOT::Math::PtEtaPhiMVector wBosonP4 = leptonP4 + neutrinoP4;
 
-							GenDeltaPhiLepWSum.push_back(Utility::Utility::DeltaPhi(leptonP4, wBosonP4));
-							GenWSumMass.push_back(wBosonP4.M());
-							GenDeltaPhiLepWDirect.push_back(Utility::Utility::DeltaPhi(leptonP4, motherP4));
-							GenMTLepNu.push_back(wBosonP4.Mt());
-						}
-					}
-				}
-			}
-		}
-		product.nGenWBoson = product.genWBosonPt.size();
-		product.nGenTop = product.genTopPt.size();
+							product.genDeltaPhiLepWSum[genMatchedWCounter] = Utility::DeltaPhi(leptonP4.Phi(), wBosonP4.Phi());
+							product.genWSumMass[genMatchedWCounter] = wBosonP4.M();
+							product.genDeltaPhiLepWDirect[genMatchedWCounter] = Utility::DeltaPhi(leptonP4.Phi(), motherP4.Phi());
+							product.genMTLepNu[genMatchedWCounter] = wBosonP4.Mt();
 
-		if (NGenLepton + NGenLeptonFromTau == 2) {
-			LeptonsInAcceptance = true;
-			isDiLeptonEvent = true;
-			isHadTauEvent = NGenTau > NGenLeptonFromTau;
-			if (isHadTauEvent) { LeptonDecayChannelFlag =1;}
-			for (int idx : idxTauLepton) {
-				const double &pt = -999;//genPartPt->At(idx);
-				//const double &phi = -999;//genPartPhi->At(idx);
-				const double &eta = -999;//genPartEta->At(idx);
-				//const double &mass = -999;//genPartMass->At(idx);
-				const double &dataReader.genPdgId = -999;//genPartPdgId->At(idx);
-
-				if (maxLeptonPt >= 25 && pt < 10) { LeptonsInAcceptance = false;}
-				if (maxLeptonPt < 25 && pt < 5) { LeptonsInAcceptance = false;}
-				if (abs(eta) > 2.5) { LeptonsInAcceptance = false;}
-				if (abs(eta) > 2.5) { LeptonsInAcceptance = false;}
-				if (dataReader.genPdgId == 11 && abs(eta) >= 1.44 && abs(eta) < 1.57) { LeptonsInAcceptance = false;}
-
-				if (isHadTauEvent && !LeptonsInAcceptance) { LeptonDecayChannelFlag = 0;}
-				else if (isHadTauEvent) { LeptonDecayChannelFlag = 1;}
-				else if (!LeptonsInAcceptance) { LeptonDecayChannelFlag = 2;}
-				else { LeptonDecayChannelFlag = 3;}
-			}
-		}
-
+							genMatchedWCounter++;
+						} // if (idxNeutrinoMother == dataReader.genMotherIndex && statusNeutrino == 23)
+					} // for (int iGen2 = i+1; iGen2 < dataReader.nGenPart; iGen2++)
+					genWCounter++;
+				} // if (std::abs(motherPdgId) == 24 && dataReader.genStatus == 23)
+				genLeptonCounter++;
+			} // if (dataReader.genStatus != 2), i.e. is not a tau decay product
+		} // if is a muon or electron
 	}
-	//product.nGenPart = NGenPart;
-	*/
+
+	// TODO figure out if this is used at all
+	if (genLeptonCounter + genLeptonFromTauCounter == 2) {
+		product.leptonsInAcceptance = true;
+		product.isDiLeptonEvent = true;
+
+		product.isHadTauEvent = genTauCounter > genLeptonFromTauCounter;
+		if (product.isHadTauEvent) { product.leptonDecayChannelFlag =1;}
+
+		for (int iTau : tauLeptonIndices) {
+			dataReader.GetGenValues(iTau);
+			const double &tauPt   = dataReader.genPt;
+			const double &tauPhi  = dataReader.genPhi;
+			const double &tauEta  = dataReader.genEta;
+			const double &tauMass = dataReader.genMass;
+			const double &tauPdgId = dataReader.genPdgId;
+
+			if (maxLeptonPt >= 25 && tauPt < 10) { product.leptonsInAcceptance = false;}
+			if (maxLeptonPt < 25 && tauPt < 5) { product.leptonsInAcceptance = false;}
+			if (std::abs(tauEta) > 2.4) { product.leptonsInAcceptance = false;}
+			if (std::abs(tauEta) > 2.4) { product.leptonsInAcceptance = false;}
+			if (tauPdgId == 11 &&
+					1.44 <= std::abs(tauEta) &&
+					std::abs(tauEta) < 1.57
+			) {
+				product.leptonsInAcceptance = false;
+			}
+
+			if (product.isHadTauEvent && !product.leptonsInAcceptance) { product.leptonDecayChannelFlag = 0;}
+			else if (product.isHadTauEvent) { product.leptonDecayChannelFlag = 1;}
+			else if (!product.leptonsInAcceptance) { product.leptonDecayChannelFlag = 2;}
+			else { product.leptonDecayChannelFlag = 3;}
+		}
+	} else {
+		product.leptonDecayChannelFlag = -999;
+	}
+
+	product.nGenLepton = genLeptonCounter;
+	product.nGenTau = genTauCounter;
+	product.nGenLeptonFromTau = genLeptonFromTauCounter;
+	product.nGenMatchedW = genMatchedWCounter;
+	product.nGenNeutrino = genNeutrinoCounter;
 }
 
 void GenLevelProducer::EndJob(TFile &file) {}

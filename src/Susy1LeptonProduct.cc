@@ -22,10 +22,10 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 		}
 
 		TTree metaData("MetaData", "MetaData");
-		metaData.Branch("era", &this->era);
-		metaData.Branch("preVFP", &this->preVFP);
-		metaData.Branch("isData", &this->isData);
-		metaData.Branch("sampleName", &this->sampleName);
+		metaData.Branch("Era", &this->era);
+		metaData.Branch("PreVFP", &this->preVFP);
+		metaData.Branch("IsData", &this->isData);
+		metaData.Branch("SampleName", &this->sampleName);
 		if (isData) {
 			metaData.Branch("runPeriod", &this->runPeriod);
 		} else {
@@ -41,7 +41,7 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 			} else if (era == 2018) {
 				luminosity = 59.83; //fb
 			}
-			metaData.Branch("luminosity", &this->luminosity);
+			metaData.Branch("Luminosity", &this->luminosity);
 		}
 
 		metaData.SetDirectory(&outputFile);
@@ -231,6 +231,31 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("PreFireWeightDown", &preFireDown);
 			tree->Branch("LHEPdfWeight", pdfWeight.data(), "pdfWeight[nPdfWeight]/D");
 			tree->Branch("LHEScaleWeight", scaleWeight.data(), "scaleWeight[nScaleWeight]/D");
+
+			tree->Branch("nGenLepton", &nGenLepton);
+			tree->Branch("GrandMotherPdgId", grandMotherPdgId.data(), "GrandMotherPdgId[nGenLepton]/I");
+			tree->Branch("GenLepGrandMotherPdgId", genLepGrandMotherPdgId.data(), "GenLepGrandMotherPdgId[nGenLepton]/I");
+			tree->Branch("GenLepMotherPdgId", genLepMotherPdgId.data(), "GenLepMotherPdgId[nGenLepton]/I");
+
+			tree->Branch("nGenTau", &nGenTau);
+			tree->Branch("GenTauGrandMotherPdgId", genTauGrandMotherPdgId.data(), "GenTauGrandMotherPdgId[nGenTau]/I");
+			tree->Branch("GenTauMotherPdgId", genTauMotherPdgId.data(), "GenTauMotherPdgId[nGenTau]/I");
+
+			tree->Branch("nGenLeptonFromTau", &nGenLeptonFromTau);
+			tree->Branch("LeptonDecayChannelFlag", &leptonDecayChannelFlag);
+			tree->Branch("IsDiLeptonEvent", &isDiLeptonEvent);
+			tree->Branch("IsHadTauEvent", &isHadTauEvent);
+			tree->Branch("LeptonsInAcceptance", &leptonsInAcceptance);
+
+			tree->Branch("nGenMatchedW", &nGenMatchedW);
+			tree->Branch("GenDeltaPhiLepWSum", genDeltaPhiLepWSum.data(), "GenDeltaPhiLepWSum[nGenMatchedW]/D");
+			tree->Branch("GenDeltaPhiLepWDirect", genDeltaPhiLepWDirect.data(), "GenDeltaPhiLepWDirect[nGenMatchedW]/D");
+			tree->Branch("GenWSumMass", genWSumMass.data(), "GenWSumMass[nGenMatchedW]/D");
+			tree->Branch("GenWDirectMass", genWDirectMass.data(), "GenWDirectMass[nGenMatchedW]/D");
+			tree->Branch("GenMTLepNu", genMTLepNu.data(), "GenMTLepNu[nGenMatchedW]/D");
+
+			tree->Branch("nGenNeutrino", &nGenNeutrino);
+			tree->Branch("GenNeutrinoPt", genNeutrinoPt.data(), "GenNeutrinoPt[nGenNeutrino]/D");
 		}
 	}
 }

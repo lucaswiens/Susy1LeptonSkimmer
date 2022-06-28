@@ -100,6 +100,13 @@ class Susy1LeptonProduct {
 			pileUpWeight, pileUpWeightUp, pileUpWeightDown;
 		std::array<double, 103> pdfWeight; // size is fixed
 		std::array<double, 9> scaleWeight; // size is fixed
+
+		// Gen Level Information
+		int nGenPart, nGenLepton, nGenTau, nGenLeptonFromTau, nGenMatchedW, nGenNeutrino,
+			leptonDecayChannelFlag;
+		bool isDiLeptonEvent, isHadTauEvent, leptonsInAcceptance;
+		std::array<double, nMax> genDeltaPhiLepWSum, genDeltaPhiLepWDirect, genWSumMass, genWDirectMass, genMTLepNu, genNeutrinoPt;
+		std::array<int, nMax> grandMotherPdgId, genTauGrandMotherPdgId, genTauMotherPdgId, genLepGrandMotherPdgId, genLepMotherPdgId;
 };
 
 #endif

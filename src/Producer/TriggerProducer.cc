@@ -1,10 +1,9 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TriggerProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
-TriggerProducer::TriggerProducer(const int &era, const char &runPeriod):
-	era(era),
-	runPeriod(runPeriod)
-	{}
+TriggerProducer::TriggerProducer(const int &era, const char &runPeriod) {
+	Name = "TriggerProcuder";
+}
 
 //void TriggerProducer::BeginJob(std::shared_ptr<TTree> tree, bool &isData, bool &doSystematics) {
 //	//Set data bool
@@ -89,10 +88,10 @@ TriggerProducer::TriggerProducer(const int &era, const char &runPeriod):
 
 void TriggerProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	//Initialize all variables as -999
-	HLT_EleOr = false;
-	HLT_MuOr = false;
-	HLT_LepOr = false;
-	HLT_MetOr = false;
+	//HLT_EleOr = false;
+	//HLT_MuOr = false;
+	//HLT_LepOr = false;
+	//HLT_MetOr = false;
 
 	//if (era ==2016) {
 	//	HLT_EleOr = *hlt_Ele105_CaloIdVT_GsfTrkIdT->Get() || *hlt_Ele115_CaloIdVT_GsfTrkIdT->Get() || *hlt_Ele50_CaloIdVT_GsfTrkIdT_PFJet165->Get() || *hlt_Ele27_WPTight_Gsf->Get() || *hlt_Ele15_IsoVVVL_PFHT400->Get();
@@ -113,9 +112,7 @@ void TriggerProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produc
 	//	HLT_MetOr = *hlt_PFMET100_PFMHT100_IDTight->Get() || *hlt_PFMETNoMu100_PFMHTNoMu100_IDTight->Get() || *hlt_PFMET110_PFMHT110_IDTight->Get() || *hlt_PFMETNoMu110_PFMHTNoMu110_IDTight->Get() || *hlt_PFMET120_PFMHT120_IDTight->Get() || *hlt_PFMETNoMu120_PFMHTNoMu120_IDTight->Get();
 	//}
 
-	HLT_LepOr = HLT_EleOr || HLT_MuOr;
-
-	//cutflow.hist->Fill("Lepton Passed Trigger", cutflow.weight);
+	//HLT_LepOr = HLT_EleOr || HLT_MuOr;
 }
 
 void TriggerProducer::EndJob(TFile &file) {}

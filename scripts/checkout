@@ -10,8 +10,14 @@ eval `scramv1 runtime -sh`;
 
 git clone git@github.com:lucaswiens/Susy1LeptonSkimmer.git Susy1LeptonAnalysis/Susy1LeptonSkimmer
 
+# Needed for JEC uncertainties
 git clone git@github.com:cms-jet/JECDatabase.git
-git clone ssh://git@gitlab.cern.ch:7999/cms-nanoAOD/jsonpog-integration.git
+
+# Muon Rocchester Corrections
 git clone ssh://git@gitlab.cern.ch:7999/akhukhun/roccor.git RoccoR
+
+# Library with corrections and scale factors in json format
+git clone ssh://git@gitlab.cern.ch:7999/cms-nanoAOD/jsonpog-integration.git
+gunzip jsonpog-integration/POG/*/*/*.json.gz
 
 scram build -j 4

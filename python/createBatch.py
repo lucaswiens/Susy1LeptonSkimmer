@@ -28,18 +28,21 @@ def prepareArguments(sample):
 			isFastSim == True
 		else:
 			isFastSim == False
-	elif "RunIISummer20UL17" in str(sample):
+	elif "RunIISummer20UL17" in str(sample) or "Run2017" in str(sample):
 		year = 2017
 		if "TuneCP2" in str(sample): #TODO FIXME
 			isFastSim == True
 		else:
 			isFastSim == False
-	elif "RunIISummer20UL18" in str(sample):
+	elif "RunIISummer20UL18" in str(sample) or "Run2018" in str(sample):
 		year = 2018
 		if "TuneCP2" in str(sample): #TODO FIXME
 			isFastSim == True
 		else:
 			isFastSim == False
+	else:
+		print("Could not determine era of the sample:\n" + str(sample) + "\nCheck the prepareArguments function to configure it properly")
+		sys.exit(1)
 
 	if "/NANOAODSIM" in sample:
 		isData = False
@@ -72,11 +75,11 @@ if __name__=="__main__":
 	args = parser.parse_args()
 
 	#Make specific subdirectory depending on input file (expects input file to be path/to/input/inputFile.md)
-	outputDirName = args.input_file.split("/")[-2] + "_" + args.input_file.split("/")[-1][:-3] + args.input_file.split("/")[-3]
+	splitInputFile = args.input_file.split("/")
+	outputDirName = splitInputFile[-2] + "/" + splitInputFile[-1].replace(".txt", "")
 	args.output = args.output + "/" + outputDirName
 	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim"
 
-	print(args.output)
 	#if  os.path.exists(args.output):
 	if False:
 		keepDirectory = raw_input("Output directory already exists: " + str(args.output) + " Do you want to remove it [y/n]: ")
@@ -116,7 +119,7 @@ if __name__=="__main__":
 			sampleName = sample.replace("/", "_")[1:]
 
 			for filename in fileList:
-				print(filename.decode('utf-8'))
+				#print(filename.decode('utf-8'))
 				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
 	sampleFile.close()
 	argumentFile.close()

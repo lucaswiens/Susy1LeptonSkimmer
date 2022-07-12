@@ -9,20 +9,26 @@
 			},
 			"Trigger": {
 				"2016PreVFP": [
-					"HLT_IsoTkMu24",
-					"HLT_IsoMu24"
+					"HLT_Mu50",
+					"HLT_IsoMu24",
+					"HLT_IsoTkMu24"
 				],
 
 				"2016PostVFP": [
-					"HLT_IsoTkMu24",
-					"HLT_IsoMu24"
+					"HLT_Mu50",
+					"HLT_IsoMu24",
+					"HLT_IsoTkMu24"
 				],
 
 				"2017": [
-					"HLT_IsoMu27"
+					"HLT_Mu50",
+					"HLT_IsoMu27",
+					"HLT_Mu15_IsoVVVL_PFHT450"
 				],
 				"2018": [
-					"HLT_IsoMu24"
+					"HLT_Mu50",
+					"HLT_IsoMu24",
+					"HLT_Mu15_IsoVVVL_PFHT450"
 				]
 			}
 		},

@@ -4,13 +4,14 @@
 module use -a /afs/desy.de/group/cms/modulefiles/;
 module load cmssw;
 
-cmsrel CMSSW_10_6_8
-cd CMSSW_10_6_8/src
+cmsrel CMSSW_12_1_0
+cd CMSSW_12_1_0/src
 eval `scramv1 runtime -sh`;
-
-#Get the JER and JEC Database, in case you want to update the txt files in the skimming repo, not required to run the skimmer
-#git clone git@github.com:cms-jet/JRDatabase.git
 
 git clone git@github.com:lucaswiens/Susy1LeptonSkimmer.git Susy1LeptonAnalysis/Susy1LeptonSkimmer
 
-scram build
+git clone git@github.com:cms-jet/JECDatabase.git
+git clone ssh://git@gitlab.cern.ch:7999/cms-nanoAOD/jsonpog-integration.git
+git clone ssh://git@gitlab.cern.ch:7999/akhukhun/roccor.git RoccoR
+
+scram build -j 4

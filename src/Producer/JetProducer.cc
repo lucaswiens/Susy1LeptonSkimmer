@@ -28,7 +28,7 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 	// Set object to get JEC uncertainty
 	bool isJECSysteamtic = true; //FIXME maybe make this part of the product?
 	if (isJECSystematic) {
-		jetCorrectionUncertainty = std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.JECUNC." + product.GetEraSelector()), "Total"));
+		jetCorrectionUncertainty = std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JEC/" + scaleFactorTree.get<std::string>("Jet.JECUNC." + product.GetEraSelector()), "Total"));
 	}
 
 

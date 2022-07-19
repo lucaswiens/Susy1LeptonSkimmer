@@ -1,7 +1,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/DataReader.h>
 #include<iostream>
 
-DataReader::DataReader(const std::string &fileName, const std::string &treeName) {
+DataReader::DataReader(const std::string &fileName, const std::string &treeName, const bool &isData) : isData(isData) {
 	inputFile = std::shared_ptr<TFile>(TFile::Open(fileName.c_str(), "READ"));
 	inputTree.reset(static_cast<TTree*>(inputFile->Get(treeName.c_str())));
 

@@ -10,8 +10,9 @@ eval `scramv1 runtime -sh`;
 
 git clone git@github.com:lucaswiens/Susy1LeptonSkimmer.git Susy1LeptonAnalysis/Susy1LeptonSkimmer
 
-# Needed for JEC uncertainties
-git clone git@github.com:cms-jet/JECDatabase.git
+# Needed for JEC uncertainties but revelant files are copied to Susy1LeptonSkimmer
+# This only needs to be checked out if you need to update the JEC uncertainty files
+#git clone git@github.com:cms-jet/JECDatabase.git
 
 # Muon Rocchester Corrections
 git clone ssh://git@gitlab.cern.ch:7999/akhukhun/roccor.git RoccoR

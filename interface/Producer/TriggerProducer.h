@@ -6,22 +6,9 @@
 
 class TriggerProducer : public BaseProducer {
 	private:
-		//Check if it is data or MC
-		//bool isData, doSystematics;
-
-		//Cut Variables
-		//int era;
-		//char runPeriod;
-		//unsigned int run;
-
-		//Vector for the output variables
-		//int nIsr, nISRweight, nISRttweightsystUp, nISRttweightsystDown;
-		//bool HLT_EleOr, HLT_MuOr, HLT_LepOr, HLT_MetOr;
-
-
 	public:
 		std::string Name = "TriggerProducer";
-		TriggerProducer(const int &era, const char &runPeriod);
+		TriggerProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
 		void EndJob(TFile &file);

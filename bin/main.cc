@@ -41,13 +41,13 @@ int main(int argc, char *argv[]) {
 		std::exit(-1);
 	}
 
-	std::string inputFileName   = std::string(argv[1]);
-	std::string outputFileName  = std::string(argv[2]);
-	bool isData                 = std::string(argv[3]) == "True" ? true : false;
-	bool doSystematics          = std::string(argv[4]) == "True" ? true : false; // Maybe use a string instead that can be "Nominal", "Up" or "Down"
-	int era                     = std::stoi(argv[5]);
-	char runPeriod              = (char)*argv[6]; //If it is MC, then runPeriod does not matter but still has to be given (e.g. just use "m")
-	double xSection             = std::stod(argv[7]);
+	std::string inputFileName  = std::string(argv[1]);
+	std::string outputFileName = std::string(argv[2]);
+	bool isData                = std::string(argv[3]) == "True" ? true : false;
+	bool doSystematics         = std::string(argv[4]) == "True" ? true : false; // Maybe use a string instead that can be "Nominal", "Up" or "Down"
+	int era                    = std::stoi(argv[5]);
+	char runPeriod             = (char)*argv[6]; //If it is MC, then runPeriod does not matter but still has to be given (e.g. just use "m")
+	double xSection            = std::stod(argv[7]);
 
 	int nMaxEvents;
 	if (argc == 9) {
@@ -67,11 +67,9 @@ int main(int argc, char *argv[]) {
 	std::vector<CutFlow> cutflows;
 	std::vector<std::shared_ptr<TTree>> outputTrees;
 	std::vector<std::string> channels = {"Muon", "MuonIncl", "Electron", "ElectronIncl"};
+	std::vector<std::string> triggerNames, metTriggerNames, metFilterNames;
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
 	Susy1LeptonProduct product(era, isData, outputFileName, runPeriod, xSection, outputFile);
-
-	std::cout << "\n" << outputFileName << "\npreVFP = " << product.GetIsPreVFP() << std::endl;
-
 	for (const std::string &channel : channels) {
 		outputFile.mkdir(channel.c_str());
 		if (doSystematics) { // create a tree for each systematic variation #FIXME
@@ -85,7 +83,7 @@ int main(int argc, char *argv[]) {
 					cutflows.push_back(CutFlow(outputFile, channel, systematic, shift));
 					std::string path = "Channel." + channel + ".Selection";
 					for (const std::string part : Utility::GetKeys(configTree, path)) {
-						cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".operator"), configTree.get<short>(path + "." + part + ".threshold"));
+						cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<short>(path + "." + part + ".Threshold"));
 					}
 				}
 			}
@@ -95,20 +93,52 @@ int main(int argc, char *argv[]) {
 			tree->SetDirectory(outputFile.GetDirectory(channel.c_str()));
 			outputTrees.push_back(tree);
 
+			for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".Trigger." + product.GetEraSelector())) {
+				if (std::find(triggerNames.begin(), triggerNames.end(), name) == triggerNames.end()) {
+					triggerNames.push_back(name);
+				}
+			}
+
+			for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".METTrigger")) {
+				if (std::find(metTriggerNames.begin(), metTriggerNames.end(), name) == metTriggerNames.end()) {
+					metTriggerNames.push_back(name);
+				}
+			}
+
+			for (const std::string &name : Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector())) {
+				if (std::find(metFilterNames.begin(), metFilterNames.end(), name) == metFilterNames.end()) {
+					metFilterNames.push_back(name);
+				}
+			}
+
 			cutflows.push_back(CutFlow(outputFile, channel, "Nominal", ""));
 			std::string path = "Channel." + channel + ".Selection";
 			for (const std::string part : Utility::GetKeys(configTree, path)) {
-				std::cout << path << ": "<< part << configTree.get<std::string>(path + "." + part + ".operator")<<configTree.get<std::string>(path + "." + part + ".threshold") << std::endl;
-				cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".operator"), configTree.get<short>(path + "." + part + ".threshold"));
+				cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<short>(path + "." + part + ".Threshold"));
 			}
 		}
 	}
 
+	for (int iChannel = 0; iChannel < channels.size(); iChannel++) {
+		std::vector<int> triggerIndex;
+		for(int iTrigger = 0; iTrigger < triggerNames.size(); iTrigger++){
+			for(const std::string& triggerName : Utility::GetVector<std::string>(configTree, "Channel." + channels[iChannel] + ".Trigger." + product.GetEraSelector())) {
+				if(triggerName == triggerNames[iTrigger]) triggerIndex.push_back(iTrigger);
+			}
+		}
+
+		//Input class instead output class is used to register cut for trigger!
+		cutflows[iChannel].AddTrigger(triggerIndex, product);
+		cutflows[iChannel].AddMetFilter(product);
+	}
+
 	// Initialize Producers and register Product
 	product.RegisterOutput(outputTrees);
+	product.RegisterTrigger(triggerNames, metTriggerNames, outputTrees);
+	product.RegisterMetFilter(metFilterNames, outputTrees);
 	std::vector<std::shared_ptr<BaseProducer>> producers = {
-		//std::shared_ptr<TriggerProducer>(new TriggerProducer(era, runPeriod)), // trigger names need update
-		//std::shared_ptr<METFilterProducer>(new METFilterProducer(era)),
+		std::shared_ptr<TriggerProducer>(new TriggerProducer(configTree, scaleFactorTree, product)),
+		std::shared_ptr<METFilterProducer>(new METFilterProducer(configTree, scaleFactorTree, product)),
 		std::shared_ptr<MuonProducer>(new MuonProducer(configTree, scaleFactorTree, product.GetEraSelector())),
 		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree)),
 		std::shared_ptr<JetProducer>(new JetProducer(configTree, scaleFactorTree, product)),
@@ -120,8 +150,10 @@ int main(int argc, char *argv[]) {
 		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 	}
 
-	DataReader dataReader(inputFileName, "Events");
+	DataReader dataReader(inputFileName, "Events", isData);
 	int nEvents = dataReader.GetEntries();
+
+	dataReader.SetTrigger(triggerNames, metTriggerNames);
 
 	//ProgressBar(0, 0);
 	std::cout << std::endl << "Starting Event loop with " << nEvents << " Events" << std::endl;

@@ -1,16 +1,5 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/Utility.h>
 
-template <typename T>
-std::vector<T> Utility::GetVector(const boost::property_tree::ptree &tree, const std::string &key){
-	std::vector<T> vec;
-
-	for(std::pair<std::string, boost::property_tree::ptree> values : tree.get_child(key)){
-		vec.push_back(values.second.get_value<T>());
-	}
-
-	return vec;
-};
-
 std::vector<std::string> Utility::GetKeys(const boost::property_tree::ptree &tree, const std::string path){
 	std::vector<std::string> keys;
 	boost::property_tree::ptree node = tree.get_child(path);

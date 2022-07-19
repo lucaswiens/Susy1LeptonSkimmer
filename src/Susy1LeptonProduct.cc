@@ -49,6 +49,51 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 		metaData.Write(0, TObject::kOverwrite);
 }
 
+void Susy1LeptonProduct::RegisterTrigger(const std::vector<std::string> &triggerNames,const std::vector<std::string> &metTriggerNames, const std::vector<std::shared_ptr<TTree>> &outputTrees){
+	/*##################################################################################################
+	#   The std::vector<bool> is special and cannot be used for getting the address of its elements    #
+	#   But you can use std::vector<short> and store it as a boolian in the output tree                #
+	#   https://en.cppreference.com/w/cpp/container/vector_bool                                        #
+	##################################################################################################*/
+	triggerValues = std::vector<short>(triggerNames.size(), true);
+	metTriggerValues = std::vector<short>(metTriggerNames.size(), true);
+
+	for(const std::shared_ptr<TTree>& tree: outputTrees){
+		for(int iTrigger = 0; iTrigger < triggerNames.size(); iTrigger++) {
+			tree->Branch(triggerNames[iTrigger].c_str(), &triggerValues[iTrigger], (triggerNames[iTrigger] + "/O").c_str());
+		}
+		for(int iTrigger = 0; iTrigger < metTriggerNames.size(); iTrigger++) {
+			tree->Branch(metTriggerNames[iTrigger].c_str(), &metTriggerValues[iTrigger], (metTriggerNames[iTrigger] + "/O").c_str());
+		}
+	}
+
+	for (const std::shared_ptr<TTree> &tree : outputTrees) {
+		tree->Branch("HLT_EleOr", &hltEleOr);
+		tree->Branch("HLT_MuonOr", &hltMuOr);
+		tree->Branch("HLT_MetOr", &hltMetOr);
+	}
+}
+
+void Susy1LeptonProduct::RegisterMetFilter(const std::vector<std::string> &metFilterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees) {
+	/*##################################################################################################
+	#   The std::vector<bool> is special and cannot be used for getting the address of its elements    #
+	#   But you can use std::vector<short> and store it as a boolian in the output tree                #
+	#   https://en.cppreference.com/w/cpp/container/vector_bool                                        #
+	##################################################################################################*/
+	metFilterValues = std::vector<short>(metFilterNames.size(), true);
+
+	for(const std::shared_ptr<TTree>& tree: outputTrees){
+		for(int iFilter = 0; iFilter < metFilterNames.size(); iFilter++) {
+			tree->Branch(metFilterNames[iFilter].c_str(), &metFilterValues[iFilter], (metFilterNames[iFilter] + "/O").c_str());
+		}
+	}
+
+	for (const std::shared_ptr<TTree> &tree : outputTrees) {
+		tree->Branch("HLT_EleOr", &hltEleOr);
+		tree->Branch("HLT_MuonOr", &hltMuOr);
+		tree->Branch("HLT_MetOr", &hltMetOr);
+	}
+}
 
 void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees) {
 	/*#########################################################################################
@@ -79,7 +124,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 
 		tree->Branch("MuonCharge", muonCharge.data(), "MuonCharge[nMuon]/I");
 		tree->Branch("MuonPdgId", muonPdgId.data(), "MuonPdgId[nMuon]/I");
-		tree->Branch("MuonGenMatchedIndex", muonMass.data(), "MuonGenMatchedIndex[nMuon]/I");
+		//tree->Branch("MuonGenMatchedIndex", muonMass.data(), "MuonGenMatchedIndex[nMuon]/I");
 		tree->Branch("MuonCutBasedId", muonCutBasedId.data(), "MuonCutBasedId[nMuon]/I");
 
 		if (isData) {
@@ -231,6 +276,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("PreFireWeightDown", &preFireDown);
 			tree->Branch("LHEPdfWeight", pdfWeight.data(), "pdfWeight[nPdfWeight]/D");
 			tree->Branch("LHEScaleWeight", scaleWeight.data(), "scaleWeight[nScaleWeight]/D");
+			tree->Branch("GenWeight", &genWeight);
 
 			tree->Branch("nGenLepton", &nGenLepton);
 			tree->Branch("GrandMotherPdgId", grandMotherPdgId.data(), "GrandMotherPdgId[nGenLepton]/I");

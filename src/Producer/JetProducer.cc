@@ -190,10 +190,10 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	std::iota(indices.begin(), indices.end(), 0);
 	std::stable_sort(indices.begin(), indices.end(), [&](int i1, int i2) {return product.jetPt[i1] > product.jetPt[i2];});
 	for (std::array<double, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
-		SortByIndex(*jetVariable, indices, jetCounter);
+		Utility::SortByIndex(*jetVariable, indices, jetCounter);
 	}
 	for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepCsvLooseId, &product.jetDeepCsvMediumId, &product.jetDeepCsvTightId, &product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
-		SortByIndex(*jetVariable, indices, jetCounter);
+		Utility::SortByIndex(*jetVariable, indices, jetCounter);
 	}
 
 	/*############################################################
@@ -245,10 +245,10 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	int removeCounter = 0; // Since the index positions shift after removing one entry, one has to adjust for this
 	for (int iRemove : jetRemovalIndices) {
 		for (std::array<double, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
-			RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
+			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
 		}
 		for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepCsvLooseId, &product.jetDeepCsvMediumId, &product.jetDeepCsvTightId, &product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
-			RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
+			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
 		}
 		removeCounter++;
 	}
@@ -328,22 +328,6 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		fatJetCounter++;
 	}
 	product.nFatJet = fatJetCounter;
-}
-
-template <typename T>
-void JetProducer::RemoveByIndex(T &array, int removeIndex, int arraySize) {
-	std::copy(array->begin() + removeIndex + 1, // copy everything starting here
-		array->begin() + arraySize,         // and ending here, not including it,
-		array->begin() + removeIndex        // to this destination
-	);
-}
-
-template <typename T>
-void JetProducer::SortByIndex(T &array, std::vector<int> indices, int size) {
-	T tmp = array;
-	for (std::size_t i = 0; i < size; i++) {
-		array[i] = tmp[indices[i]];
-	}
 }
 
 void JetProducer::EndJob(TFile &file) {}

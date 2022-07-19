@@ -13,8 +13,9 @@ class DataReader {
 		std::shared_ptr<TFile> inputFile;
 		std::shared_ptr<TTree> inputTree;
 
-		// Event Number
+		// Event Number and meta information
 		int entry;
+		bool isData;
 
 		// MetaData Leafs
 		TLeaf *processNameLeaf;
@@ -70,14 +71,18 @@ class DataReader {
 			*nScaleWeightLeaf, *scaleWeightLeaf,
 			*preFireLeaf, *preFireUpLeaf, *preFireDownLeaf;
 
+		// Trigger and METFilter Leafs
+		std::vector<TLeaf*> triggerLeafs, metTriggerLeafs, metFilterLeafs;
+
 		// Generator Particle Leafs
 		TLeaf *nGenPartLeaf,
 			*genPdgIdLeaf, *genMotherIndexLeaf,
 			*genPtLeaf, *genEtaLeaf, *genPhiLeaf, *genMassLeaf,
+			*genWeightLeaf,
 			*genStatusLeaf, *genStatusFlagsLeaf;
 
 	public:
-		DataReader(const std::string &fileName, const std::string &treeName);
+		DataReader(const std::string &fileName, const std::string &treeName, const bool &isData);
 
 		// Event entry information
 		int GetEntries(){return inputTree->GetEntries();}
@@ -153,19 +158,30 @@ class DataReader {
 		std::array<double, 103> pdfWeight; // size is fixed
 		std::array<double, 9> scaleWeight; // size is fixed
 
+		// Trigger and MET Filter
+		std::vector<short> triggerValues, metTriggerValues, metFilterValues;
+		void SetTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames);
+		void ReadTrigger();
+		void GetTrigger();
+		void SetMetFilter(const std::vector<std::string> &metFilterNames);
+		void ReadMetFilter();
+		void GetMetFilter();
+
 		// Generator Particle
 		void ReadGenEntry();
 		void GetGenValues(const int &index);
 		int nGenPart,
 			genPdgId, genMotherIndex,
 			genStatus, genStatusFlags;
-		double genPt, genEta, genPhi, genMass;
+		double genPt, genEta, genPhi, genMass,
+			genWeight;
 
-		int GetGenMatchedIndex(const double &recoPt, const double &recoPhi, const double &recoEta, const int& recoPDG, const double &deltaRCut, const double &deltaPtCut);
-		int LastGenCopy(const int& index);
+		int GetGenMatchedIndex(const double &recoPt, const double &recoPhi, const double &recoEta, const int &recoPDG, const double &deltaRCut, const double &deltaPtCut);
+		int LastGenCopy(const int &index);
 		std::vector<int> alreadyMatchedIndex;
 
 };
 
 #endif
+;
 

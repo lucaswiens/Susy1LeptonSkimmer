@@ -144,6 +144,7 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.nGenLeptonFromTau = genLeptonFromTauCounter;
 	product.nGenMatchedW = genMatchedWCounter;
 	product.nGenNeutrino = genNeutrinoCounter;
+	product.genWeight = dataReader.genWeight;
 }
 
 void GenLevelProducer::EndJob(TFile &file) {}

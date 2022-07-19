@@ -120,6 +120,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName)
 	genPhiLeaf         = inputTree->GetLeaf("GenPart_phi");
 	genEtaLeaf         = inputTree->GetLeaf("GenPart_eta");
 	genMassLeaf        = inputTree->GetLeaf("GenPart_mass");
+	genWeightLeaf      = inputTree->GetLeaf("genWeight");
 }
 
 void DataReader::ReadMuonEntry() {
@@ -336,7 +337,7 @@ void DataReader::GetIsoTrackValues(const int &index) {
 
 
 void DataReader::ReadPileUpEntry() {
-	if(nPdfWeightLeaf->GetBranch()->GetReadEntry() == entry){ return;}
+	if(nPdfWeightLeaf->GetBranch()->GetReadEntry() == entry) { return;}
 	nTrueIntLeaf->GetBranch()->GetEntry(entry);
 	nTrueInt = nTrueIntLeaf->GetValue();
 
@@ -367,6 +368,66 @@ void DataReader::GetPileUpValues() {
 	preFireDown = preFireDownLeaf->GetValue();
 }
 
+void DataReader::SetTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames) {
+	for(const std::string& name : triggerNames) {
+		triggerLeafs.push_back(inputTree->GetLeaf(name.c_str()));
+		triggerValues.push_back(false);
+	}
+	for(const std::string& name : metTriggerNames) {
+		metTriggerLeafs.push_back(inputTree->GetLeaf(name.c_str()));
+		metTriggerValues.push_back(false);
+	}
+}
+
+void DataReader::ReadTrigger() {
+	for(TLeaf *triggerLeaf : triggerLeafs) {
+		if(triggerLeaf == nullptr) {
+			//std::cout << "Trigger not found: '" + name + "', continue without it!" << std::endl;
+			continue;
+		}
+		triggerLeaf->GetBranch()->GetEntry(entry);
+	}
+	for(TLeaf *triggerLeaf : metTriggerLeafs) {
+		if(triggerLeaf == nullptr) {
+			//std::cout << "Trigger not found: '" + name + "', continue without it!" << std::endl;
+			continue;
+		}
+		triggerLeaf->GetBranch()->GetEntry(entry);
+	}
+}
+
+void DataReader::GetTrigger() {
+	for(int i = 0; i < triggerLeafs.size(); ++i) {
+		triggerValues[i] = triggerLeafs[i]->GetValue();
+	}
+	for(int i = 0; i < metTriggerLeafs.size(); ++i) {
+		metTriggerValues[i] = triggerLeafs[i]->GetValue();
+	}
+}
+
+void DataReader::SetMetFilter(const std::vector<std::string>& metFilterNames) {
+	for(const std::string& filterName : metFilterNames) {
+		if (filterName == "Flag_eeBadScFilter" && isData) { continue;}
+		TLeaf *filter = inputTree->GetLeaf(filterName.c_str());
+		if(filter == nullptr) {
+			std::cout << "MET filter not found: '" + filterName + "', continue without it!" << std::endl;
+			continue;
+		}
+		metFilterLeafs.push_back(filter);
+		//metFilterValues.push_back(true);
+	}
+}
+
+void DataReader::ReadMetFilter() {
+	for(TLeaf *filter : metFilterLeafs) filter->GetBranch()->GetEntry(entry);
+}
+
+void DataReader::GetMetFilter() {
+	for(int i = 0; i < metFilterLeafs.size(); ++i) {
+		metFilterValues[i] = metFilterLeafs[i]->GetValue();
+	}
+}
+
 void DataReader::ReadGenJetEntry() {
 	if(nGenJetLeaf->GetBranch()->GetReadEntry() == entry) return;
 	nGenJetLeaf->GetBranch()->GetEntry(entry);
@@ -377,7 +438,7 @@ void DataReader::ReadGenJetEntry() {
 	genJetPhiLeaf->GetBranch()->GetEntry(entry);
 }
 
-void DataReader::GetGenJetValues(const int &index){
+void DataReader::GetGenJetValues(const int &index) {
 	genJetPt = genJetPtLeaf->GetValue(index);
 	genJetEta = genJetEtaLeaf->GetValue(index);
 	genJetPhi = genJetPhiLeaf->GetValue(index);
@@ -394,7 +455,7 @@ void DataReader::ReadGenFatJetEntry() {
 	genFatJetPhiLeaf->GetBranch()->GetEntry(entry);
 }
 
-void DataReader::GetGenFatJetValues(const int &index){
+void DataReader::GetGenFatJetValues(const int &index) {
 	genFatJetPt = genFatJetPtLeaf->GetValue(index);
 	genFatJetEta = genFatJetEtaLeaf->GetValue(index);
 	genFatJetPhi = genFatJetPhiLeaf->GetValue(index);
@@ -411,8 +472,10 @@ void DataReader::ReadGenEntry() {
 	genPhiLeaf->GetBranch()->GetEntry(entry);
 	genEtaLeaf->GetBranch()->GetEntry(entry);
 	genMassLeaf->GetBranch()->GetEntry(entry);
+	genWeightLeaf->GetBranch()->GetEntry(entry);
 
 	nGenPart = nGenPartLeaf->GetValue();
+	genWeight = genWeightLeaf->GetValue();
 }
 
 void DataReader::GetGenValues(const int &index) {
@@ -426,16 +489,16 @@ void DataReader::GetGenValues(const int &index) {
 	genMass        = genMassLeaf->GetValue(index);
 }
 
-int DataReader::LastGenCopy(const int& index){
+int DataReader::LastGenCopy(const int& index) {
 	GetGenValues(index);
 
 	int partIndex = index, motherIndex = genMotherIndex;
 	int partPDG = genPdgId;
 
-	while(true){
+	while(true) {
 		GetGenValues(motherIndex);
 
-		if (partPDG == genPdgId){
+		if (partPDG == genPdgId) {
 			partIndex = motherIndex;
 			motherIndex = genMotherIndex;
 		}
@@ -446,7 +509,7 @@ int DataReader::LastGenCopy(const int& index){
 	return partIndex;
 }
 
-int DataReader::GetGenMatchedIndex(const double &recoPt, const double &recoPhi, const double &recoEta, const int& recoPDG, const double &deltaRCut, const double &deltaPtCut){
+int DataReader::GetGenMatchedIndex(const double &recoPt, const double &recoPhi, const double &recoEta, const int& recoPDG, const double &deltaRCut, const double &deltaPtCut) {
 	int genIndex = -999;
 	double deltaR,
 		deltaPt,
@@ -454,7 +517,7 @@ int DataReader::GetGenMatchedIndex(const double &recoPt, const double &recoPhi, 
 		deltaPtMin = std::numeric_limits<double>::max();
 
 	ReadGenEntry();
-	for(int iGen = 0; iGen < nGenPart; iGen++){
+	for(int iGen = 0; iGen < nGenPart; iGen++) {
 		GetGenValues(iGen);
 
 		deltaR = Utility::DeltaR(recoEta, recoPhi, genEta, genPhi);
@@ -462,7 +525,7 @@ int DataReader::GetGenMatchedIndex(const double &recoPt, const double &recoPhi, 
 
 		if (deltaR > deltaRCut || deltaPt > deltaPtCut) continue;
 
-		if (deltaR < deltaRMin && deltaPt < deltaPtMin && recoPDG == std::abs(genPdgId)){
+		if (deltaR < deltaRMin && deltaPt < deltaPtMin && recoPDG == std::abs(genPdgId)) {
 			int index = LastGenCopy(iGen);
 			if (std::find(alreadyMatchedIndex.begin(), alreadyMatchedIndex.end(), index) != alreadyMatchedIndex.end()) continue;
 

@@ -46,12 +46,6 @@ class JetProducer : public BaseProducer {
 		double CorrectEnergy(const double &pt, const double &eta, const double &rho, const double &area);
 		double SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const bool &isAk4);
 
-		template <typename T>
-		void SortByIndex(T &array, std::vector<int> indices, int size);
-
-		template <typename T>
-		void RemoveByIndex(T &array, int removeIndex, int arraySize);
-
 	public:
 		std::string Name = "JetProducer";
 		JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product);

@@ -13,6 +13,8 @@ class Susy1LeptonProduct {
 		double xSection, luminosity;
 	public:
 		Susy1LeptonProduct(const int &era, const bool &isData, const std::string &sampleName, const char &runPeriod, const double &xSection, TFile &outputFile);
+		void RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metFilterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
+		void RegisterMetFilter(const std::vector<std::string> &filterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
 		void RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees);
 		int GetEra() {return era;}
 		std::string GetEraSelector() { return eraSelector;}
@@ -101,9 +103,15 @@ class Susy1LeptonProduct {
 		std::array<double, 103> pdfWeight; // size is fixed
 		std::array<double, 9> scaleWeight; // size is fixed
 
+		// Trigger Informaion
+		//std::vector<bool> triggerValues, metTriggerValues, metFilterValues;
+		std::vector<short> triggerValues, metTriggerValues, metFilterValues;
+		bool hltEleOr, hltMuOr, hltMetOr;
+
 		// Gen Level Information
 		int nGenPart, nGenLepton, nGenTau, nGenLeptonFromTau, nGenMatchedW, nGenNeutrino,
 			leptonDecayChannelFlag;
+		double genWeight;
 		bool isDiLeptonEvent, isHadTauEvent, leptonsInAcceptance;
 		std::array<double, nMax> genDeltaPhiLepWSum, genDeltaPhiLepWDirect, genWSumMass, genWDirectMass, genMTLepNu, genNeutrinoPt;
 		std::array<int, nMax> grandMotherPdgId, genTauGrandMotherPdgId, genTauMotherPdgId, genLepGrandMotherPdgId, genLepMotherPdgId;

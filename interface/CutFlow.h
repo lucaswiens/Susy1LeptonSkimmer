@@ -24,17 +24,14 @@ class CutFlow{
 		CutFlow(TFile &outputFile, const std::string &channel, const std::string &systematic, const std::string &shift);
 		void AddCut(const std::string &part, Susy1LeptonProduct& product, const std::string &op, const int &threshold);
 
-		template <typename T>
-		void AddTrigger(const std::vector<int>& triggerIdx, T& input){
-			if(triggerIdx.size() != 0){
-				cuts.insert(cuts.begin(), [&input, triggerIdx](){for(const int &idx : triggerIdx){if(input.triggers[idx]) return true;} return false;});
-				cutNames.insert(cutNames.begin(), "Trigger");
-			}
+		void AddTrigger(const std::vector<int>& triggerIndex, Susy1LeptonProduct &product){
+			cuts.insert(cuts.begin(), [&product, triggerIndex](){for(const int& idx : triggerIndex){if(product.triggerValues[idx]) return true;} return false;});
+			cutNames.insert(cutNames.begin(), "Trigger");
+		}
 
-			else{
-				cuts.insert(cuts.begin(), [&input](){for(const bool &passed : input.METFilter){if(!passed) return false;} return true;});
-				cutNames.insert(cutNames.begin(), "MET Filter");
-			}
+		void AddMetFilter(Susy1LeptonProduct &product){
+			cuts.insert(cuts.begin(), [&product](){for(const bool& passed : product.metFilterValues){if(!passed) return false;} return true;});
+			cutNames.insert(cutNames.begin(), "MET Filter");
 		}
 
 		bool Passed();

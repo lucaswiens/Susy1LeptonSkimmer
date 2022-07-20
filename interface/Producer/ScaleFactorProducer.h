@@ -28,7 +28,7 @@ class ScaleFactorProducer : public BaseProducer {
 		*/
 
 		std::unique_ptr<correction::CorrectionSet> electronSf, muonSf, bTagSf;
-		//std::vector<std::string> bTagSyst, bTagSystLight;
+		std::vector<std::string> bTagSyst;
 
 	public:
 		ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);

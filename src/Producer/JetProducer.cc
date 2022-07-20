@@ -166,7 +166,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		const double &smearFactor = product.GetIsData() ? 1.0 : JetProducer::SmearEnergy(dataReader, correctionFactor * dataReader.jetPt, true);
 
 		const double &jetPtCorrected = dataReader.jetPt * correctionFactor * smearFactor;
-		if (jetPtCorrected > jetPtCut && std::abs(dataReader.jetEta) > jetEtaCut) { continue;}
+		if (jetPtCorrected < jetPtCut || std::abs(dataReader.jetEta) > jetEtaCut) { continue;}
 
 		metPx += dataReader.jetPt * std::cos(dataReader.jetPhi) - jetPtCorrected * std::cos(dataReader.jetPhi);
 		metPy += dataReader.jetPt * std::sin(dataReader.jetPhi) - jetPtCorrected * std::sin(dataReader.jetPhi);
@@ -175,6 +175,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		product.jetEta[jetCounter]  = dataReader.jetEta;
 		product.jetPhi[jetCounter]  = dataReader.jetPhi;
 		product.jetMass[jetCounter] = dataReader.jetMass * correctionFactor * smearFactor;
+
+		product.jetPartFlav[jetCounter] = dataReader.jetPartFlav;
 
 		product.jetDeepCsvLooseId[jetCounter]  = dataReader.jetDeepCsv > deepCsvBTagMap.at('L');
 		product.jetDeepCsvMediumId[jetCounter] = dataReader.jetDeepCsv > deepCsvBTagMap.at('M');

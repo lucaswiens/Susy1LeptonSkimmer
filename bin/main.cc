@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
 	std::vector<std::string> channels = {"Muon", "MuonIncl", "Electron", "ElectronIncl"};
 	std::vector<std::string> triggerNames, metTriggerNames, metFilterNames;
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
-	Susy1LeptonProduct product(era, isData, outputFileName, runPeriod, xSection, outputFile);
+	Susy1LeptonProduct product(era, isData, outputFileName, runPeriod, xSection, configTree, outputFile);
 	for (const std::string &channel : channels) {
 		outputFile.mkdir(channel.c_str());
 		if (doSystematics) { // create a tree for each systematic variation #FIXME
@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Initialize Producers and register Product
-	product.RegisterOutput(outputTrees);
+	product.RegisterOutput(outputTrees, configTree);
 	product.RegisterTrigger(triggerNames, metTriggerNames, outputTrees);
 	product.RegisterMetFilter(metFilterNames, outputTrees);
 	std::vector<std::shared_ptr<BaseProducer>> producers = {
@@ -143,17 +143,19 @@ int main(int argc, char *argv[]) {
 		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree)),
 		std::shared_ptr<JetProducer>(new JetProducer(configTree, scaleFactorTree, product)),
 		std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(configTree, scaleFactorTree)),
-		//std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector())), // FIXME segmentation violation after code is done.. probably something weird with the correction lib..
 	};
 	if (!isData) {
 		producers.push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(configTree, scaleFactorTree, product.GetEraSelector())));
+		producers.push_back(std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 	}
 
 	DataReader dataReader(inputFileName, "Events", isData);
 	int nEvents = dataReader.GetEntries();
 
-	dataReader.SetTrigger(triggerNames, metTriggerNames);
+	//Register trigger to data reader class
+	dataReader.RegisterTrigger(triggerNames, metTriggerNames);
+	dataReader.RegisterMetFilter(Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector()));
 
 	//ProgressBar(0, 0);
 	std::cout << std::endl << "Starting Event loop with " << nEvents << " Events" << std::endl;

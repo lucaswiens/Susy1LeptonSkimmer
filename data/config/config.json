@@ -123,7 +123,6 @@
 					"HLT_IsoMu27",
 					"HLT_Mu15_IsoVVVL_PFHT450"
 				],
-
 				"2018": [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
@@ -138,7 +137,6 @@
 					"HLT_PFMET120_PFMHT120_IDTight",
 					"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 				]
-			}
 		},
 		"Electron": {
 			"Selection": {
@@ -167,7 +165,6 @@
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-
 				"2016PostVFP": [
 					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
@@ -198,7 +195,6 @@
 					"HLT_PFMET120_PFMHT120_IDTight",
 					"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 				]
-			}
 		}
 
 	},
@@ -340,7 +336,21 @@
 					"Medium" : 0.2783,
 					"Tight"  : 0.7100
 				}
-			}
+			},
+			"BTagSystematics" : [
+				"uncorrelated",
+				"correlated",
+				"isr",
+				"fsr",
+				"hdamp",
+				"jes",
+				"jer",
+				"pileup",
+				"qcdscale",
+				"statistic",
+				"topmass",
+				"type3"
+			]
 		},
 		"IsoTrack": {
 			"Mt2" : {
@@ -348,6 +358,5 @@
 				"Leptonic": 80
 			}
 		}
-
 	}
 }

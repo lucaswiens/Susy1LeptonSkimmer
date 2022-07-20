@@ -4,6 +4,11 @@
 #include <TTree.h>
 #include <TFile.h>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+namespace pt = boost::property_tree;
+
 class Susy1LeptonProduct {
 	private:
 		int era;
@@ -12,10 +17,10 @@ class Susy1LeptonProduct {
 		char runPeriod;
 		double xSection, luminosity;
 	public:
-		Susy1LeptonProduct(const int &era, const bool &isData, const std::string &sampleName, const char &runPeriod, const double &xSection, TFile &outputFile);
+		Susy1LeptonProduct(const int &era, const bool &isData, const std::string &sampleName, const char &runPeriod, const double &xSection, const pt::ptree &configTree, TFile &outputFile);
 		void RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metFilterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
 		void RegisterMetFilter(const std::vector<std::string> &filterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
-		void RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees);
+		void RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees, const pt::ptree &configTree);
 		int GetEra() {return era;}
 		std::string GetEraSelector() { return eraSelector;}
 		bool GetIsPreVFP() {return preVFP;}
@@ -70,11 +75,20 @@ class Susy1LeptonProduct {
 			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
 			jetId;
 		double rho, metPt, metPhi, wBosonMinMass, wBosonMinMassPt, wBosonBestMass, wBosonBestMassPt, topBestMass, topBestMassPt;
+		std::array<int, nMax> jetPartFlav;
 		std::array<double, nMax> jetPt, jetEta, jetPhi, jetMass,
+			jetDeepCSVLooseSf, jetDeepCSVMediumSf, jetDeepCSVTightSf,
+			jetDeepJetLooseSf, jetDeepJetMediumSf, jetDeepJetTightSf,
 			jetArea, jetRawFactor,
 			jetDeepCsv, jetDeepJet;
-		std::array<bool, nMax> jetDeepCsvTightId, jetDeepCsvMediumId, jetDeepCsvLooseId,
-			jetDeepJetTightId, jetDeepJetMediumId, jetDeepJetLooseId;
+		std::array<bool, nMax> jetDeepCsvLooseId, jetDeepCsvMediumId, jetDeepCsvTightId,
+			jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId;
+		std::vector<std::array<double, nMax>> jetDeepCSVLooseSfUp, jetDeepCSVLooseSfDown,
+			jetDeepCSVMediumSfUp, jetDeepCSVMediumSfDown,
+			jetDeepCSVTightSfUp, jetDeepCSVTightSfDown,
+			jetDeepJetLooseSfUp, jetDeepJetLooseSfDown,
+			jetDeepJetMediumSfUp, jetDeepJetMediumSfDown,
+			jetDeepJetTightSfUp, jetDeepJetTightSfDown;
 
 		// FatJet Inforamtion
 		int nFatJet;

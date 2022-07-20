@@ -58,7 +58,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	jetAreaLeaf     = inputTree->GetLeaf("Jet_area");
 	jetDeepCsvLeaf  = inputTree->GetLeaf("Jet_btagDeepB");
 	jetDeepJetLeaf  = inputTree->GetLeaf("Jet_btagDeepFlavB");
-	//jetPartFlavLeaf = inputTree->GetLeaf("Jet_partonFlavour");
+	jetPartFlavLeaf = inputTree->GetLeaf("Jet_partonFlavour");
 	jetRawFactorLeaf   = inputTree->GetLeaf("Jet_rawFactor");
 	jetIdLeaf       = inputTree->GetLeaf("Jet_jetId");
 	//jetPUIDLeaf     = inputTree->GetLeaf("Jet_puId");
@@ -265,7 +265,7 @@ void DataReader::ReadJetEntry() {
 	jetAreaLeaf->GetBranch()->GetEntry(entry);
 	jetDeepCsvLeaf->GetBranch()->GetEntry(entry);
 	jetDeepJetLeaf->GetBranch()->GetEntry(entry);
-	//jetPartFlavLeaf->GetBranch()->GetEntry(entry);
+	jetPartFlavLeaf->GetBranch()->GetEntry(entry);
 	jetRawFactorLeaf->GetBranch()->GetEntry(entry);
 	jetIdLeaf->GetBranch()->GetEntry(entry);
 	//jetPUIDLeaf->GetBranch()->GetEntry(entry);
@@ -279,7 +279,7 @@ void DataReader::GetJetValues(const int &index) {
 	jetArea = jetAreaLeaf->GetValue(index);
 	jetDeepCsv = jetDeepCsvLeaf->GetValue(index);
 	jetDeepJet = jetDeepJetLeaf->GetValue(index);
-	//jetPartFlav = jetPartFlavLeaf->GetValue(index);
+	jetPartFlav = jetPartFlavLeaf->GetValue(index);
 	jetRawFactor = jetRawFactorLeaf->GetValue(index);
 	jetId = jetIdLeaf->GetValue(index);
 	//jetPUID = jetPUIDLeaf->GetValue(index);
@@ -368,7 +368,7 @@ void DataReader::GetPileUpValues() {
 	preFireDown = preFireDownLeaf->GetValue();
 }
 
-void DataReader::SetTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames) {
+void DataReader::RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames) {
 	for(const std::string& name : triggerNames) {
 		triggerLeafs.push_back(inputTree->GetLeaf(name.c_str()));
 		triggerValues.push_back(false);
@@ -405,7 +405,7 @@ void DataReader::GetTrigger() {
 	}
 }
 
-void DataReader::SetMetFilter(const std::vector<std::string>& metFilterNames) {
+void DataReader::RegisterMetFilter(const std::vector<std::string>& metFilterNames) {
 	for(const std::string& filterName : metFilterNames) {
 		if (filterName == "Flag_eeBadScFilter" && isData) { continue;}
 		TLeaf *filter = inputTree->GetLeaf(filterName.c_str());
@@ -414,12 +414,14 @@ void DataReader::SetMetFilter(const std::vector<std::string>& metFilterNames) {
 			continue;
 		}
 		metFilterLeafs.push_back(filter);
-		//metFilterValues.push_back(true);
+		metFilterValues.push_back(true);
 	}
 }
 
 void DataReader::ReadMetFilter() {
-	for(TLeaf *filter : metFilterLeafs) filter->GetBranch()->GetEntry(entry);
+	for(TLeaf *filterLeaf : metFilterLeafs) {
+		filterLeaf->GetBranch()->GetEntry(entry);
+	}
 }
 
 void DataReader::GetMetFilter() {

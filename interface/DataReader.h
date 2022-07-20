@@ -40,7 +40,7 @@ class DataReader {
 
 		// Jet Leafs
 		TLeaf *nJetLeaf,
-			//*jetFlavourLeaf,
+			*jetPartFlavLeaf,
 			*jetIdLeaf,
 			*jetMassLeaf, *jetPtLeaf, *jetEtaLeaf, *jetPhiLeaf,
 			*jetAreaLeaf, *jetRawFactorLeaf,
@@ -115,8 +115,8 @@ class DataReader {
 		void ReadJetEntry();
 		void GetJetValues(const int &index);
 		int nJet,
-			jetId;
-			//jetFlavour;
+			jetId,
+			jetPartFlav;
 		double jetMass, jetPt, jetEta, jetPhi,
 			jetArea, jetRawFactor,
 			jetDeepCsv, jetDeepJet,
@@ -160,10 +160,10 @@ class DataReader {
 
 		// Trigger and MET Filter
 		std::vector<short> triggerValues, metTriggerValues, metFilterValues;
-		void SetTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames);
+		void RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames);
 		void ReadTrigger();
 		void GetTrigger();
-		void SetMetFilter(const std::vector<std::string> &metFilterNames);
+		void RegisterMetFilter(const std::vector<std::string> &metFilterNames);
 		void ReadMetFilter();
 		void GetMetFilter();
 

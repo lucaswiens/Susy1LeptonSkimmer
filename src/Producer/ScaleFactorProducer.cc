@@ -18,7 +18,7 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 }
 
 void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
-	float electronPt, muonEta, muonPt;
+	double electronPt, muonEta, muonPt;
 
 	//Loop over selected electrons
 	for (int iElectron = 0; iElectron < product.nElectron; iElectron++) {

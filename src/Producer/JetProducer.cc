@@ -16,8 +16,11 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 	#   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite   #
 	################################################################################################*/
 	era              = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".Era");
+	runPeriod        = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + product.GetRunPeriod());
 	dataType         = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + (product.GetIsData()? ".DATA" : ".MC"));
-	runPeriod        = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + "M");
+	if (product.GetIsData()) {
+		dataType = "Run" + runPeriod + "_" + dataType;
+	}
 	jerVersion       = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".JER");
 	ak4Algorithm     = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK4.Algorithm");
 	ak8Algorithm     = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK8.Algorithm");
@@ -176,7 +179,9 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		product.jetPhi[jetCounter]  = dataReader.jetPhi;
 		product.jetMass[jetCounter] = dataReader.jetMass * correctionFactor * smearFactor;
 
-		product.jetPartFlav[jetCounter] = dataReader.jetPartFlav;
+		if (product.GetIsData()) {
+			product.jetPartFlav[jetCounter] = dataReader.jetPartFlav;
+		}
 
 		product.jetDeepCsvLooseId[jetCounter]  = dataReader.jetDeepCsv > deepCsvBTagMap.at('L');
 		product.jetDeepCsvMediumId[jetCounter] = dataReader.jetDeepCsv > deepCsvBTagMap.at('M');

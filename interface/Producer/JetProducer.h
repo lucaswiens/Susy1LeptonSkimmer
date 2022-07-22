@@ -38,11 +38,6 @@ class JetProducer : public BaseProducer {
 		// Btag Map
 		std::map<char, double> deepCsvBTagMap, deepJetBTagMap;
 
-
-		//Get jet energy correction
-		//FactorizedJetCorrector *jetCorrector;
-		//void SetCorrector(const char &runPeriod);
-
 		double CorrectEnergy(const double &pt, const double &eta, const double &rho, const double &area);
 		double SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const bool &isAk4);
 

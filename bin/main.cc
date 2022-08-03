@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
 					outputFile.cd(channel.c_str());
 					std::shared_ptr<TTree> tree = std::make_shared<TTree>((systematic + shift).c_str(), (systematic + shift).c_str());
 					tree->SetDirectory(outputFile.GetDirectory(channel.c_str()));
+					tree->SetAutoFlush(10000);
 					outputTrees.push_back(tree);
 
 					cutflows.push_back(CutFlow(outputFile, channel, systematic, shift));
@@ -128,8 +129,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		//Input class instead output class is used to register cut for trigger!
-		cutflows[iChannel].AddTrigger(triggerIndex, product);
-		cutflows[iChannel].AddMetFilter(product);
+		cutflows[iChannel].AddTriggerOr(triggerIndex, product);
 	}
 
 	// Initialize Producers and register Product
@@ -158,12 +158,16 @@ int main(int argc, char *argv[]) {
 	dataReader.RegisterMetFilter(Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector()));
 
 	//ProgressBar(0, 0);
-	std::cout << std::endl << "Starting Event loop with " << nEvents << " Events" << std::endl;
+	if (nMaxEvents > 0) {
+		std::cout << std::endl << "Starting Event loop with " << nMaxEvents << " Events" << std::endl;
+	} else {
+		std::cout << std::endl << "Starting Event loop with " << nEvents << " Events" << std::endl;
+	}
 	for (int entry = 0; entry < dataReader.GetEntries(); ++entry) {
 		// Stop Events Loop after nMaxEvents
 		if (nMaxEvents > 0 && entry >= nMaxEvents) { break;}
 		if (entry % 20000 == 0) {
-			std::cout  << "Processed " << 100*(double)(entry + 1)/(nMaxEvents < 0? nEvents : nMaxEvents) << "% Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
+			std::cout  << "Processed " << int(100*(double)(entry + 1)/(nMaxEvents > 0? nMaxEvents : nEvents)) << "% Events at a rate of " + std::to_string(entry / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
 		}
 
 		dataReader.SetEntry(entry);
@@ -179,7 +183,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	int finalNumberOfEvents;
-	std::cout  << "Processed Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
+	if (nMaxEvents > 0) {
+		std::cout  << "Processed Events at a rate of " + std::to_string(nMaxEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
+	} else {
+		std::cout  << "Processed Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
+	}
 	for (std::shared_ptr<TTree> tree : outputTrees) {
 		finalNumberOfEvents = tree->GetEntries();
 		if (nMaxEvents > 0) {

@@ -24,15 +24,35 @@ class CutFlow{
 		CutFlow(TFile &outputFile, const std::string &channel, const std::string &systematic, const std::string &shift);
 		void AddCut(const std::string &part, Susy1LeptonProduct& product, const std::string &op, const int &threshold);
 
+		// The Lambda function checks if any of the triggers are true and only returns false if all triggers fail
 		void AddTrigger(const std::vector<int>& triggerIndex, Susy1LeptonProduct &product){
-			cuts.insert(cuts.begin(), [&product, triggerIndex](){for(const int& idx : triggerIndex){if(product.triggerValues[idx]) return true;} return false;});
+			cuts.insert(cuts.begin(), [&product, triggerIndex](){for(const int& index : triggerIndex){if(product.triggerValues[index]) return true;} return false;});
 			cutNames.insert(cutNames.begin(), "Trigger");
 		}
 
+		// The Lambda function checks if any of the MET triggers are true and only returns false if all triggers fail
 		void AddMetFilter(Susy1LeptonProduct &product){
 			cuts.insert(cuts.begin(), [&product](){for(const bool& passed : product.metFilterValues){if(!passed) return false;} return true;});
 			cutNames.insert(cutNames.begin(), "MET Filter");
 		}
+
+		// The Lambda function checks if either the MET triggers or Lepton triggers are true and only return false if all of them are false
+		void AddTriggerOr(const std::vector<int>& triggerIndex, Susy1LeptonProduct &product){
+			cuts.insert(cuts.begin(), [&product, triggerIndex](){
+					bool hltLepOr = false, hltMetOr = false;
+					for (const int& index : triggerIndex) {
+						hltLepOr = hltLepOr || product.triggerValues[index];
+					}
+					for (const bool& passed : product.metFilterValues) {
+						hltMetOr = hltMetOr || passed;
+					}
+					return hltLepOr || hltMetOr;
+				}
+			);
+			cutNames.insert(cutNames.begin(), "Trigger(HLT_LepOr || HLT_METOr)");
+		}
+
+
 
 		bool Passed();
 		void Count(){hist->Fill("No cuts", 1);}; // TODO maybe just use GetEntries()?

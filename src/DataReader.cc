@@ -376,28 +376,33 @@ void DataReader::GetPileUpValues() {
 
 void DataReader::RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames) {
 	for(const std::string& name : triggerNames) {
-		triggerLeafs.push_back(inputTree->GetLeaf(name.c_str()));
-		triggerValues.push_back(false);
+		TLeaf *trigger = inputTree->GetLeaf(name.c_str());
+		if (trigger == nullptr) {
+			std::cout << "Not Found! Skipping Trigger: " << name << std::endl;
+			continue;
+		}
+		std::cout << "Register Trigger: " << name << std::endl;
+		triggerLeafs.push_back(trigger);
+		triggerValues.push_back(true);
 	}
+
 	for(const std::string& name : metTriggerNames) {
-		metTriggerLeafs.push_back(inputTree->GetLeaf(name.c_str()));
-		metTriggerValues.push_back(false);
+		TLeaf *trigger = inputTree->GetLeaf(name.c_str());
+		if (trigger == nullptr) {
+			std::cout << "Not Found! Skipping Trigger: " << name << std::endl;
+			continue;
+		}
+		std::cout << "Register Trigger: " << name << std::endl;
+		metTriggerLeafs.push_back(trigger);
+		metTriggerValues.push_back(true);
 	}
 }
 
 void DataReader::ReadTrigger() {
 	for(TLeaf *triggerLeaf : triggerLeafs) {
-		if(triggerLeaf == nullptr) {
-			//std::cout << "Trigger not found: '" + name + "', continue without it!" << std::endl;
-			continue;
-		}
 		triggerLeaf->GetBranch()->GetEntry(entry);
 	}
 	for(TLeaf *triggerLeaf : metTriggerLeafs) {
-		if(triggerLeaf == nullptr) {
-			//std::cout << "Trigger not found: '" + name + "', continue without it!" << std::endl;
-			continue;
-		}
 		triggerLeaf->GetBranch()->GetEntry(entry);
 	}
 }
@@ -407,7 +412,7 @@ void DataReader::GetTrigger() {
 		triggerValues[i] = triggerLeafs[i]->GetValue();
 	}
 	for(int i = 0; i < metTriggerLeafs.size(); ++i) {
-		metTriggerValues[i] = triggerLeafs[i]->GetValue();
+		metTriggerValues[i] = metTriggerLeafs[i]->GetValue();
 	}
 }
 

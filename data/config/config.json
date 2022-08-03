@@ -350,6 +350,10 @@
 				"statistic",
 				"topmass",
 				"type3"
+			],
+			"LightTagSystematics": [
+				"uncorrelated",
+				"correlated"
 			]
 		},
 		"IsoTrack": {

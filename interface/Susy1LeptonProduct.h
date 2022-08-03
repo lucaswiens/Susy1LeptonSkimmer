@@ -75,20 +75,30 @@ class Susy1LeptonProduct {
 			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
 			jetId;
 		double rho, metPt, metPhi, wBosonMinMass, wBosonMinMassPt, wBosonBestMass, wBosonBestMassPt, topBestMass, topBestMassPt;
-		std::array<int, nMax> jetPartFlav;
+		std::array<int, nMax> jetPartFlav,
+			jetDeepJetId, jetDeepCsvId;
 		std::array<double, nMax> jetPt, jetEta, jetPhi, jetMass,
-			jetDeepCSVLooseSf, jetDeepCSVMediumSf, jetDeepCSVTightSf,
+			jetDeepCsvLooseSf, jetDeepCsvMediumSf, jetDeepCsvTightSf,
 			jetDeepJetLooseSf, jetDeepJetMediumSf, jetDeepJetTightSf,
+			jetDeepCsvLooseLightSf, jetDeepCsvMediumLightSf, jetDeepCsvTightLightSf,
+			jetDeepJetLooseLightSf, jetDeepJetMediumLightSf, jetDeepJetTightLightSf,
 			jetArea, jetRawFactor,
 			jetDeepCsv, jetDeepJet;
 		std::array<bool, nMax> jetDeepCsvLooseId, jetDeepCsvMediumId, jetDeepCsvTightId,
 			jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId;
-		std::vector<std::array<double, nMax>> jetDeepCSVLooseSfUp, jetDeepCSVLooseSfDown,
-			jetDeepCSVMediumSfUp, jetDeepCSVMediumSfDown,
-			jetDeepCSVTightSfUp, jetDeepCSVTightSfDown,
+		std::vector<std::array<double, nMax>> jetDeepCsvLooseSfUp, jetDeepCsvLooseSfDown,
+			jetDeepCsvMediumSfUp, jetDeepCsvMediumSfDown,
+			jetDeepCsvTightSfUp, jetDeepCsvTightSfDown,
 			jetDeepJetLooseSfUp, jetDeepJetLooseSfDown,
 			jetDeepJetMediumSfUp, jetDeepJetMediumSfDown,
-			jetDeepJetTightSfUp, jetDeepJetTightSfDown;
+			jetDeepJetTightSfUp, jetDeepJetTightSfDown,
+			jetDeepCsvLooseLightSfUp, jetDeepCsvLooseLightSfDown,
+			jetDeepCsvMediumLightSfUp, jetDeepCsvMediumLightSfDown,
+			jetDeepCsvTightLightSfUp, jetDeepCsvTightLightSfDown,
+			jetDeepJetLooseLightSfUp, jetDeepJetLooseLightSfDown,
+			jetDeepJetMediumLightSfUp, jetDeepJetMediumLightSfDown,
+			jetDeepJetTightLightSfUp, jetDeepJetTightLightSfDown;
+
 
 		// FatJet Inforamtion
 		int nFatJet;

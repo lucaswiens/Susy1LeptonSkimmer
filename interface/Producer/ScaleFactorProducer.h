@@ -17,21 +17,19 @@ class ScaleFactorProducer : public BaseProducer {
 		bool isData;
 
 		//Hist of MC btag efficiency
-		/*
-		std::shared_ptr<TH2F> bTagEffBLooseDeepJet, bTagEffBMediumDeepJet, bTagEffBTightDeepJet,
+		std::shared_ptr<TH2D> bTagEffBLooseDeepJet, bTagEffBMediumDeepJet, bTagEffBTightDeepJet,
 			bTagEffCLooseDeepJet, bTagEffCMediumDeepJet, bTagEffCTightDeepJet,
 			bTagEffLightLooseDeepJet, bTagEffLightMediumDeepJet, bTagEffLightTightDeepJet,
-			bTagEffBLooseDeepCSV, bTagEffBMediumDeepCSV, bTagEffBTightDeepCSV,
-			bTagEffCLooseDeepCSV, bTagEffCMediumDeepCSV, bTagEffCTightDeepCSV,
-			bTagEffLightLooseDeepCSV, bTagEffLightMediumDeepCSV, bTagEffLightTightDeepCSV,
+			bTagEffBLooseDeepCsv, bTagEffBMediumDeepCsv, bTagEffBTightDeepCsv,
+			bTagEffCLooseDeepCsv, bTagEffCMediumDeepCsv, bTagEffCTightDeepCsv,
+			bTagEffLightLooseDeepCsv, bTagEffLightMediumDeepCsv, bTagEffLightTightDeepCsv,
 			bTotal, cTotal, lightTotal;
-		*/
 
 		std::unique_ptr<correction::CorrectionSet> electronSf, muonSf, bTagSf;
-		std::vector<std::string> bTagSyst;
+		std::vector<std::string> bTagSyst, bTagSystLight;
 
 	public:
-		ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);
+		ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
 		void EndJob(TFile &file);

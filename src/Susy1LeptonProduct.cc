@@ -49,12 +49,12 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 		metaData.Write(0, TObject::kOverwrite);
 
 		for(const std::pair<std::string, boost::property_tree::ptree> bSyst : configTree.get_child("Producer.Jet.BTagSystematics")){
-			jetDeepCSVLooseSfUp.push_back(std::array<double, nMax>());
-			jetDeepCSVLooseSfDown.push_back(std::array<double, nMax>());
-			jetDeepCSVMediumSfUp.push_back(std::array<double, nMax>());
-			jetDeepCSVMediumSfDown.push_back(std::array<double, nMax>());
-			jetDeepCSVTightSfUp.push_back(std::array<double, nMax>());
-			jetDeepCSVTightSfDown.push_back(std::array<double, nMax>());
+			jetDeepCsvLooseSfUp.push_back(std::array<double, nMax>());
+			jetDeepCsvLooseSfDown.push_back(std::array<double, nMax>());
+			jetDeepCsvMediumSfUp.push_back(std::array<double, nMax>());
+			jetDeepCsvMediumSfDown.push_back(std::array<double, nMax>());
+			jetDeepCsvTightSfUp.push_back(std::array<double, nMax>());
+			jetDeepCsvTightSfDown.push_back(std::array<double, nMax>());
 
 			jetDeepJetLooseSfUp.push_back(std::array<double, nMax>());
 			jetDeepJetLooseSfDown.push_back(std::array<double, nMax>());
@@ -62,6 +62,22 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 			jetDeepJetMediumSfDown.push_back(std::array<double, nMax>());
 			jetDeepJetTightSfUp.push_back(std::array<double, nMax>());
 			jetDeepJetTightSfDown.push_back(std::array<double, nMax>());
+		}
+
+		for(const std::pair<std::string, boost::property_tree::ptree> bSyst : configTree.get_child("Producer.Jet.LightTagSystematics")){
+			jetDeepCsvLooseLightSfUp.push_back(std::array<double, nMax>());
+			jetDeepCsvLooseLightSfDown.push_back(std::array<double, nMax>());
+			jetDeepCsvMediumLightSfUp.push_back(std::array<double, nMax>());
+			jetDeepCsvMediumLightSfDown.push_back(std::array<double, nMax>());
+			jetDeepCsvTightLightSfUp.push_back(std::array<double, nMax>());
+			jetDeepCsvTightLightSfDown.push_back(std::array<double, nMax>());
+
+			jetDeepJetLooseLightSfUp.push_back(std::array<double, nMax>());
+			jetDeepJetLooseLightSfDown.push_back(std::array<double, nMax>());
+			jetDeepJetMediumLightSfUp.push_back(std::array<double, nMax>());
+			jetDeepJetMediumLightSfDown.push_back(std::array<double, nMax>());
+			jetDeepJetTightLightSfUp.push_back(std::array<double, nMax>());
+			jetDeepJetTightLightSfDown.push_back(std::array<double, nMax>());
 		}
 }
 
@@ -220,17 +236,9 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("ElectronTightMvaSfDown", electronTightMvaSfDown.data(), "ElectronTightMvaSfDown[nMuon]/D");
 		}
 
-		tree->Branch("nJet", &nJet);
-		tree->Branch("nDeepCsvLooseBTag", &nDeepCsvLooseBTag);
-		tree->Branch("nDeepCsvMediumBTag", &nDeepCsvMediumBTag);
-		tree->Branch("nDeepCsvTightBTag", &nDeepCsvTightBTag);
-		tree->Branch("nDeepJetLooseBTag", &nDeepJetLooseBTag);
-		tree->Branch("nDeepJetMediumBTag", &nDeepJetMediumBTag);
-		tree->Branch("nDeepJetTightBTag", &nDeepJetTightBTag);
-
-		tree->Branch("JetId", &jetId);
 		tree->Branch("MetPt", &metPt);
 		tree->Branch("MetPhi", &metPhi);
+		tree->Branch("nJet", &nJet);
 		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/D");
 		tree->Branch("JetEta", jetEta.data(), "JetEta[nJet]/D");
 		tree->Branch("JetPhi", jetPhi.data(), "JetPhi[nJet]/D");
@@ -239,14 +247,21 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetRawFactor", jetRawFactor.data(), "JetRawFactor,[nJet]/D");
 		tree->Branch("JetDeepCSV", jetDeepCsv.data(), "JetDeepCSV[nJet]/D");
 		tree->Branch("JetDeepJet", jetDeepJet.data(), "JetDeepJet,[nJet]/D");
+		tree->Branch("nDeepCsvLooseBTag", &nDeepCsvLooseBTag);
+		tree->Branch("nDeepCsvMediumBTag", &nDeepCsvMediumBTag);
+		tree->Branch("nDeepCsvTightBTag", &nDeepCsvTightBTag);
+		tree->Branch("nDeepJetLooseBTag", &nDeepJetLooseBTag);
+		tree->Branch("nDeepJetMediumBTag", &nDeepJetMediumBTag);
+		tree->Branch("nDeepJetTightBTag", &nDeepJetTightBTag);
+		tree->Branch("JetId", &jetId);
 		if (!isData) {
 			tree->Branch("JetDeepCSVLooseId", jetDeepCsvLooseId.data(), "JetDeepCSVLooseId,[nJet]/O");
 			tree->Branch("JetDeepCSVMediumId", jetDeepCsvMediumId.data(), "JetDeepCSVMediumId[nJet]/O");
 			tree->Branch("JetDeepCSVTightId", jetDeepCsvTightId.data(), "JetDeepCSVTightId[nJet]/O");
 
-			tree->Branch("JetDeepCSVLooseSf", jetDeepCSVLooseSf.data(), "JetDeepCSVLooseSf[nJet]/D");
-			tree->Branch("JetDeepCSVMediumSf", jetDeepCSVMediumSf.data(), "JetDeepCSVMediumSf[nJet]/D");
-			tree->Branch("JetDeepCSVTightSf", jetDeepCSVTightSf.data(), "JetDeepCSVTightSf[nJet]/D");
+			tree->Branch("JetDeepCSVLooseSf", jetDeepCsvLooseSf.data(), "JetDeepCSVLooseSf[nJet]/D");
+			tree->Branch("JetDeepCSVMediumSf", jetDeepCsvMediumSf.data(), "JetDeepCSVMediumSf[nJet]/D");
+			tree->Branch("JetDeepCSVTightSf", jetDeepCsvTightSf.data(), "JetDeepCSVTightSf[nJet]/D");
 
 			tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/O");
 			tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/O");
@@ -259,12 +274,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			int iBTagSyst = 0;
 			for(const std::pair<std::string, boost::property_tree::ptree> j : configTree.get_child("Producer.Jet.BTagSystematics")){
 				std::string bSyst = j.second.get_value<std::string>();
-				tree->Branch(("JetDeepCSVLooseSf_" + bSyst + "Up").c_str(), jetDeepCSVLooseSfUp[iBTagSyst].data(), ("JetDeepCSVLooseSf_" + bSyst + "Up[nJet]/D").c_str());
-				tree->Branch(("JetDeepCSVLooseSf_" + bSyst + "Down").c_str(), jetDeepCSVLooseSfDown[iBTagSyst].data(), ("JetDeepCSVLooseSf_" + bSyst + "Down[nJet]/D").c_str());
-				tree->Branch(("JetDeepCSVMediumSf_" + bSyst + "Up").c_str(), jetDeepCSVMediumSfUp[iBTagSyst].data(), ("JetDeepCSVMediumSf_" + bSyst + "Up[nJet]/D").c_str());
-				tree->Branch(("JetDeepCSVMediumSf_" + bSyst + "Down").c_str(), jetDeepCSVMediumSfDown[iBTagSyst].data(), ("JetDeepCSVMediumSf_" + bSyst + "Down[nJet]/D").c_str());
-				tree->Branch(("JetDeepCSVTightSf_" + bSyst + "Up").c_str(), jetDeepCSVTightSfUp[iBTagSyst].data(), ("JetDeepCSVTightSf_" + bSyst + "Up[nJet]/D").c_str());
-				tree->Branch(("JetDeepCSVTightSf_" + bSyst + "Down").c_str(), jetDeepCSVTightSfDown[iBTagSyst].data(), ("JetDeepCSVTightSf_" + bSyst + "Down[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVLooseSf_" + bSyst + "Up").c_str(), jetDeepCsvLooseSfUp[iBTagSyst].data(), ("JetDeepCSVLooseSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVLooseSf_" + bSyst + "Down").c_str(), jetDeepCsvLooseSfDown[iBTagSyst].data(), ("JetDeepCSVLooseSf_" + bSyst + "Down[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVMediumSf_" + bSyst + "Up").c_str(), jetDeepCsvMediumSfUp[iBTagSyst].data(), ("JetDeepCSVMediumSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVMediumSf_" + bSyst + "Down").c_str(), jetDeepCsvMediumSfDown[iBTagSyst].data(), ("JetDeepCSVMediumSf_" + bSyst + "Down[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVTightSf_" + bSyst + "Up").c_str(), jetDeepCsvTightSfUp[iBTagSyst].data(), ("JetDeepCSVTightSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVTightSf_" + bSyst + "Down").c_str(), jetDeepCsvTightSfDown[iBTagSyst].data(), ("JetDeepCSVTightSf_" + bSyst + "Down[nJet]/D").c_str());
 
 				tree->Branch(("JetDeepJetLooseSf_" + bSyst + "Up").c_str(), jetDeepJetLooseSfUp[iBTagSyst].data(), ("JetDeepJetLooseSf_" + bSyst + "Up[nJet]/D").c_str());
 				tree->Branch(("JetDeepJetLooseSf_" + bSyst + "Down").c_str(), jetDeepJetLooseSfDown[iBTagSyst].data(), ("JetDeepJetLooseSf_" + bSyst + "Down[nJet]/D").c_str());
@@ -272,6 +287,24 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 				tree->Branch(("JetDeepJetMediumSf_" + bSyst + "Down").c_str(), jetDeepJetMediumSfDown[iBTagSyst].data(), ("JetDeepJetMediumSf_" + bSyst + "Down[nJet]/D").c_str());
 				tree->Branch(("JetDeepJetTightSf_" + bSyst + "Up").c_str(), jetDeepJetTightSfUp[iBTagSyst].data(), ("JetDeepJetTightSf_" + bSyst + "Up[nJet]/D").c_str());
 				tree->Branch(("JetDeepJetTightSf_" + bSyst + "Down").c_str(), jetDeepJetTightSfDown[iBTagSyst].data(), ("JetDeepJetTightSf_" + bSyst + "Down[nJet]/D").c_str());
+			}
+
+			iBTagSyst = 0;
+			for(const std::pair<std::string, boost::property_tree::ptree> j : configTree.get_child("Producer.Jet.LightTagSystematics")){
+				std::string bSyst = j.second.get_value<std::string>();
+				tree->Branch(("JetDeepCSVLooseLightSf_" + bSyst + "Up").c_str(), jetDeepCsvLooseLightSfUp[iBTagSyst].data(), ("JetDeepCSVLooseLightSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVLooseLightSf_" + bSyst + "Down").c_str(), jetDeepCsvLooseLightSfDown[iBTagSyst].data(), ("JetDeepCSVLooseLightSf_" + bSyst + "Down[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVMediumLightSf_" + bSyst + "Up").c_str(), jetDeepCsvMediumLightSfUp[iBTagSyst].data(), ("JetDeepCSVMediumLightSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVMediumLightSf_" + bSyst + "Down").c_str(), jetDeepCsvMediumLightSfDown[iBTagSyst].data(), ("JetDeepCSVMediumLightSf_" + bSyst + "Down[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVTightLightSf_" + bSyst + "Up").c_str(), jetDeepCsvTightLightSfUp[iBTagSyst].data(), ("JetDeepCSVTightLightSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepCSVTightLightSf_" + bSyst + "Down").c_str(), jetDeepCsvTightLightSfDown[iBTagSyst].data(), ("JetDeepCSVTightLightSf_" + bSyst + "Down[nJet]/D").c_str());
+
+				tree->Branch(("JetDeepJetLooseLightSf_" + bSyst + "Up").c_str(), jetDeepJetLooseLightSfUp[iBTagSyst].data(), ("JetDeepJetLooseLightSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepJetLooseLightSf_" + bSyst + "Down").c_str(), jetDeepJetLooseLightSfDown[iBTagSyst].data(), ("JetDeepJetLooseLightSf_" + bSyst + "Down[nJet]/D").c_str());
+				tree->Branch(("JetDeepJetMediumLightSf_" + bSyst + "Up").c_str(), jetDeepJetMediumLightSfUp[iBTagSyst].data(), ("JetDeepJetMediumLightSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepJetMediumLightSf_" + bSyst + "Down").c_str(), jetDeepJetMediumLightSfDown[iBTagSyst].data(), ("JetDeepJetMediumLightSf_" + bSyst + "Down[nJet]/D").c_str());
+				tree->Branch(("JetDeepJetTightLightSf_" + bSyst + "Up").c_str(), jetDeepJetTightLightSfUp[iBTagSyst].data(), ("JetDeepJetTightLightSf_" + bSyst + "Up[nJet]/D").c_str());
+				tree->Branch(("JetDeepJetTightLightSf_" + bSyst + "Down").c_str(), jetDeepJetTightLightSfDown[iBTagSyst].data(), ("JetDeepJetTightLightSf_" + bSyst + "Down[nJet]/D").c_str());
 			}
 		}
 		tree->Branch("WBosonMinMass", &wBosonMinMass);

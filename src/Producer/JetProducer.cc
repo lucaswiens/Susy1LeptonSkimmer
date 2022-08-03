@@ -7,6 +7,7 @@
 #include <random>
 
 JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product) {
+	Name = "JetProducer";
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 
 	/*################################################################################################
@@ -140,7 +141,7 @@ double JetProducer::SmearEnergy(DataReader &dataReader, const double &jetPtCorre
 void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.jetPt.fill(0); // This might not be needed but it makes testing a lot easier
 	dataReader.ReadJetEntry();
-	assert(dataReader.nJet < product.nMax);
+	assert(dataReader.nJet <= product.nMax);
 	int jetCounter = 0;
 
 	double metPx = dataReader.metPt * std::cos(dataReader.metPhi),
@@ -310,7 +311,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 	int fatJetCounter = 0;
 	dataReader.ReadFatJetEntry();
-	assert(dataReader.nFatJet < product.nMax);
+	assert(dataReader.nFatJet <= product.nMax);
 	for (int iFatJet = 0; iFatJet < dataReader.nFatJet; iFatJet++) {
 		dataReader.GetFatJetValues(iFatJet);
 

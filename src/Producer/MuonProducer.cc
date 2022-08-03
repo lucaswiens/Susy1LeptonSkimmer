@@ -1,8 +1,8 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/MuonProducer.h>
 
 MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector) {
+	Name = "MuonProducer";
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
-	//Name = "MuonProducer";
 	rc.init(std::string(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".RoccoR")));
 
 	muonGoodPtCut         = configTree.get<double>("Producer.Muon.Pt.Good");
@@ -34,9 +34,6 @@ MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFa
 void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	//Initialize all variables as -999
 	product.muonPtVector.clear(); // Just for testing, this is required for vectors
-	//product.nMuon = 0;
-	//product.nGoodMuon = 0;
-	//product.nVetoMuon = 0;
 
 	dataReader.ReadMuonEntry();
 	product.nMuon = dataReader.nMuon;
@@ -72,10 +69,6 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 
 		if (muonPt < muonVetoPtCut ||
 				std::abs(dataReader.muonEta) > muonEtaCut ||
-				//dataReader.muonDxy > muonDxyCut ||
-				//dataReader.muonDz > muonDzCut ||
-				//dataReader.muonSip3d > muonSip3dCut ||
-				//dataReader.muonMiniIso > muonVetoIsoCut ||
 				!dataReader.muonIsPfCand)
 		{continue; }
 
@@ -98,22 +91,13 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 		product.muonIsGood[muonCounter] = muonPt > muonGoodPtCut &&
 							dataReader.muonMiniIso < muonGoodIsoCut &&
 							dataReader.muonIdMap.at(muonGoodCutBasedIdCut);
-							//(muonGoodCutBasedIdCut == 'T'?  dataReader.muonTightId :
-							//muonGoodCutBasedIdCut  == 'M'? dataReader.muonMediumId :
-							//muonGoodCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
 
 		product.muonIsVeto[muonCounter] = muonPt <= muonGoodPtCut &&
 							dataReader.muonMiniIso < muonVetoIsoCut &&
 							dataReader.muonIdMap.at(muonVetoCutBasedIdCut);
-							//(muonVetoCutBasedIdCut == 'T'?  dataReader.muonTightId :
-							//muonVetoCutBasedIdCut  == 'M'? dataReader.muonMediumId :
-							//muonVetoCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
 
 		product.muonIsAntiSelected[muonCounter] = dataReader.muonMiniIso >= muonAntiIsoCut &&
 							dataReader.muonIdMap.at(muonAntiCutBasedIdCut);
-							//(muonAntiCutBasedIdCut == 'T'?  dataReader.muonTightId :
-							//muonAntiCutBasedIdCut  == 'M'? dataReader.muonMediumId :
-							//muonAntiCutBasedIdCut  == 'L'?  dataReader.muonLooseId : false);
 
 		if (product.muonIsGood[muonCounter]) { goodMuonCounter++;}
 		if (product.muonIsVeto[muonCounter]) { vetoMuonCounter++;}
@@ -140,11 +124,4 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 
 }
 
-void MuonProducer::EndJob(TFile &file) {
-	//muonIdSFFile->Close();
-	//muonIsolationSFFile->Close();
-	//muonTriggerSFFile->Close();
-
-	//electronGSFSFFile->Close();
-	//electronMVASFFile->Close();
-}
+void MuonProducer::EndJob(TFile &file) { }

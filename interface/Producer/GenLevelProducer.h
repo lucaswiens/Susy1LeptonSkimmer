@@ -9,7 +9,6 @@
 class GenLevelProducer : public BaseProducer {
 	private:
 	public:
-		std::string Name = "GenLevelProducer";
 		GenLevelProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);

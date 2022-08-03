@@ -42,7 +42,6 @@ class JetProducer : public BaseProducer {
 		double SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const bool &isAk4);
 
 	public:
-		std::string Name = "JetProducer";
 		JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);

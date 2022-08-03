@@ -12,7 +12,6 @@ class PileUpWeightProducer : public BaseProducer {
 		std::string goldenJsonString;
 		std::shared_ptr<TH1D> pileUpMc;
 	public:
-		std::string Name = "PileUpWeightProducer";
 		PileUpWeightProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);

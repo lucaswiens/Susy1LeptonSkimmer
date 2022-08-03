@@ -3,7 +3,7 @@
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
 
-#include <TH2F.h>
+#include <TH2D.h>
 
 #include <correction.h>
 

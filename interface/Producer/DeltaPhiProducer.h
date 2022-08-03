@@ -13,7 +13,6 @@ class DeltaPhiProducer : public BaseProducer {
 	private:
 		double hadronicMt2Cut, leptonicMt2Cut;
 	public:
-		std::string Name = "DeltaPhiProducer";
 		DeltaPhiProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree);
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
 		void EndJob(TFile &file);

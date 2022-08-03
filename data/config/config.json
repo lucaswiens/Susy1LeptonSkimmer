@@ -32,13 +32,13 @@
 				]
 			},
 			"METTrigger": [
-					"HLT_PFMET100_PFMHT100_IDTight",
-					"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
-					"HLT_PFMET110_PFMHT110_IDTight",
-					"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
-					"HLT_PFMET120_PFMHT120_IDTight",
-					"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
-				]
+				"HLT_PFMET100_PFMHT100_IDTight",
+				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
+				"HLT_PFMET110_PFMHT110_IDTight",
+				"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
+				"HLT_PFMET120_PFMHT120_IDTight",
+				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
+			]
 		},
 		"ElectronIncl": {
 			"Selection": {
@@ -78,13 +78,13 @@
 				]
 			},
 			"METTrigger": [
-					"HLT_PFMET100_PFMHT100_IDTight",
-					"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
-					"HLT_PFMET110_PFMHT110_IDTight",
-					"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
-					"HLT_PFMET120_PFMHT120_IDTight",
-					"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
-				]
+				"HLT_PFMET100_PFMHT100_IDTight",
+				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
+				"HLT_PFMET110_PFMHT110_IDTight",
+				"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
+				"HLT_PFMET120_PFMHT120_IDTight",
+				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
+			]
 		},
 		"Muon": {
 			"Selection": {
@@ -130,13 +130,13 @@
 				]
 			},
 			"METTrigger": [
-					"HLT_PFMET100_PFMHT100_IDTight",
-					"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
-					"HLT_PFMET110_PFMHT110_IDTight",
-					"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
-					"HLT_PFMET120_PFMHT120_IDTight",
-					"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
-				]
+				"HLT_PFMET100_PFMHT100_IDTight",
+				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
+				"HLT_PFMET110_PFMHT110_IDTight",
+				"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
+				"HLT_PFMET120_PFMHT120_IDTight",
+				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
+			]
 		},
 		"Electron": {
 			"Selection": {
@@ -188,13 +188,13 @@
 				]
 			},
 			"METTrigger": [
-					"HLT_PFMET100_PFMHT100_IDTight",
-					"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
-					"HLT_PFMET110_PFMHT110_IDTight",
-					"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
-					"HLT_PFMET120_PFMHT120_IDTight",
-					"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
-				]
+				"HLT_PFMET100_PFMHT100_IDTight",
+				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
+				"HLT_PFMET110_PFMHT110_IDTight",
+				"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
+				"HLT_PFMET120_PFMHT120_IDTight",
+				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
+			]
 		}
 
 	},

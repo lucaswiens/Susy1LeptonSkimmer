@@ -1,7 +1,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/GenLevelProducer.h>
 
 GenLevelProducer::GenLevelProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector) {
-
+	Name = "GenLevelProducer";
 }
 
 void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {

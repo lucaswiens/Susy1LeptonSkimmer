@@ -1,6 +1,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 
 DeltaPhiProducer::DeltaPhiProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree) {
+	Name = "DeltaPhiProducer";
 	hadronicMt2Cut = configTree.get<double>("Producer.IsoTrack.Mt2.Hadronic");
 	leptonicMt2Cut = configTree.get<double>("Producer.IsoTrack.Mt2.Leptonic");
 }

@@ -19,7 +19,6 @@ class ElectronProducer : public BaseProducer {
 		int electronGoodNumberOfLostHitsCut;
 		char electronGoodCutBasedIdCut, electronVetoCutBasedIdCut, electronAntiIsCutBasedIdCut, electronAntiIsNotCutBasedIdCut;
 	public:
-		std::string Name = "ElectronProducer";
 		ElectronProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);

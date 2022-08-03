@@ -1,6 +1,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
 
 PileUpWeightProducer::PileUpWeightProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector) {
+	Name = "PileUpWeightProducer";
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 	pileUpCorrectionSet = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("PileUp." + eraSelector + ".JSON"));
 	goldenJsonString = scaleFactorTree.get<std::string>("PileUp." + eraSelector + ".GoldenJSON");

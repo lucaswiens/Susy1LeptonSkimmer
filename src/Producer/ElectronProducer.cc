@@ -1,6 +1,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/ElectronProducer.h>
 
 ElectronProducer::ElectronProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree) {
+	Name = "ElectronProducer";
 	electronGoodPtCut               = configTree.get<double>("Producer.Electron.Pt.Good");
 	electronVetoPtCut               = configTree.get<double>("Producer.Electron.Pt.Veto");
 	electronEtaCut                  = configTree.get<double>("Producer.Electron.Eta");

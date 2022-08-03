@@ -16,11 +16,14 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 	#   Instructions:                                                                                #
 	#   https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite   #
 	################################################################################################*/
-	era              = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".Era");
-	runPeriod        = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + product.GetRunPeriod());
-	dataType         = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + (product.GetIsData()? ".DATA" : ".MC"));
+	//runPeriod        = product.GetIsData() ? uscaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + product.GetRunPeriod()) : "M";
+	era = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".Era");
 	if (product.GetIsData()) {
-		dataType = "Run" + runPeriod + "_" + dataType;
+		// Run Period and JEC Version for Data
+		dataType = "Run" + scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".RunPeriod." + product.GetRunPeriod()) + "_" + scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".DATA");
+	} else {
+		// JEC Version for MC
+		dataType  = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".MC");
 	}
 	jerVersion       = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".JER");
 	ak4Algorithm     = scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".AK4.Algorithm");
@@ -187,9 +190,12 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		product.jetDeepCsvLooseId[jetCounter]  = dataReader.jetDeepCsv > deepCsvBTagMap.at('L');
 		product.jetDeepCsvMediumId[jetCounter] = dataReader.jetDeepCsv > deepCsvBTagMap.at('M');
 		product.jetDeepCsvTightId[jetCounter]  = dataReader.jetDeepCsv > deepCsvBTagMap.at('T');
+		product.jetDeepCsvId[jetCounter] = product.jetDeepCsvLooseId[jetCounter] + product.jetDeepCsvMediumId[jetCounter] + product.jetDeepCsvTightId[jetCounter];
+
 		product.jetDeepJetLooseId[jetCounter]  = dataReader.jetDeepJet > deepJetBTagMap.at('L');
 		product.jetDeepJetMediumId[jetCounter] = dataReader.jetDeepJet > deepJetBTagMap.at('M');
 		product.jetDeepJetTightId[jetCounter]  = dataReader.jetDeepJet > deepJetBTagMap.at('T');
+		product.jetDeepJetId[jetCounter] = product.jetDeepJetLooseId[jetCounter] + product.jetDeepJetMediumId[jetCounter] + product.jetDeepJetTightId[jetCounter];
 
 		jetCounter++;
 	}

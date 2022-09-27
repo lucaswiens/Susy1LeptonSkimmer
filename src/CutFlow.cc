@@ -1,11 +1,10 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/CutFlow.h>
-#include <iostream>
 
-CutFlow::CutFlow(TFile &outputFile, const std::string &channel, const std::string &systematic, const std::string &shift) {
-	outputFile.cd(channel.c_str());
+CutFlow::CutFlow(TFile &outputFile, const std::string &channel) {
+	//outputFile.cd(channel.c_str());
 	hist = std::make_shared<TH1D>();
-	hist->SetName(("Cutflow_" + systematic + shift).c_str());
-	hist->SetTitle(("Cutflow_" + systematic + shift).c_str());
+	hist->SetName(("cutflow_" + channel).c_str());
+	hist->SetTitle(("cutflow_" + channel).c_str());
 	hist->SetDirectory(outputFile.GetDirectory(channel.c_str()));
 }
 

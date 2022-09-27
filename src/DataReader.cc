@@ -2,7 +2,9 @@
 #include<iostream>
 
 DataReader::DataReader(const std::string &fileName, const std::string &treeName, const bool &isData) : isData(isData) {
+	std::cout << std::endl << "Starting to open:" << std::endl << fileName << std::endl;
 	inputFile = std::shared_ptr<TFile>(TFile::Open(fileName.c_str(), "READ"));
+	std::cout << "File Opened!" << std::endl;
 	inputTree.reset(static_cast<TTree*>(inputFile->Get(treeName.c_str())));
 
 	// Muons
@@ -522,12 +524,12 @@ int DataReader::LastGenCopy(const int& index) {
 	return partIndex;
 }
 
-int DataReader::GetGenMatchedIndex(const double &recoPt, const double &recoPhi, const double &recoEta, const int& recoPDG, const double &deltaRCut, const double &deltaPtCut) {
+int DataReader::GetGenMatchedIndex(const float &recoPt, const float &recoPhi, const float &recoEta, const int& recoPDG, const float &deltaRCut, const float &deltaPtCut) {
 	int genIndex = -999;
-	double deltaR,
+	float deltaR,
 		deltaPt,
-		deltaRMin = std::numeric_limits<double>::max(),
-		deltaPtMin = std::numeric_limits<double>::max();
+		deltaRMin = std::numeric_limits<float>::max(),
+		deltaPtMin = std::numeric_limits<float>::max();
 
 	ReadGenEntry();
 	for(int iGen = 0; iGen < nGenPart; iGen++) {

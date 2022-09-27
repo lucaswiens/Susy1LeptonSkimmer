@@ -92,7 +92,7 @@ class DataReader {
 		void ReadMuonEntry();
 		void GetMuonValues(const int &index);
 		int nMuon;
-		double muonPt, muonEta, muonPhi, muonMass, muonIso, muonDxy, muonDz, muonSip3d, muonMiniIso, muonRandomNumber;
+		float muonPt, muonEta, muonPhi, muonMass, muonIso, muonDxy, muonDz, muonSip3d, muonMiniIso, muonRandomNumber;
 		int muonPdgId, muonCharge, muonMvaId, muonNTrackerLayers;
 		bool muonLooseId, muonMediumId, muonTightId, muonIsPfCand;
 		std::map<char, bool> muonIdMap;
@@ -101,7 +101,7 @@ class DataReader {
 		void ReadElectronEntry();
 		void GetElectronValues(const int &index);
 		int nElectron;
-		double electronPt, electronEta, electronPhi, electronMass,
+		float electronPt, electronEta, electronPhi, electronMass,
 			electronDxy, electronDz,
 			electronECorr,
 			electronMiniIso, electronIso03, electronIso04, electronRelJetIso,
@@ -117,7 +117,7 @@ class DataReader {
 		int nJet,
 			jetId,
 			jetPartFlav;
-		double jetMass, jetPt, jetEta, jetPhi,
+		float jetMass, jetPt, jetEta, jetPhi,
 			jetArea, jetRawFactor,
 			jetDeepCsv, jetDeepJet,
 			rho,
@@ -127,7 +127,7 @@ class DataReader {
 		void GetFatJetValues(const int &index);
 		int nFatJet,
 			fatJetId;
-		double fatJetMass, fatJetPt, fatJetEta, fatJetPhi,
+		float fatJetMass, fatJetPt, fatJetEta, fatJetPhi,
 			fatJetArea, fatJetRawFactor,
 			fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
 			fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD;
@@ -137,26 +137,26 @@ class DataReader {
 		void GetIsoTrackValues(const int &index);
 		int nIsoTrack,
 			isoTrackPdgId;
-		double isoTrackPt, isoTrackEta, isoTrackPhi;
+		float isoTrackPt, isoTrackEta, isoTrackPhi;
 
 		// Gen Jet for Smearing
 		void ReadGenJetEntry();
 		void GetGenJetValues(const int &index);
 		int nGenJet;
-		double genJetPt, genJetEta, genJetPhi;
+		float genJetPt, genJetEta, genJetPhi;
 		void ReadGenFatJetEntry();
 		void GetGenFatJetValues(const int &index);
 		int nGenFatJet;
-		double genFatJetPt, genFatJetEta, genFatJetPhi;
+		float genFatJetPt, genFatJetEta, genFatJetPhi;
 
 		// PileUp
 		void ReadPileUpEntry();
 		void GetPileUpValues();
 		int nPdfWeight, nScaleWeight;
-		double nTrueInt,
+		float nTrueInt,
 			preFire, preFireUp, preFireDown;
-		std::array<double, 103> pdfWeight; // size is fixed
-		std::array<double, 9> scaleWeight; // size is fixed
+		std::array<float, 103> pdfWeight; // size is fixed
+		std::array<float, 9> scaleWeight; // size is fixed
 
 		// Trigger and MET Filter
 		std::vector<short> triggerValues, metTriggerValues, metFilterValues;
@@ -173,10 +173,10 @@ class DataReader {
 		int nGenPart,
 			genPdgId, genMotherIndex,
 			genStatus, genStatusFlags;
-		double genPt, genEta, genPhi, genMass,
+		float genPt, genEta, genPhi, genMass,
 			genWeight;
 
-		int GetGenMatchedIndex(const double &recoPt, const double &recoPhi, const double &recoEta, const int &recoPDG, const double &deltaRCut, const double &deltaPtCut);
+		int GetGenMatchedIndex(const float &recoPt, const float &recoPhi, const float &recoEta, const int &recoPDG, const float &deltaRCut, const float &deltaPtCut);
 		int LastGenCopy(const int &index);
 		std::vector<int> alreadyMatchedIndex;
 

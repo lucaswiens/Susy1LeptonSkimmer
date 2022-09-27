@@ -2,18 +2,18 @@
 
 DeltaPhiProducer::DeltaPhiProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree) {
 	Name = "DeltaPhiProducer";
-	hadronicMt2Cut = configTree.get<double>("Producer.IsoTrack.Mt2.Hadronic");
-	leptonicMt2Cut = configTree.get<double>("Producer.IsoTrack.Mt2.Leptonic");
+	hadronicMt2Cut = configTree.get<float>("Producer.IsoTrack.Mt2.Hadronic");
+	leptonicMt2Cut = configTree.get<float>("Producer.IsoTrack.Mt2.Leptonic");
 }
 
 void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	int isoTrackCounter = 0;
 	bool isGoodMuon = false;
 	int goodMuonIndex = 0, goodElectronIndex = 0;
-	/*##########################################################
-	#   Calculate the DeltaPhi using the leading good lepton   #
-	#   In most cases this should be the leading lepton        #
-	##########################################################*/
+	/*###########################################################################################
+	#   Most of these variables are only well defined if the event has exactly one good lepton. #
+	#   For inclusive channels they are just calculated using the leading good lepton.          #
+	###########################################################################################*/
 	if (product.nMuon > 0 && product.nElectron > 0) {
 		for (int iMuon = 0; iMuon < product.nMuon; iMuon++) {
 			if (product.muonIsGood[iMuon]){
@@ -49,14 +49,13 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 
 	product.LT = -999;
 	product.deltaPhi = -999;
-	product.absoluteDeltaPhi = -999;
 	product.LP = -999;
 	product.wBosonMt = -999;
 	if (product.nMuon > 0 || product.nElectron > 0) {
-		double leptonPt   = isGoodMuon ? product.muonPt[goodMuonIndex]     : product.electronPt[goodElectronIndex];
-		double leptonEta  = isGoodMuon ? product.muonEta[goodMuonIndex]    : product.electronEta[goodElectronIndex];
-		double leptonPhi  = isGoodMuon ? product.muonPhi[goodMuonIndex]    : product.electronPhi[goodElectronIndex];
-		double leptonMass = isGoodMuon ? product.muonMass[goodMuonIndex]   : product.electronMass[goodElectronIndex];
+		float leptonPt   = isGoodMuon ? product.muonPt[goodMuonIndex]     : product.electronPt[goodElectronIndex];
+		float leptonEta  = isGoodMuon ? product.muonEta[goodMuonIndex]    : product.electronEta[goodElectronIndex];
+		float leptonPhi  = isGoodMuon ? product.muonPhi[goodMuonIndex]    : product.electronPhi[goodElectronIndex];
+		float leptonMass = isGoodMuon ? product.muonMass[goodMuonIndex]   : product.electronMass[goodElectronIndex];
 		int leptonCharge  = isGoodMuon ? product.muonCharge[goodMuonIndex] : product.electronCharge[goodElectronIndex];
 		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(leptonPt, leptonEta, leptonPhi, leptonMass);
 		ROOT::Math::PtEtaPhiMVector metP4 = ROOT::Math::PtEtaPhiMVector(product.metPt, 0, product.metPhi, 0);
@@ -64,7 +63,6 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 
 		product.LT = leptonPt + product.metPt;
 		product.deltaPhi = Utility::DeltaPhi(leptonP4.Phi(), wBosonP4.Phi());
-		product.absoluteDeltaPhi = std::abs(product.deltaPhi);
 		product.LP = leptonPt / wBosonP4.Pt() * std::cos(product.deltaPhi);
 		product.wBosonMt = wBosonP4.Mt();
 
@@ -72,15 +70,15 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		assert(dataReader.nIsoTrack < product.nMax);
 		heppy::Davismt2 mt2obj;
 		product.isoTrackVeto = false;
-		double deltaRMin = 0.1, isoMt2Cut = -999;
+		float deltaRMin = 0.1, isoMt2Cut = -999;
 		for (int iTrack = 0; iTrack < dataReader.nIsoTrack; iTrack++) {
 			dataReader.GetIsoTrackValues(iTrack);
 
-			const int &isotrackcharge = (0 < dataReader.isoTrackPdgId) - (dataReader.isoTrackPdgId < 0); //only true for leptons but veto only matters for leptons
+			const int &isotrackcharge = (0 < dataReader.isoTrackPdgId) - (dataReader.isoTrackPdgId < 0); // This is only true if the particle is a lepton, but it is also only used to compare it to leptonCharge
 
 			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14 && (isotrackcharge == leptonCharge)) continue;
 
-			double deltaR = Utility::DeltaR(leptonEta, leptonPhi, dataReader.isoTrackEta, dataReader.isoTrackPhi);
+			float deltaR = Utility::DeltaR(leptonEta, leptonPhi, dataReader.isoTrackEta, dataReader.isoTrackPhi);
 
 			if (deltaR < deltaRMin) continue;
 
@@ -97,7 +95,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 			product.isoTrackPt[isoTrackCounter] = dataReader.isoTrackPt;
 			product.isoTrackPdgId[isoTrackCounter] = dataReader.isoTrackPdgId;
 
-			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14) { // TODO Add these to config
+			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14) { // https://twiki.cern.ch/twiki/bin/view/Main/PdgId
 				product.isoTrackIsHadronicDecay[isoTrackCounter] = false; //leptonic track
 				isoMt2Cut = leptonicMt2Cut;
 			} else {
@@ -112,31 +110,16 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.nIsoTrack = isoTrackCounter;
 
 	product.HT = 0;
-	for (int *nBtag : {&product.nDeepCsvLooseBTag, &product.nDeepCsvMediumBTag, &product.nDeepCsvTightBTag, &product.nDeepJetLooseBTag, &product.nDeepJetMediumBTag, &product.nDeepJetTightBTag}) {
-
+	for (int *nBtag : {&product.nDeepJetLooseBTag, &product.nDeepJetMediumBTag, &product.nDeepJetTightBTag}) {
 		*nBtag = 0;
 	}
 
 	for (int iJet = 0; iJet < product.nJet; iJet++) {
 		product.HT += product.jetPt.at(iJet);
 
-		if (product.jetDeepCsvLooseId[iJet])  { product.nDeepCsvLooseBTag++;}
-		if (product.jetDeepCsvMediumId[iJet]) { product.nDeepCsvMediumBTag++;}
-		if (product.jetDeepCsvTightId[iJet])  { product.nDeepCsvTightBTag++;}
 		if (product.jetDeepJetLooseId[iJet])  { product.nDeepJetLooseBTag++;}
 		if (product.jetDeepJetMediumId[iJet]) { product.nDeepJetMediumBTag++;}
 		if (product.jetDeepJetTightId[iJet])  { product.nDeepJetTightBTag++;}
-	}
-
-	// TODO this is kind of stupid.. Probably best to do this during the anaysis step
-	if (product.nDeepJetMediumBTag == 0) {// 0-B SRs
-		if (product.LT < 250) { product.isSignalRegion = false;}
-		else if (product.LT > 250) { product.isSignalRegion = product.absoluteDeltaPhi > 0.75;}
-	} else {// Multi-B SRs
-		if (product.LT < 250) { product.isSignalRegion = false;}
-		else if (product.LT < 350) { product.isSignalRegion = product.absoluteDeltaPhi > 1.0;}
-		else if (product.LT < 600) { product.isSignalRegion = product.absoluteDeltaPhi > 0.75;}
-		else if (product.LT > 600) { product.isSignalRegion = product.absoluteDeltaPhi > 0.5;}
 	}
 }
 

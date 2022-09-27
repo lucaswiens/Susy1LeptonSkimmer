@@ -32,7 +32,7 @@ class BaseProducer {
 		//File path for SF etc.
 		std::string filePath = std::string(std::getenv("CMSSW_BASE")) + "/src/Susy1LeptonAnalsis/Susy1LeptonSkimmer/data/";
 
-		std::map<double, std::map<char, std::string>> runEras = { // TODO Remove and maybe put in config if it's still needed
+		std::map<float, std::map<char, std::string>> runEras = { // TODO Remove and maybe put in config if it's still needed
 			{2016.0, {
 					{'B', "BCD"},
 					{'C', "BCD"},
@@ -68,7 +68,7 @@ class BaseProducer {
 		int FirstCopy(const int &index, const int &pdgID); //NANOAOD
 
 		//Match Reco to gen particles
-		std::tuple<int, int, int> SetGenParticles(const double &Pt, const double &Eta, const double &Phi, const int &i, const int &pdgID);
+		std::tuple<int, int, int> SetGenParticles(const float &Pt, const float &Eta, const float &Phi, const int &i, const int &pdgID);
 
 		static const int arrayMaxSize = 20;
 	public:

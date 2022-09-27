@@ -5,18 +5,18 @@ MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFa
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 	rc.init(std::string(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".RoccoR")));
 
-	muonGoodPtCut         = configTree.get<double>("Producer.Muon.Pt.Good");
-	muonVetoPtCut         = configTree.get<double>("Producer.Muon.Pt.Veto");
-	muonEtaCut            = configTree.get<double>("Producer.Muon.Eta");
-	muonGoodIsoCut        = configTree.get<double>("Producer.Muon.Iso.Good");
-	muonVetoIsoCut        = configTree.get<double>("Producer.Muon.Iso.Veto");
-	muonAntiIsoCut        = configTree.get<double>("Producer.Muon.Iso.Anti");
+	muonGoodPtCut         = configTree.get<float>("Producer.Muon.Pt.Good");
+	muonVetoPtCut         = configTree.get<float>("Producer.Muon.Pt.Veto");
+	muonEtaCut            = configTree.get<float>("Producer.Muon.Eta");
+	muonGoodIsoCut        = configTree.get<float>("Producer.Muon.Iso.Good");
+	muonVetoIsoCut        = configTree.get<float>("Producer.Muon.Iso.Veto");
+	muonAntiIsoCut        = configTree.get<float>("Producer.Muon.Iso.Anti");
 	muonGoodCutBasedIdCut = configTree.get<char>("Producer.Muon.CutBasedId.Good");
 	muonVetoCutBasedIdCut = configTree.get<char>("Producer.Muon.CutBasedId.Veto");
 	muonAntiCutBasedIdCut = configTree.get<char>("Producer.Muon.CutBasedId.Anti");
-	//muonDxyCut          = configTree.get<double>("Producer.Muon.Dxy");
-	//muonDzCut           = configTree.get<double>("Producer.Muon.Dz");
-	//muonSip3dCut        = configTree.get<double>("Producer.Muon.Sip3DCut");
+	//muonDxyCut          = configTree.get<float>("Producer.Muon.Dxy");
+	//muonDzCut           = configTree.get<float>("Producer.Muon.Dz");
+	//muonSip3dCut        = configTree.get<float>("Producer.Muon.Sip3DCut");
 
 	std::cout << std::endl <<
 		"The following cuts are applied to Muons:"   << std::endl <<
@@ -45,7 +45,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 
 		// Rochester Correction
 		int muonMatchedGenIndex = -999;
-		double dataScaleFactor = 1., mcScaleFactor = 1., scaleFactorUnc = 0.; // TODO think about how to do this better
+		float dataScaleFactor = 1., mcScaleFactor = 1., scaleFactorUnc = 0.; // TODO think about how to do this better
 		if (!product.GetIsData()) {
 			muonMatchedGenIndex = dataReader.GetGenMatchedIndex(dataReader.muonPt, dataReader.muonPhi, dataReader.muonEta, 13, 0.4, 0.4);
 			if(muonMatchedGenIndex > 0){
@@ -63,15 +63,14 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 			dataScaleFactor = rc.kScaleDT(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, 0, 0);
 		}
 
-		double muonPt      = dataReader.muonPt * (product.GetIsData() ? dataScaleFactor : mcScaleFactor),
+		float muonPt      = dataReader.muonPt * (product.GetIsData() ? dataScaleFactor : mcScaleFactor),
 			muonPtUp   = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor + scaleFactorUnc) : (mcScaleFactor + scaleFactorUnc)),
 			muonPtDown = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor - scaleFactorUnc) : (mcScaleFactor - scaleFactorUnc));
 
 		if (muonPt < muonVetoPtCut ||
 				std::abs(dataReader.muonEta) > muonEtaCut ||
 				!dataReader.muonIsPfCand)
-		{continue; }
-
+		{ continue;}
 
 		product.muonPtVector.push_back(muonPt);
 		product.muonPt[muonCounter] = muonPt;
@@ -105,7 +104,6 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 		muonCounter++;
 	}
 
-	//Overwrite number of leptons by excluding leptons that do not survive the cuts
 	product.nMuon = muonCounter;
 	product.nGoodMuon = goodMuonCounter;
 	product.nVetoMuon = vetoMuonCounter;

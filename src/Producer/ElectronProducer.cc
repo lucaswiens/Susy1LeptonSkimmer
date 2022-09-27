@@ -2,12 +2,12 @@
 
 ElectronProducer::ElectronProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree) {
 	Name = "ElectronProducer";
-	electronGoodPtCut               = configTree.get<double>("Producer.Electron.Pt.Good");
-	electronVetoPtCut               = configTree.get<double>("Producer.Electron.Pt.Veto");
-	electronEtaCut                  = configTree.get<double>("Producer.Electron.Eta");
-	electronGoodIsoCut              = configTree.get<double>("Producer.Electron.Iso.Good");
-	electronVetoIsoCut              = configTree.get<double>("Producer.Electron.Iso.Veto");
-	electronAntiIsoCut              = configTree.get<double>("Producer.Electron.Iso.Anti");
+	electronGoodPtCut               = configTree.get<float>("Producer.Electron.Pt.Good");
+	electronVetoPtCut               = configTree.get<float>("Producer.Electron.Pt.Veto");
+	electronEtaCut                  = configTree.get<float>("Producer.Electron.Eta");
+	electronGoodIsoCut              = configTree.get<float>("Producer.Electron.Iso.Good");
+	electronVetoIsoCut              = configTree.get<float>("Producer.Electron.Iso.Veto");
+	electronAntiIsoCut              = configTree.get<float>("Producer.Electron.Iso.Anti");
 	electronGoodCutBasedIdCut       = configTree.get<char>("Producer.Electron.CutBasedId.Good");
 	electronVetoCutBasedIdCut       = configTree.get<char>("Producer.Electron.CutBasedId.Veto");
 	electronAntiIsCutBasedIdCut     = configTree.get<char>("Producer.Electron.CutBasedId.Anti.Is");

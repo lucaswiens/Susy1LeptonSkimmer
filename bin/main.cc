@@ -30,7 +30,7 @@ namespace pt = boost::property_tree;
 
 /*#####################################################################
 #   This is a skimmer for the 1 Lepton Delta Phi Analysis.            #
-#   The current design is designed to work on UltraLegacy samples:    #
+#   The current setup is designed to work on UltraLegacy samples:     #
 #   https://twiki.cern.ch/twiki/bin/view/CMS/PdmVRun2LegacyAnalysis   #
 #####################################################################*/
 
@@ -44,14 +44,13 @@ int main(int argc, char *argv[]) {
 	std::string inputFileName  = std::string(argv[1]);
 	std::string outputFileName = std::string(argv[2]);
 	bool isData                = std::string(argv[3]) == "True" ? true : false;
-	bool doSystematics         = std::string(argv[4]) == "True" ? true : false; // Maybe use a string instead that can be "Nominal", "Up" or "Down"
-	int era                    = std::stoi(argv[5]);
-	char runPeriod             = (char)*argv[6]; //If it is MC, then runPeriod does not matter but still has to be given (e.g. just use "m")
-	double xSection            = std::stod(argv[7]);
+	int era                    = std::stoi(argv[4]);
+	char runPeriod             = (char)*argv[5]; //If it is MC, then runPeriod does not matter but still has to be given (e.g. just use "m")
+	float xSection             = std::stod(argv[6]);
 
 	int nMaxEvents;
-	if (argc == 9) {
-		nMaxEvents = std::stoi(std::string(argv[8]));
+	if (argc >= 8) {
+		nMaxEvents = std::stoi(std::string(argv[7]));
 	} else {
 		nMaxEvents = -999;
 	}
@@ -70,74 +69,61 @@ int main(int argc, char *argv[]) {
 	std::vector<std::string> triggerNames, metTriggerNames, metFilterNames;
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
 	Susy1LeptonProduct product(era, isData, outputFileName, runPeriod, xSection, configTree, outputFile);
+
+	// Create a TTree and CutFlow for each channel
+	static const long autoFlush = 10000;
 	for (const std::string &channel : channels) {
-		outputFile.mkdir(channel.c_str());
-		if (doSystematics) { // create a tree for each systematic variation #FIXME
-			for (std::string systematic : {"JEC", "JER"}) {
-				for (std::string shift : {"Up", "Down"}) {
-					outputFile.cd(channel.c_str());
-					std::shared_ptr<TTree> tree = std::make_shared<TTree>((systematic + shift).c_str(), (systematic + shift).c_str());
-					tree->SetDirectory(outputFile.GetDirectory(channel.c_str()));
-					tree->SetAutoFlush(10000);
-					outputTrees.push_back(tree);
+		std::shared_ptr<TTree> tree = std::make_shared<TTree>(channel.c_str(), channel.c_str());
+		tree->SetAutoFlush(autoFlush);
+		outputTrees.push_back(tree);
 
-					cutflows.push_back(CutFlow(outputFile, channel, systematic, shift));
-					std::string path = "Channel." + channel + ".Selection";
-					for (const std::string part : Utility::GetKeys(configTree, path)) {
-						cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<short>(path + "." + part + ".Threshold"));
-					}
-				}
-			}
-		} else { // create just the Nominal tree
-			outputFile.cd(channel.c_str());
-			std::shared_ptr<TTree> tree = std::make_shared<TTree>("Nominal", "Nominal");
-			tree->SetDirectory(outputFile.GetDirectory(channel.c_str()));
-			outputTrees.push_back(tree);
-
-			for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".Trigger." + product.GetEraSelector())) {
-				if (std::find(triggerNames.begin(), triggerNames.end(), name) == triggerNames.end()) {
-					triggerNames.push_back(name);
-				}
-			}
-
-			for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".METTrigger")) {
-				if (std::find(metTriggerNames.begin(), metTriggerNames.end(), name) == metTriggerNames.end()) {
-					metTriggerNames.push_back(name);
-				}
-			}
-
-			for (const std::string &name : Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector())) {
-				if (std::find(metFilterNames.begin(), metFilterNames.end(), name) == metFilterNames.end()) {
-					metFilterNames.push_back(name);
-				}
-			}
-
-			cutflows.push_back(CutFlow(outputFile, channel, "Nominal", ""));
-			std::string path = "Channel." + channel + ".Selection";
-			for (const std::string part : Utility::GetKeys(configTree, path)) {
-				cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<short>(path + "." + part + ".Threshold"));
+		for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".Trigger." + product.GetEraSelector())) {
+			if (std::find(triggerNames.begin(), triggerNames.end(), name) == triggerNames.end()) {
+				triggerNames.push_back(name);
 			}
 		}
+
+		for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".METTrigger")) {
+			if (std::find(metTriggerNames.begin(), metTriggerNames.end(), name) == metTriggerNames.end()) {
+				metTriggerNames.push_back(name);
+			}
+		}
+
+		for (const std::string &name : Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector())) {
+			if (std::find(metFilterNames.begin(), metFilterNames.end(), name) == metFilterNames.end()) {
+				metFilterNames.push_back(name);
+			}
+		}
+
+		cutflows.push_back(CutFlow(outputFile, channel));
+		std::string path = "Channel." + channel + ".Selection";
+		for (const std::string part : Utility::GetKeys(configTree, path)) {
+			std::cout << path << ": "<< part << configTree.get<std::string>(path + "." + part + ".Operator")<<configTree.get<std::string>(path + "." + part + ".Threshold") << std::endl;
+			cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<short>(path + "." + part + ".Threshold"));
+		}
+		std::cout << std::endl;
 	}
 
+	// Register Trigger output
 	for (int iChannel = 0; iChannel < channels.size(); iChannel++) {
 		std::vector<int> triggerIndex;
-		for(int iTrigger = 0; iTrigger < triggerNames.size(); iTrigger++){
-			for(const std::string& triggerName : Utility::GetVector<std::string>(configTree, "Channel." + channels[iChannel] + ".Trigger." + product.GetEraSelector())) {
+		for(int iTrigger = 0; iTrigger < triggerNames.size(); iTrigger++) {
+			for(const std::string& triggerName : Utility::GetVector<std::string>(configTree, "Channel." + channels.at(iChannel) + ".Trigger." + product.GetEraSelector())) {
 				if(triggerName == triggerNames[iTrigger]) triggerIndex.push_back(iTrigger);
 			}
 		}
 
-		//Input class instead output class is used to register cut for trigger!
-		cutflows[iChannel].AddTriggerOr(triggerIndex, product);
+		cutflows[iChannel].AddTriggerOr(triggerIndex, product, channels.at(iChannel));
 	}
 
-	// Initialize Producers and register Product
-	product.RegisterOutput(outputTrees, configTree);
+	// Register branches that will be stored in the output
 	product.RegisterTrigger(triggerNames, metTriggerNames, outputTrees);
 	product.RegisterMetFilter(metFilterNames, outputTrees);
+	product.RegisterOutput(outputTrees, configTree);
+
+	// Initialize Producers
 	std::vector<std::shared_ptr<BaseProducer>> producers = {
-		std::shared_ptr<TriggerProducer>(new TriggerProducer(configTree, scaleFactorTree, product)),
+		std::shared_ptr<TriggerProducer>(new TriggerProducer(configTree, scaleFactorTree, product, triggerNames)),
 		std::shared_ptr<METFilterProducer>(new METFilterProducer(configTree, scaleFactorTree, product)),
 		std::shared_ptr<MuonProducer>(new MuonProducer(configTree, scaleFactorTree, product.GetEraSelector())),
 		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree)),
@@ -151,27 +137,19 @@ int main(int argc, char *argv[]) {
 	}
 
 	DataReader dataReader(inputFileName, "Events", isData);
-	int nEvents = dataReader.GetEntries();
-
-	//Register trigger to data reader class
 	dataReader.RegisterTrigger(triggerNames, metTriggerNames);
 	dataReader.RegisterMetFilter(Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector()));
+	int nEvents = nMaxEvents > 0 ? nMaxEvents : dataReader.GetEntries();
 
-	//ProgressBar(0, 0);
-	if (nMaxEvents > 0) {
-		std::cout << std::endl << "Starting Event loop with " << nMaxEvents << " Events" << std::endl;
-	} else {
-		std::cout << std::endl << "Starting Event loop with " << nEvents << " Events" << std::endl;
-	}
-	for (int entry = 0; entry < dataReader.GetEntries(); ++entry) {
-		// Stop Events Loop after nMaxEvents
-		if (nMaxEvents > 0 && entry >= nMaxEvents) { break;}
-		if (entry % 20000 == 0) {
-			std::cout  << "Processed " << int(100*(double)(entry + 1)/(nMaxEvents > 0? nMaxEvents : nEvents)) << "% Events at a rate of " + std::to_string(entry / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
+	std::cout << std::endl << "Starting Event loop over " << nEvents << " Events" << std::endl;
+	for (int entry = 0; entry < nEvents; ++entry) {
+		if (entry % 10000 == 0) {
+			std::cout  << "Processed " << int(100*(float)(entry + 1)/nEvents) << "% Events at a rate of " + std::to_string(entry / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
 		}
 
 		dataReader.SetEntry(entry);
 		for (std::shared_ptr<BaseProducer> producer : producers) {
+			//std::cout << producer->Name << std::endl; // Debug Information
 			producer->Produce(dataReader, product);
 		}
 
@@ -182,27 +160,20 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-	int finalNumberOfEvents;
-	if (nMaxEvents > 0) {
-		std::cout  << "Processed Events at a rate of " + std::to_string(nMaxEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
-	} else {
-		std::cout  << "Processed Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
-	}
+	std::cout  << "Processed Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
+
 	for (std::shared_ptr<TTree> tree : outputTrees) {
-		finalNumberOfEvents = tree->GetEntries();
-		if (nMaxEvents > 0) {
-			std::cout << std::setw(20) << tree->GetDirectory()->GetName() << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nMaxEvents << " (" << 100*(double)finalNumberOfEvents/nMaxEvents << "%)" << std::endl;
-		} else {
-			std::cout << std::setw(20) << tree->GetDirectory()->GetName() << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(double)finalNumberOfEvents/nEvents << "%)" << std::endl;
-		}
+		int finalNumberOfEvents = tree->GetEntries();
+		std::cout << std::setw(20) << tree->GetDirectory()->GetName() << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(float)finalNumberOfEvents/nEvents << "%)" << std::endl;
 	}
 
 	for (int iTree = 0; iTree < outputTrees.size(); iTree++) {
-		outputFile.cd(outputTrees.at(iTree)->GetDirectory()->GetName());
+		outputFile.cd();
 		outputTrees.at(iTree)->Write(0, TObject::kOverwrite);
 		cutflows.at(iTree).WriteOutput();
 	}
 
+	product.WriteMetaData(outputFile);
 	outputFile.Write(0, TObject::kOverwrite);
 	outputFile.Close();
 

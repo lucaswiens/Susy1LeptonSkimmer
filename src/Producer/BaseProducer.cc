@@ -15,7 +15,7 @@ int BaseProducer::FirstCopy(const int &index, const int &pdgID) {
 	return daughterIdx;
 }
 
-std::tuple<int, int, int> BaseProducer::SetGenParticles(const double &pt, const double &eta, const double &phi, const int &i, const int &pdgID) {
+std::tuple<int, int, int> BaseProducer::SetGenParticles(const float &pt, const float &eta, const float &phi, const int &i, const int &pdgID) {
 	std::tuple<int, int, int> IDs = std::make_tuple(-99., -99., -99.);
 
 	std::map<int, int> genIndex;

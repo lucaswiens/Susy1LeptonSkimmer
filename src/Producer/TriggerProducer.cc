@@ -1,7 +1,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TriggerProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
-TriggerProducer::TriggerProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product) {
+TriggerProducer::TriggerProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product, const std::vector<std::string> &triggerNames) : triggerNames(triggerNames) {
 	Name = "TriggerProducer";
 }
 
@@ -16,8 +16,13 @@ void TriggerProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produc
 
 	for(int i = 0; i < dataReader.triggerValues.size(); ++i){
 		product.triggerValues[i] = dataReader.triggerValues[i];
-		product.hltEleOr = product.hltEleOr || dataReader.triggerValues[i];
-		product.hltMuOr = product.hltMuOr || dataReader.triggerValues[i];
+
+		std::string triggerName = triggerNames[i];
+		if (triggerName.find("Ele") != std::string::npos) {
+			product.hltEleOr = product.hltEleOr || dataReader.triggerValues[i];
+		} else if (triggerName.find("Mu") != std::string::npos) {
+			product.hltMuOr = product.hltMuOr || dataReader.triggerValues[i];
+		}
 	}
 
 	for(int i = 0; i < dataReader.metTriggerValues.size(); ++i){

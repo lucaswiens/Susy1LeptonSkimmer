@@ -2,7 +2,6 @@
 
 ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile) {
 	Name = "ScaleFactorProducer";
-	outputFile.mkdir("BTagEfficiency");
 	//TH1::AddDirectory(false);
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 
@@ -19,15 +18,13 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 	muonEraAlias = scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.eraAlias");
 	muonTriggName = scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.triggerName");
 
-	bTagSyst = Utility::GetVector<std::string>(configTree, "Producer.Jet.BTagSystematics");
-	bTagSystLight = Utility::GetVector<std::string>(configTree, "Producer.Jet.LightTagSystematics");
-
+	bTagSyst = Utility::GetVector<std::string>(configTree, "Producer.Jet.BTagSystematic"); bTagSystLight = Utility::GetVector<std::string>(configTree, "Producer.Jet.LightTagSystematic");
 	////Set histograms
-	double ptCut = configTree.get<double>("Producer.Jet.Pt");
-	double etaCut = configTree.get<double>("Producer.Jet.Eta");
+	float ptCut = configTree.get<float>("Producer.Jet.Pt");
+	float etaCut = configTree.get<float>("Producer.Jet.Eta");
 
-	std::vector<double> etaBins = {-etaCut, -1.4, 1.4, etaCut};
-	std::vector<double> ptBins;
+	std::vector<float> etaBins = {-etaCut, -1.4, 1.4, etaCut};
+	std::vector<float> ptBins;
 
 	ptBins = {ptCut, 50, 70, 90, 200};
 
@@ -59,36 +56,38 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 	bTagEffLightMediumDeepCsv = std::make_shared<TH2D>("nMediumLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 	bTagEffLightTightDeepCsv = std::make_shared<TH2D>("nTightLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 
+	/*
 	for (const std::shared_ptr<TH2D> &hist : {bTotal, cTotal, lightTotal, bTagEffBLooseDeepJet, bTagEffBMediumDeepJet, bTagEffBTightDeepJet, bTagEffCLooseDeepJet, bTagEffCMediumDeepJet, bTagEffCTightDeepJet, bTagEffLightLooseDeepJet, bTagEffLightMediumDeepJet, bTagEffLightTightDeepJet, bTagEffBLooseDeepCsv, bTagEffBMediumDeepCsv, bTagEffBTightDeepCsv , bTagEffCLooseDeepCsv, bTagEffCMediumDeepCsv, bTagEffCTightDeepCsv, bTagEffLightLooseDeepCsv, bTagEffLightMediumDeepCsv, bTagEffLightTightDeepCsv}) {
 		hist->SetDirectory(outputFile.GetDirectory("BTagEfficiency"));
 	}
+	*/
 }
 
 void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
-	double electronPt, muonEta, muonPt;
+	float electronPt, muonEta, muonPt;
 
 	//Loop over selected electrons
 	for (int iElectron = 0; iElectron < product.nElectron; iElectron++) {
 		//electronPt = product.electronPt[iElectron] >= 30 ? product.electronPt[iElectron] : 30;
 		electronPt = product.electronPt[iElectron];
 
-		std::string recoPtThreshold = product.electronPt[iElectron] >= 20 ? "RecoAbove20" : "RecoBelow20";
+		std::string recoPtThreshold            = product.electronPt[iElectron] >= 20 ? "RecoAbove20" : "RecoBelow20";
 		product.electronRecoSf[iElectron]      = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sf", recoPtThreshold, product.electronEta[iElectron], electronPt});
-		product.electronVetoSf[iElectron]     = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sf", "Veto", product.electronEta[iElectron], electronPt});
+		product.electronVetoSf[iElectron]      = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sf", "Veto", product.electronEta[iElectron], electronPt});
 		product.electronMediumSf[iElectron]    = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sf", "Medium", product.electronEta[iElectron], electronPt});
 		product.electronTightSf[iElectron]     = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sf", "Tight", product.electronEta[iElectron], electronPt});
 		product.electronMediumMvaSf[iElectron] = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sf", "wp90iso", product.electronEta[iElectron], electronPt});
 		product.electronTightMvaSf[iElectron]  = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sf", "wp80iso", product.electronEta[iElectron], electronPt});
 
-		product.electronRecoSfUp[iElectron]   = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", recoPtThreshold, product.electronEta[iElectron], electronPt});
-		product.electronVetoSfUp[iElectron]     = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", "Veto", product.electronEta[iElectron], electronPt});
+		product.electronRecoSfUp[iElectron]      = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", recoPtThreshold, product.electronEta[iElectron], electronPt});
+		product.electronVetoSfUp[iElectron]      = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", "Veto", product.electronEta[iElectron], electronPt});
 		product.electronMediumSfUp[iElectron]    = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", "Medium", product.electronEta[iElectron], electronPt});
 		product.electronTightSfUp[iElectron]     = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", "Tight", product.electronEta[iElectron], electronPt});
 		product.electronMediumMvaSfUp[iElectron] = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", "wp90iso", product.electronEta[iElectron], electronPt});
 		product.electronTightMvaSfUp[iElectron]  = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfup", "wp80iso", product.electronEta[iElectron], electronPt});
 
 		product.electronRecoSfDown[iElectron]      = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfdown", recoPtThreshold, product.electronEta[iElectron], electronPt});
-		product.electronVetoSfDown[iElectron]     = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfdown", "Veto", product.electronEta[iElectron], electronPt});
+		product.electronVetoSfDown[iElectron]      = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfdown", "Veto", product.electronEta[iElectron], electronPt});
 		product.electronMediumSfDown[iElectron]    = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfdown", "Medium", product.electronEta[iElectron], electronPt});
 		product.electronTightSfDown[iElectron]     = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfdown", "Tight", product.electronEta[iElectron], electronPt});
 		product.electronMediumMvaSfDown[iElectron] = electronSf->at("UL-Electron-ID-SF")->evaluate({electronEraAlias, "sfdown", "wp90iso", product.electronEta[iElectron], electronPt});
@@ -123,9 +122,14 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 		product.muonTriggerSfDown[iMuon]  = muonSf->at(muonTriggName)->evaluate({muonEraAlias, muonEta, muonPt, "systdown"});
 	}
 
-	//Btag efficiency and Sf
+	/*######################################################################################################
+	#   Btag efficiency and Sf                                                                             #
+	#   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagSFMethods#1a_Event_reweighting_using_scale        #
+	#   Due to large file sizes, only store the systematic variations of the recommended DeepJet bTagger   #
+	#   For comparison, store both DeepJet and DeepCSV (not really necessary)                              #
+	######################################################################################################*/
 	for (int iJet = 0; iJet < product.nJet; iJet++) {
-		//btag Sf
+		// btag Sf
 		int flav = (std::abs(product.jetPartFlav[iJet]) == 4 || std::abs(product.jetPartFlav[iJet]) == 5) ? std::abs(product.jetPartFlav[iJet]) : 0;
 		std::string postFix = flav != 0 ? "_comb" : "_incl";
 

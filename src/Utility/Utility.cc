@@ -11,15 +11,15 @@ std::vector<std::string> Utility::GetKeys(const boost::property_tree::ptree &tre
 	return keys;
 };
 
-double Utility::DeltaPhi(double phi1, double phi2) {
-	double deltaPhi = phi1 - phi2;
+float Utility::DeltaPhi(float phi1, float phi2) {
+	float deltaPhi = phi1 - phi2;
 	while (deltaPhi >  M_PI) deltaPhi -= 2 * M_PI;
 	while (deltaPhi < -M_PI) deltaPhi += 2 * M_PI;
 	return deltaPhi;
 }
 
-double Utility::DeltaR(const double &eta1, const double &phi1, const double &eta2, const double &phi2) {
-	double deltaEta = eta1 - eta2;
-	double deltaPhi = Utility::DeltaPhi(phi1, phi2);
+float Utility::DeltaR(const float &eta1, const float &phi1, const float &eta2, const float &phi2) {
+	float deltaEta = eta1 - eta2;
+	float deltaPhi = Utility::DeltaPhi(phi1, phi2);
 	return std::sqrt(deltaPhi * deltaPhi + deltaEta * deltaEta);
 }

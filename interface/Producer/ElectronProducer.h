@@ -15,7 +15,7 @@ class ElectronProducer : public BaseProducer {
 	private:
 		//Cut Variables
 		int era;
-		double electronGoodPtCut, electronVetoPtCut, electronEtaCut, electronGoodIsoCut, electronVetoIsoCut, electronAntiIsoCut;
+		float electronGoodPtCut, electronVetoPtCut, electronEtaCut, electronGoodIsoCut, electronVetoIsoCut, electronAntiIsoCut;
 		int electronGoodNumberOfLostHitsCut;
 		char electronGoodCutBasedIdCut, electronVetoCutBasedIdCut, electronAntiIsCutBasedIdCut, electronAntiIsNotCutBasedIdCut;
 	public:

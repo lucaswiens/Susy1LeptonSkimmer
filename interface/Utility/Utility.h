@@ -33,8 +33,8 @@ namespace Utility{
 	}
 
 	std::vector<std::string> GetKeys(const boost::property_tree::ptree &tree, const std::string path);
-	double DeltaPhi(double phi1, double phi2);
-	double DeltaR(const double &eta1, const double &phi1, const double &eta2, const double &phi2);
+	float DeltaPhi(float phi1, float phi2);
+	float DeltaR(const float &eta1, const float &phi1, const float &eta2, const float &phi2);
 }
 
 #endif

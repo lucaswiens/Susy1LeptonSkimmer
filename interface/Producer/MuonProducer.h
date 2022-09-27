@@ -16,7 +16,7 @@
 class MuonProducer : public BaseProducer {
 	private:
 		//Cut Variables
-		double muonGoodPtCut, muonVetoPtCut, muonEtaCut, muonGoodIsoCut, muonVetoIsoCut, muonAntiIsoCut, muonDxyCut, muonDzCut, muonSip3dCut;
+		float muonGoodPtCut, muonVetoPtCut, muonEtaCut, muonGoodIsoCut, muonVetoIsoCut, muonAntiIsoCut, muonDxyCut, muonDzCut, muonSip3dCut;
 		char muonGoodCutBasedIdCut, muonVetoCutBasedIdCut, muonAntiCutBasedIdCut;
 
 		//Muon scale corrector

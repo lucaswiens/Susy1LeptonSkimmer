@@ -20,10 +20,10 @@ class JetProducer : public BaseProducer {
 	private:
 		// Configuration Variables
 		bool isData, doSystematics, isUp, isJERSystematic, isJECSystematic, preVFP;
-		double jetPtCut, jetEtaCut;
+		float jetPtCut, jetEtaCut;
 
 		// Top quark and W boson mass
-		double pdgTopMass     = 172.76,
+		float pdgTopMass     = 172.76,
 			pdgWBosonMass = 80.379;
 
 		// JEC and JER from json library
@@ -31,15 +31,21 @@ class JetProducer : public BaseProducer {
 		std::string era, dataType, runPeriod, jerVersion, ak4Algorithm, ak8Algorithm;
 
 
-		//JEC/JER systematics
-		std::shared_ptr<JetCorrectionUncertainty> jetCorrectionUncertainty;
-		bool isJERsyst = false;
+		//JEC systematics
+		std::vector<std::string> jecSystematics;
+		std::map<std::string, std::shared_ptr<JetCorrectionUncertainty>> ak4CorrectionUncertainty, ak8CorrectionUncertainty;
+
+		//Classes for reading jet energy SF (Only needed for AK8 jets as the ak4 can be done with the correction set)
+		JME::JetParameters jetParameter;
+		JME::JetResolution resolutionAk8;
+		JME::JetResolutionScaleFactor resolutionSfAk8;
 
 		// Btag Map
-		std::map<char, double> deepCsvBTagMap, deepJetBTagMap;
+		std::map<char, float> deepCsvBTagMap, deepJetBTagMap;
 
-		double CorrectEnergy(const double &pt, const double &eta, const double &rho, const double &area);
-		double SmearEnergy(DataReader &dataReader, const double &jetPtCorrected, const bool &isAk4);
+		float CorrectEnergy(const float &pt, const float &eta, const float &rho, const float &area);
+		float SmearEnergy(DataReader &dataReader, const float &jetPtCorrected, const bool &isAk4);
+		float SmearFatEnergy(DataReader &dataReader, const float &jetPtCorrected);
 
 	public:
 		JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product);

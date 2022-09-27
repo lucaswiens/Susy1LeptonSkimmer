@@ -7,13 +7,13 @@ GenLevelProducer::GenLevelProducer(const pt::ptree &configTree, const pt::ptree 
 void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	ROOT::Math::PtEtaPhiMVector leptonP4;
 	ROOT::Math::PtEtaPhiMVector neutrinoP4;
-	double maxLeptonPt;
+	float maxLeptonPt;
 	int genPartCounter = 0, genLeptonCounter = 0, genTauCounter = 0, genLeptonFromTauCounter = 0, genWCounter = 0, genMatchedWCounter = 0, genNeutrinoCounter = 0, genTopCounter = 0;
 	std::vector<int> tauLeptonIndices;
 	dataReader.ReadGenEntry();
 	for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
 		dataReader.GetGenValues(iGen);
-		const double leptonPt = dataReader.genPt;
+		const float leptonPt = dataReader.genPt;
 
 
 		/*#################################################################################################
@@ -41,27 +41,27 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 				genTauCounter++;
 			} else {
 				// lepton Pt already read
-				const double leptonPhi  = dataReader.genPhi;
-				const double leptonEta  = dataReader.genEta;
-				const double leptonMass = dataReader.genMass;
+				const float leptonPhi  = dataReader.genPhi;
+				const float leptonEta  = dataReader.genEta;
+				const float leptonMass = dataReader.genMass;
 				const int leptonStatus = dataReader.genStatus;
 
 				const int motherIndex = dataReader.genMotherIndex;
 				dataReader.GetGenValues(motherIndex); // Read Mother Info
-				const double motherPt   = dataReader.genPt;
-				const double motherPhi  = dataReader.genPhi;
-				const double motherEta  = dataReader.genEta;
-				const double motherMass = dataReader.genMass;
+				const float motherPt   = dataReader.genPt;
+				const float motherPhi  = dataReader.genPhi;
+				const float motherEta  = dataReader.genEta;
+				const float motherMass = dataReader.genMass;
 				const int motherStatus  = dataReader.genStatus;
 				const int motherPdgId   = dataReader.genPdgId;
 				product.genLepMotherPdgId[genLeptonCounter] = motherPdgId;
 
 				const int grandMotherIndex = dataReader.genMotherIndex;
 				dataReader.GetGenValues(grandMotherIndex); // Read GrandMother Info
-				const double grandMotherPt   = dataReader.genPt;
-				const double grandMotherPhi  = dataReader.genPhi;
-				const double grandMotherEta  = dataReader.genEta;
-				const double grandMotherMass = dataReader.genMass;
+				const float grandMotherPt   = dataReader.genPt;
+				const float grandMotherPhi  = dataReader.genPhi;
+				const float grandMotherEta  = dataReader.genEta;
+				const float grandMotherMass = dataReader.genMass;
 				const int grandMotherStatus  = dataReader.genStatus;
 				const int grandMotherPdgId   = dataReader.genPdgId;
 				product.genLepGrandMotherPdgId[genLeptonCounter] = grandMotherPdgId;
@@ -79,10 +79,10 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 						const int neutrinoMotherIndex = dataReader.genMotherIndex;
 						const int statusNeutrino = dataReader.genStatus;
 						if (neutrinoMotherIndex == motherIndex && statusNeutrino == 23) { // Has the same mother as the lepton and the neutrino status
-							const double neutrinoPt   = dataReader.genPt;
-							const double neutrinoPhi  = dataReader.genPhi;
-							const double neutrinoEta  = dataReader.genEta;
-							const double neutrinoMass = dataReader.genMass;
+							const float neutrinoPt   = dataReader.genPt;
+							const float neutrinoPhi  = dataReader.genPhi;
+							const float neutrinoEta  = dataReader.genEta;
+							const float neutrinoMass = dataReader.genMass;
 
 							leptonP4 = ROOT::Math::PtEtaPhiMVector(leptonPt, leptonEta, leptonPhi, leptonMass);
 							neutrinoP4 = ROOT::Math::PtEtaPhiMVector(neutrinoPt, neutrinoEta, neutrinoPhi, neutrinoMass);
@@ -113,11 +113,11 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 
 		for (int iTau : tauLeptonIndices) {
 			dataReader.GetGenValues(iTau);
-			const double &tauPt   = dataReader.genPt;
-			const double &tauPhi  = dataReader.genPhi;
-			const double &tauEta  = dataReader.genEta;
-			const double &tauMass = dataReader.genMass;
-			const double &tauPdgId = dataReader.genPdgId;
+			const float &tauPt   = dataReader.genPt;
+			const float &tauPhi  = dataReader.genPhi;
+			const float &tauEta  = dataReader.genEta;
+			const float &tauMass = dataReader.genMass;
+			const float &tauPdgId = dataReader.genPdgId;
 
 			if (maxLeptonPt >= 25 && tauPt < 10) { product.leptonsInAcceptance = false;}
 			if (maxLeptonPt < 25 && tauPt < 5) { product.leptonsInAcceptance = false;}

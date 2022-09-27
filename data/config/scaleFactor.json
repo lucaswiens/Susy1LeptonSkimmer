@@ -100,11 +100,19 @@
 			}
 		},
 
-		"JECUNC" : {
-			"2016PreVFP"  : "2016PreVFP/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt",
-			"2016PostVFP" : "2016PostVFP/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt",
-			"2017"        : "2017/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt",
-			"2018"        : "2018/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt"
+		"JECSystematic" : {
+			"AK4" : {
+				"2016PreVFP"  : "2016PreVFP/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt",
+				"2016PostVFP" : "2016PostVFP/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt",
+				"2017"        : "2017/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt",
+				"2018"        : "2018/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt"
+			},
+			"AK8" : {
+				"2016PreVFP"  : "2016PreVFP/Summer19UL16APV_V7_MC_UncertaintySources_AK8PFchs.txt",
+				"2016PostVFP" : "2016PostVFP/Summer19UL16_V7_MC_UncertaintySources_AK8PFchs.txt",
+				"2017"        : "2017/Summer19UL17_V5_MC_UncertaintySources_AK8PFchs.txt",
+				"2018"        : "2018/Summer19UL18_V5_MC_UncertaintySources_AK8PFchs.txt"
+			}
 		},
 
 		"JME" : {

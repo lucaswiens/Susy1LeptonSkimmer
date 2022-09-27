@@ -1,6 +1,2 @@
 #!/bin/bash
-#testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/TTJets_TuneCP5_RunIISummer19UL16NanoAODv2.root    "TTJets_TuneCP5_RunIISummer19UL16NanoAODv2" False False 2016 "m" "722.8" "1"  $1
-#testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/TTJets_TuneCP5_RunIISummer19UL16NanoAODAPVv2.root "TTJets_TuneCP5_RunIISummer19UL16NanoAODAPVv2" False False 2016 "m" "722.8" "1"  $1
-
-testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/RunIISummer20UL17NanoAODv9_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_NANOAODSIM_106X_mc2017_realistic_v9-v1.root TTJets False False 2017 m 722.8 1 ${1}
-#testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/RunIISummer20UL17NanoAODv9_WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8_NANOAODSIM_106X_mc2017_realistic_v9-v1.root WJets_HT100_200 False False 2017 m 123321 1 ${1}
+testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/RunIISummer20UL17NanoAODv9_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_NANOAODSIM_106X_mc2017_realistic_v9-v1.root TTJets False 2017 m 722.8 1 ${1}

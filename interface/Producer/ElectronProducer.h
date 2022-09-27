@@ -2,7 +2,6 @@
 #define ELECTRONPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
-//#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
 #include <Math/LorentzVector.h>
 #include <Math/PtEtaPhiM4D.h>

@@ -4,15 +4,13 @@ TARGETDIR=${PWD##*/}
 INFILE=$1
 OUT=$2
 ISDATA=$3
-DOSYSTEMATICS=$4
-ERA=$5
-RUNPERIOD=$6
-XSECTION=$7
-JOB=$8
+ERA=$4
+RUNPERIOD=$5
+XSECTION=$6
+JOB=$7
 echo INFILE         $INFILE
 echo OUT            $OUT
 echo ISDATA         $ISDATA
-echo DOSYSTEMATICS  $DOSYSTEMATICS
 echo ERA            $ERA
 echo RUNPERIOD      $RUNPERIOD
 echo XSECTION       $XSECTION
@@ -37,6 +35,5 @@ export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
 mkdir -p $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
 cd $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
 pwd
-echo NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION
-NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION
-
+echo NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $ERA $RUNPERIOD $XSECTION
+NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $ERA $RUNPERIOD $XSECTION

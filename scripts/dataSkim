@@ -1,3 +1,2 @@
 #!/bin/bash
-testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/Run2017C_SingleMuon_NANOAOD_UL2017_MiniAODv2_NanoAODv9-v1_280000_BC5C703F-4822-4049-80D7-53A6A8F80D53.root "SingleMuon" True False 2017 "C" 1 1 $1
-
+testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/Run2017C_SingleMuon_NANOAOD_UL2017_MiniAODv2_NanoAODv9-v1_280000_BC5C703F-4822-4049-80D7-53A6A8F80D53.root "SingleMuon" True 2017 "C" 1 1 $1

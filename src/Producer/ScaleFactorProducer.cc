@@ -55,12 +55,6 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 	bTagEffLightLooseDeepCsv = std::make_shared<TH2D>("nLooseLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 	bTagEffLightMediumDeepCsv = std::make_shared<TH2D>("nMediumLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 	bTagEffLightTightDeepCsv = std::make_shared<TH2D>("nTightLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-
-	/*
-	for (const std::shared_ptr<TH2D> &hist : {bTotal, cTotal, lightTotal, bTagEffBLooseDeepJet, bTagEffBMediumDeepJet, bTagEffBTightDeepJet, bTagEffCLooseDeepJet, bTagEffCMediumDeepJet, bTagEffCTightDeepJet, bTagEffLightLooseDeepJet, bTagEffLightMediumDeepJet, bTagEffLightTightDeepJet, bTagEffBLooseDeepCsv, bTagEffBMediumDeepCsv, bTagEffBTightDeepCsv , bTagEffCLooseDeepCsv, bTagEffCMediumDeepCsv, bTagEffCTightDeepCsv, bTagEffLightLooseDeepCsv, bTagEffLightMediumDeepCsv, bTagEffLightTightDeepCsv}) {
-		hist->SetDirectory(outputFile.GetDirectory("BTagEfficiency"));
-	}
-	*/
 }
 
 void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -142,42 +136,27 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 		product.jetDeepJetTightSf[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({"central", "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
 
 		for (int bSyst = 0; bSyst < bTagSyst.size(); ++bSyst) {
-			std::string shiftUp = flav != 0 ? "up_" + bTagSyst.at(bSyst) : "central",
-				shiftDown = flav != 0 ? "down_" + bTagSyst.at(bSyst) : "central";
-
-			product.jetDeepCsvLooseSfUp.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftUp, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvLooseSfDown.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftDown, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvMediumSfUp.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftUp, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvMediumSfDown.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftDown, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvTightSfUp.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftUp, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvTightSfDown.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftDown, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-
-			product.jetDeepJetLooseSfUp.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetLooseSfDown.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetMediumSfUp.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetMediumSfDown.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetTightSfUp.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetTightSfDown.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			std::string shiftUp = flav != 0 ? "up_" + bTagSyst[bSyst] : "central",
+				shiftDown = flav != 0 ? "down_" + bTagSyst[bSyst] : "central";
+			product.jetDeepJetLooseSfUp[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetLooseSfDown[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetMediumSfUp[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetMediumSfDown[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetTightSfUp[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetTightSfDown[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
 		}
 
 		for (int bSyst = 0; bSyst < bTagSystLight.size(); ++bSyst) {
-			std::string shiftUp = flav == 0 ? "up_" + bTagSyst.at(bSyst) : "central",
-						shiftDown = flav == 0 ? "down_" + bTagSyst.at(bSyst) : "central";
-
-			product.jetDeepCsvLooseLightSfUp.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftUp, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvLooseLightSfDown.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftDown, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvMediumLightSfUp.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftUp, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvMediumLightSfDown.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftDown, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvTightLightSfUp.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftUp, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepCsvTightLightSfDown.at(bSyst)[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({shiftDown, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-
-			product.jetDeepJetLooseLightSfUp.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetLooseLightSfDown.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetMediumLightSfUp.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetMediumLightSfDown.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetTightLightSfUp.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-			product.jetDeepJetTightLightSfDown.at(bSyst)[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			std::string shiftUp = flav == 0 ? "up_" + bTagSyst[bSyst] : "central",
+				shiftDown = flav == 0 ? "down_" + bTagSyst[bSyst] : "central";
+			product.jetDeepJetLooseLightSfUp[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetLooseLightSfDown[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetMediumLightSfUp[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetMediumLightSfDown[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetTightLightSfUp[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftUp, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
+			product.jetDeepJetTightLightSfDown[bSyst][iJet] = bTagSf->at("deepJet" + postFix)->evaluate({shiftDown, "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
 		}
+
 		if (std::abs(product.jetPartFlav[iJet]) == 5) {
 			bTotal->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 
@@ -254,4 +233,34 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 	}
 }
 
-void ScaleFactorProducer::EndJob(TFile &) {}
+void ScaleFactorProducer::EndJob(TFile &file) {
+	bTotal->Write();
+	cTotal->Write();
+	lightTotal->Write();
+
+	bTagEffBLooseDeepJet->Write();
+	bTagEffBMediumDeepJet->Write();
+	bTagEffBTightDeepJet->Write();
+
+	bTagEffCLooseDeepJet->Write();
+	bTagEffCMediumDeepJet->Write();
+	bTagEffCTightDeepJet->Write();
+
+	bTagEffLightLooseDeepJet->Write();
+	bTagEffLightMediumDeepJet->Write();
+	bTagEffLightTightDeepJet->Write();
+
+	bTagEffBLooseDeepCsv->Write();
+	bTagEffBMediumDeepCsv->Write();
+	bTagEffBTightDeepCsv ->Write();
+
+	bTagEffCLooseDeepCsv->Write();
+	bTagEffCMediumDeepCsv->Write();
+	bTagEffCTightDeepCsv->Write();
+
+	bTagEffLightLooseDeepCsv->Write();
+	bTagEffLightMediumDeepCsv->Write();
+	bTagEffLightTightDeepCsv->Write();
+
+
+}

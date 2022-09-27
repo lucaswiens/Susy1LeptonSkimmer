@@ -1,4 +1,4 @@
-#!/cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_6_8/external/slc7_amd64_gcc700/bin/python
+#!/cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_6_8/external/slc7_amd64_gcc700/bin/python3
 import sys, os
 import argparse
 import subprocess
@@ -62,7 +62,7 @@ def GetOSVariable(Var):
 	return variable
 
 if __name__=="__main__":
-	date = GetOSVariable("DATE")#subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).replace("\n", "")
+	date = GetOSVariable("DATE")
 	cmsswBase = GetOSVariable("CMSSW_BASE")
 	#redirector = "root://cms-xrd-global.cern.ch/"
 	redirector = "root://xrootd-cms.infn.it/"
@@ -70,7 +70,6 @@ if __name__=="__main__":
 	parser = argparse.ArgumentParser(description="Runs a NAF batch system for nanoAOD", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-i", "--input-file", required=True, help="Path to the file containing a list of samples.")
 	parser.add_argument("-o", "--output", help="Path to the output directory", default = cmsswBase + "/" "Batch/" + date)
-	parser.add_argument("--do-systematics", help="Perform systematic variations", default = "False") #vs. localSkim for faster skimming
 
 	args = parser.parse_args()
 
@@ -80,18 +79,6 @@ if __name__=="__main__":
 	args.output = args.output + "/" + outputDirName
 	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim"
 
-	#if  os.path.exists(args.output):
-	if False:
-		keepDirectory = raw_input("Output directory already exists: " + str(args.output) + " Do you want to remove it [y/n]: ")
-		if ( "y" in keepDirectory or "Y" in keepDirectory or "Yes" in keepDirectory or "yes" in keepDirectory):
-			shutil.rmtree(str(args.output))
-			os.makedirs(str(args.output))
-			os.makedirs(str(args.output) + "/logs")
-			os.makedirs(str(args.output) + "/error")
-			os.makedirs(str(args.output) + "/output")
-		elif ( "N" in keepDirectory or  "n" in keepDirectory or  "No" in keepDirectory or "no" in keepDirectory): print(str(args.output) , "will be ovewritten by the job output -- take care")
-		else:
-			raise ValueError( "invalid input, answer with \"Yes\" or \"No\"")
 	try:
 		os.makedirs(str(args.output))
 		os.makedirs(str(args.output) + "/logs")
@@ -100,13 +87,18 @@ if __name__=="__main__":
 	except:
 		print("Output Dir already exists")
 
-
-	submitFileContent = open(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/condor.submit", "r").read()
-	submitFileContent = submitFileContent.replace("@EXECUTABLE", executable)
-	submitFileContent = submitFileContent.replace("@OUT", args.output)
-
 	submitFile = open(args.output + "/condor.submit", "w")
-	submitFile.write(submitFileContent)
+	submitFile.write(f"executable = {cmsswBase}/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim\n")
+	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(isData) $(year) $(runPeriod) $(Process) $(cmsswBase)\n")
+	submitFile.write(f"\n")
+	submitFile.write(f"universe       = vanilla\n")
+	submitFile.write(f"request_memory = 500 MB\n")
+	submitFile.write(f"\n")
+	submitFile.write(f"output = {args.output}/output/job$(Cluster)_$(Process).stdout\n")
+	submitFile.write(f"error  = {args.output}/error/job$(Cluster)_$(Process).stderr\n")
+	submitFile.write(f"log    = {args.output}/logs/job$(Cluster)_$(Process).log\n")
+	submitFile.write(f"\n")
+	submitFile.write(f"queue inputFile outputFile isData year runPeriod cmsswBase from arguments.md\n")
 	submitFile.close()
 
 	sampleFile = open(args.input_file, "r")
@@ -119,8 +111,7 @@ if __name__=="__main__":
 			sampleName = sample.replace("/", "_")[1:]
 
 			for filename in fileList:
-				#print(filename.decode('utf-8'))
-				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(isData) + " " + str(args.do_systematics) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
+				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(isData) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
 	sampleFile.close()
 	argumentFile.close()
 

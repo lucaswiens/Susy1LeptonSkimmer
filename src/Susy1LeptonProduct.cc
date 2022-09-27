@@ -346,7 +346,8 @@ void Susy1LeptonProduct::WriteMetaData(TFile &outputFile) {
 	metaData.Branch("PreVFP", &preVFP);
 	metaData.Branch("IsData", &isData);
 	metaData.Branch("SampleName", &sampleName);
-	if (isData) { metaData.Branch("runPeriod", &runPeriod);
+	if (isData) {
+		metaData.Branch("runPeriod", &runPeriod);
 	} else {
 		metaData.Branch("xSection", &xSection);
 		if (era == 2016) {

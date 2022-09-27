@@ -2,17 +2,15 @@
 INFILE=$1
 OUT=$2
 ISDATA=$3
-DOSYSTEMATICS=$4
-ERA=$5
-RUNPERIOD=$6
-XSECTION=$7
-JOB=$8
-NMAXEVENTS=$9
+ERA=$4
+RUNPERIOD=$5
+XSECTION=$6
+JOB=$7
+NMAXEVENTS=$8
 
 echo "INFILE        = " $INFILE
 echo "OUT           = " $OUT
 echo "ISDATA        = " $ISDATA
-echo "DOSYSTEMATICS = " $DOSYSTEMATICS
 echo "ERA           = " $ERA
 echo "RUNPERIOD     = " $RUNPERIOD
 echo "XSECTION      = " $XSECTION
@@ -25,8 +23,8 @@ cd $CMSSW_BASE/Testing/`date +"%Y_%m_%d"`/$OUT
 ##Do the skimming
 echo
 echo "Executing:"
-echo "NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION $NMAXEVENTS"
+echo "NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $ERA $RUNPERIOD $XSECTION $NMAXEVENTS"
 echo
-NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $DOSYSTEMATICS $ERA $RUNPERIOD $XSECTION $NMAXEVENTS
+NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $ERA $RUNPERIOD $XSECTION $NMAXEVENTS
 
 cd $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer

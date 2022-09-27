@@ -293,6 +293,15 @@
 		"Jet": {
 			"Pt" : 20,
 			"Eta" : 2.4,
+			"JECSystematic" : [
+				"Total",
+				"SubTotalPileUp",
+				"SubTotalRelative",
+				"SubTotalPt",
+				"SubTotalScale",
+				"FlavorQCD",
+				"TimePtEta"
+			],
 			"DeepCSV" : {
 				"2016PreVFP": {
 					"Loose"  : 0.2027,
@@ -337,7 +346,7 @@
 					"Tight"  : 0.7100
 				}
 			},
-			"BTagSystematics" : [
+			"BTagSystematic" : [
 				"uncorrelated",
 				"correlated",
 				"isr",
@@ -351,7 +360,7 @@
 				"topmass",
 				"type3"
 			],
-			"LightTagSystematics": [
+			"LightTagSystematic": [
 				"uncorrelated",
 				"correlated"
 			]

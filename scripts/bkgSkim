@@ -1,2 +1,0 @@
-#!/bin/bash
-testSkim $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/RunIISummer20UL17NanoAODv9_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_NANOAODSIM_106X_mc2017_realistic_v9-v1.root TTJets False 2017 m 722.8 1 ${1}

@@ -1,9 +1,10 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 #include<iostream>
 
-Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile) :
+Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const bool &isFastSim, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile) :
 	era(era),
 	isData(isData),
+	isFastSim(isFastSim),
 	sampleName(sampleName),
 	runPeriod(runPeriod),
 	xSection(xSection) {
@@ -95,7 +96,6 @@ void Susy1LeptonProduct::RegisterMetFilter (const std::vector<std::string> &metF
 }
 
 void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees, const pt::ptree &configTree) {
-	int counter = 0;
 	/*#########################################################################################
 	#   Set Branches of output tree                                                           #
 	#   See the following link for type definitions                                           #
@@ -142,6 +142,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 
 		tree->Branch("MuonCharge", muonCharge.data(), "MuonCharge[nMuon]/I");
 		tree->Branch("MuonPdgId", muonPdgId.data(), "MuonPdgId[nMuon]/I");
+		tree->Branch("MuonGenMatchedIndex", muonMass.data(), "MuonGenMatchedIndex[nMuon]/I");
 		tree->Branch("MuonCutBasedId", muonCutBasedId.data(), "MuonCutBasedId[nMuon]/I");
 
 		tree->Branch("nElectron", &nElectron);
@@ -209,6 +210,8 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetEta", jetEta.data(), "JetEta[nJet]/F");
 		tree->Branch("JetPhi", jetPhi.data(), "JetPhi[nJet]/F");
 		tree->Branch("JetMass", jetMass.data(), "JetMass,[nJet]/F");
+		tree->Branch("JetMass_JERUp", jetMassJerUp.data(), "JetMass_JERUp[nJet]/F");
+		tree->Branch("JetMass_JERDown", jetMassJerDown.data(), "JetMass_JERDown[nJet]/F");
 		//tree->Branch("JetDeepJet", jetDeepJet.data(), "JetDeepJet,[nJet]/F");
 		tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/O");
 		tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/O");
@@ -296,8 +299,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 				tree->Branch(("JetPt_" + syst + "Up").c_str (), jetPtJecUp[iSyst].data(), ("JetPt_" + syst + "Up[nJet]/F").c_str ());
 				tree->Branch(("JetPt_" + syst + "Down").c_str (), jetPtJecDown[iSyst].data(), ("JetPt_" + syst + "Down[nJet]/F").c_str ());
 				iSyst++;
-				std::cout << counter<< std::endl; counter ++ ;
-
 			}
 
 			iSyst = 0;
@@ -345,6 +346,7 @@ void Susy1LeptonProduct::WriteMetaData(TFile &outputFile) {
 	metaData.Branch("Era", &era);
 	metaData.Branch("PreVFP", &preVFP);
 	metaData.Branch("IsData", &isData);
+	metaData.Branch("IsFastSim", &isFastSim);
 	metaData.Branch("SampleName", &sampleName);
 	if (isData) {
 		metaData.Branch("runPeriod", &runPeriod);

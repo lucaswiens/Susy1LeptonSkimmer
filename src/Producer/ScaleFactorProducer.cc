@@ -43,18 +43,6 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 	bTagEffLightLooseDeepJet = std::make_shared<TH2D>("nLooseLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 	bTagEffLightMediumDeepJet = std::make_shared<TH2D>("nMediumLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 	bTagEffLightTightDeepJet = std::make_shared<TH2D>("nTightLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-
-	bTagEffBLooseDeepCsv = std::make_shared<TH2D>("nLooseBbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffBMediumDeepCsv = std::make_shared<TH2D>("nMediumBbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffBTightDeepCsv  = std::make_shared<TH2D>("nTightBbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-
-	bTagEffCLooseDeepCsv = std::make_shared<TH2D>("nLooseCbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffCMediumDeepCsv = std::make_shared<TH2D>("nMediumCbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffCTightDeepCsv = std::make_shared<TH2D>("nTightCbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-
-	bTagEffLightLooseDeepCsv = std::make_shared<TH2D>("nLooseLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffLightMediumDeepCsv = std::make_shared<TH2D>("nMediumLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffLightTightDeepCsv = std::make_shared<TH2D>("nTightLightbTagDeepCsv", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 }
 
 void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -120,16 +108,11 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 	#   Btag efficiency and Sf                                                                             #
 	#   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagSFMethods#1a_Event_reweighting_using_scale        #
 	#   Due to large file sizes, only store the systematic variations of the recommended DeepJet bTagger   #
-	#   For comparison, store both DeepJet and DeepCSV (not really necessary)                              #
 	######################################################################################################*/
 	for (int iJet = 0; iJet < product.nJet; iJet++) {
 		// btag Sf
 		int flav = (std::abs(product.jetPartFlav[iJet]) == 4 || std::abs(product.jetPartFlav[iJet]) == 5) ? std::abs(product.jetPartFlav[iJet]) : 0;
 		std::string postFix = flav != 0 ? "_comb" : "_incl";
-
-		product.jetDeepCsvLooseSf[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({"central", "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-		product.jetDeepCsvMediumSf[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({"central", "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
-		product.jetDeepCsvTightSf[iJet] = bTagSf->at("deepCSV" + postFix)->evaluate({"central", "T", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
 
 		product.jetDeepJetLooseSf[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({"central", "L", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
 		product.jetDeepJetMediumSf[iJet] = bTagSf->at("deepJet" + postFix)->evaluate({"central", "M", flav, std::abs(product.jetEta[iJet]), product.jetPt[iJet]});
@@ -170,17 +153,6 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 			} else if (product.jetDeepJetId[iJet] >= 1) {
 				bTagEffBLooseDeepJet->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 			}
-
-			if (product.jetDeepCsvId[iJet] >= 3) {
-				bTagEffBLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffBMediumDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffBTightDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			} else if (product.jetDeepCsvId[iJet] >= 2) {
-				bTagEffBLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffBMediumDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			} else if (product.jetDeepCsvId[iJet] >= 1) {
-				bTagEffBLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			}
 		} else if (std::abs(product.jetPartFlav[iJet]) == 4) {
 			cTotal->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 
@@ -194,17 +166,6 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 			} else if (product.jetDeepJetId[iJet] >= 1) {
 				bTagEffCLooseDeepJet->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 			}
-
-			if (product.jetDeepCsvId[iJet] >= 3) {
-				bTagEffCLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffCMediumDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffCTightDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			} else if (product.jetDeepCsvId[iJet] >= 2) {
-				bTagEffCLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffCMediumDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			} else if (product.jetDeepCsvId[iJet] >= 1) {
-				bTagEffCLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			}
 		} else {
 			lightTotal->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 
@@ -217,17 +178,6 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 				bTagEffLightMediumDeepJet->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 			} else if (product.jetDeepJetId[iJet] >= 1) {
 				bTagEffLightLooseDeepJet->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			}
-
-			if (product.jetDeepCsvId[iJet] >= 3) {
-				bTagEffLightLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffLightMediumDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffLightTightDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			} else if (product.jetDeepCsvId[iJet] >= 2) {
-				bTagEffLightLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-				bTagEffLightMediumDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
-			} else if (product.jetDeepCsvId[iJet] >= 1) {
-				bTagEffLightLooseDeepCsv->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 			}
 		}
 	}
@@ -249,18 +199,4 @@ void ScaleFactorProducer::EndJob(TFile &file) {
 	bTagEffLightLooseDeepJet->Write();
 	bTagEffLightMediumDeepJet->Write();
 	bTagEffLightTightDeepJet->Write();
-
-	bTagEffBLooseDeepCsv->Write();
-	bTagEffBMediumDeepCsv->Write();
-	bTagEffBTightDeepCsv ->Write();
-
-	bTagEffCLooseDeepCsv->Write();
-	bTagEffCMediumDeepCsv->Write();
-	bTagEffCTightDeepCsv->Write();
-
-	bTagEffLightLooseDeepCsv->Write();
-	bTagEffLightMediumDeepCsv->Write();
-	bTagEffLightTightDeepCsv->Write();
-
-
 }

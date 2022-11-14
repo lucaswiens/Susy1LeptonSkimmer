@@ -20,26 +20,19 @@ def prepareArguments(sample):
 	isSignal = False
 	isUSER = False
 	year = "unknown"
-	runPeriod = "m"
-	isFastSim = False
+	runPeriod = "M"
 	if "RunIISummer20UL16" in str(sample) or "Run2016" in str(sample):
 		year = 2016
-		if "PUSummer16v3Fast" in str(sample): #TODO FIXME
-			isFastSim == True
-		else:
-			isFastSim == False
+		if "PUSummer16v3Fast" in str(sample): #FastSim
+			runPeriod = "S"
 	elif "RunIISummer20UL17" in str(sample) or "Run2017" in str(sample):
 		year = 2017
-		if "TuneCP2" in str(sample): #TODO FIXME
-			isFastSim == True
-		else:
-			isFastSim == False
+		if "TuneCP2" in str(sample): #FastSim
+			runPeriod = "S"
 	elif "RunIISummer20UL18" in str(sample) or "Run2018" in str(sample):
 		year = 2018
-		if "TuneCP2" in str(sample): #TODO FIXME
-			isFastSim == True
-		else:
-			isFastSim == False
+		if "TuneCP2" in str(sample): #FastSim
+			runPeriod = "S"
 	else:
 		print("Could not determine era of the sample:\n" + str(sample) + "\nCheck the prepareArguments function to configure it properly")
 		sys.exit(1)
@@ -51,7 +44,7 @@ def prepareArguments(sample):
 	if isData:
 		runPeriod = findall("Run201..", sample)[0][-1]
 	xSection = getXSection.GetXSection(sample)
-	return isData, isSignal, year, runPeriod, isFastSim, xSection
+	return year, runPeriod, xSection
 
 def GetOSVariable(Var):
 	try:
@@ -89,7 +82,7 @@ if __name__=="__main__":
 
 	submitFile = open(args.output + "/condor.submit", "w")
 	submitFile.write(f"executable = {cmsswBase}/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim\n")
-	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(isData) $(year) $(runPeriod) $(Process) $(cmsswBase)\n")
+	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(year) $(runPeriod) $(Process) $(cmsswBase)\n")
 	submitFile.write(f"\n")
 	submitFile.write(f"universe       = vanilla\n")
 	submitFile.write(f"request_memory = 500 MB\n")
@@ -98,7 +91,7 @@ if __name__=="__main__":
 	submitFile.write(f"error  = {args.output}/error/job$(Cluster)_$(Process).stderr\n")
 	submitFile.write(f"log    = {args.output}/logs/job$(Cluster)_$(Process).log\n")
 	submitFile.write(f"\n")
-	submitFile.write(f"queue inputFile outputFile isData year runPeriod cmsswBase from arguments.md\n")
+	submitFile.write(f"queue inputFile outputFile year runPeriod cmsswBase from arguments.md\n")
 	submitFile.close()
 
 	sampleFile = open(args.input_file, "r")
@@ -107,11 +100,11 @@ if __name__=="__main__":
 		sample = sample.strip()
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			fileList = findFileLocation(sample)
-			isData, isSignal, year, runPeriod, isFastSim, xSection = prepareArguments(sample)
+			year, runPeriod, xSection = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 
 			for filename in fileList:
-				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(isData) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
+				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
 	sampleFile.close()
 	argumentFile.close()
 

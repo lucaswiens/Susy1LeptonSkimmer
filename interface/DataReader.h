@@ -44,7 +44,7 @@ class DataReader {
 			*jetIdLeaf,
 			*jetMassLeaf, *jetPtLeaf, *jetEtaLeaf, *jetPhiLeaf,
 			*jetAreaLeaf, *jetRawFactorLeaf,
-			*jetDeepCsvLeaf, *jetDeepJetLeaf,
+			*jetDeepJetLeaf,
 			*rhoLeaf,
 			*metPhiLeaf, *metPtLeaf;
 		// Fat Jet Leafs
@@ -119,7 +119,7 @@ class DataReader {
 			jetPartFlav;
 		float jetMass, jetPt, jetEta, jetPhi,
 			jetArea, jetRawFactor,
-			jetDeepCsv, jetDeepJet,
+			jetDeepJet,
 			rho,
 			metPhi, metPt;
 

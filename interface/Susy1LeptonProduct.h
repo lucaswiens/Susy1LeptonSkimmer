@@ -12,14 +12,14 @@ namespace pt = boost::property_tree;
 class Susy1LeptonProduct {
 	private:
 		int era;
-		bool preVFP, isData, isUp;
+		bool preVFP, isData, isFastSim;
 		std::string eraSelector, sampleName;
 		char runPeriod;
 		float xSection, luminosity;
 
 		TTree metaData;
 	public:
-		Susy1LeptonProduct(const int &era, const bool &isData, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile);
+		Susy1LeptonProduct(const int &era, const bool &isData, const bool &isFastSim, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile);
 		void RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metFilterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
 		void RegisterMetFilter(const std::vector<std::string> &filterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
 		void RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees, const pt::ptree &configTree);
@@ -28,6 +28,7 @@ class Susy1LeptonProduct {
 		std::string GetEraSelector() { return eraSelector;}
 		bool GetIsPreVFP() {return preVFP;}
 		bool GetIsData() {return isData;}
+		bool GetIsFastSim() {return isFastSim;}
 		char GetRunPeriod() {return runPeriod;}
 
 		// Max value for static arrays, should use assert to enforce nObject < nMax, so you know when to increase nMax
@@ -49,7 +50,6 @@ class Susy1LeptonProduct {
 		std::array<bool, nMax> muonTightId, muonMediumId, muonLooseId,
 			muonMvaId, muonIsPfCand,
 			muonIsGood, muonIsVeto, muonIsAntiSelected;
-		std::vector<float> muonPtVector;
 
 		// Electron Inforamtion
 		int nElectron, nGoodElectron, nVetoElectron, nAntiSelectedElectron;
@@ -67,43 +67,33 @@ class Susy1LeptonProduct {
 			electronMediumMvaSf, electronMediumMvaSfUp, electronMediumMvaSfDown,
 			electronTightMvaSf, electronTightMvaSfUp, electronTightMvaSfDown;
 		std::array<int, nMax> electronCharge, electronCutBasedId, electronNLostHits;
-		std::array<bool, nMax> electronLooseMvaId, electronMediumMvaId, electronTightMvaId,
+		std::array<short, nMax> electronLooseMvaId, electronMediumMvaId, electronTightMvaId,
 			electronTightId, electronMediumId, electronLooseId, electronVetoId,
 			electronIsGood, electronIsVeto, electronIsAntiSelected,
 			electronConvVeto;
 
 		// Jet Inforamtion
 		int nJet,
-			nDeepCsvLooseBTag, nDeepCsvMediumBTag, nDeepCsvTightBTag,
 			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
 			jetId;
 		float rho, metPt, metPtJerUp, metPtJerDown, metPhi;
 		std::vector<float> metPtJecUp, metPtJecDown;
 		std::array<int, nMax> jetPartFlav,
-			jetDeepJetId, jetDeepCsvId;
+			jetDeepJetId;
 		std::array<float, nMax> jetPt, jetPtJerUp, jetPtJerDown,
 			jetMass, jetMassJerUp, jetMassJerDown,
 			jetEta, jetPhi,
-			jetDeepCsvLooseSf, jetDeepCsvMediumSf, jetDeepCsvTightSf,
-			jetDeepJetLooseSf, jetDeepJetMediumSf, jetDeepJetTightSf,
-			jetDeepCsvLooseLightSf, jetDeepCsvMediumLightSf, jetDeepCsvTightLightSf,
-			jetDeepJetLooseLightSf, jetDeepJetMediumLightSf, jetDeepJetTightLightSf,
 			jetArea,
-			jetDeepCsv, jetDeepJet;
+			jetDeepJetLooseSf, jetDeepJetMediumSf, jetDeepJetTightSf,
+			jetDeepJetLooseLightSf, jetDeepJetMediumLightSf, jetDeepJetTightLightSf,
+			jetDeepJet;
 		std::vector<std::array<float, nMax>> jetPtJecUp, jetPtJecDown,
 			jetMassJecUp, jetMassJecDown;
-		std::array<bool, nMax> jetDeepCsvLooseId, jetDeepCsvMediumId, jetDeepCsvTightId,
-			jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId;
-		std::vector<std::array<float, nMax>> jetDeepCsvLooseSfUp, jetDeepCsvLooseSfDown,
-		//std::array<float, nMax> jetDeepCsvLooseSfUp, jetDeepCsvLooseSfDown,
-			jetDeepCsvMediumSfUp, jetDeepCsvMediumSfDown,
-			jetDeepCsvTightSfUp, jetDeepCsvTightSfDown,
+		std::array<bool, nMax> jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId;
+		std::vector<std::array<float, nMax>>
 			jetDeepJetLooseSfUp, jetDeepJetLooseSfDown,
 			jetDeepJetMediumSfUp, jetDeepJetMediumSfDown,
 			jetDeepJetTightSfUp, jetDeepJetTightSfDown,
-			jetDeepCsvLooseLightSfUp, jetDeepCsvLooseLightSfDown,
-			jetDeepCsvMediumLightSfUp, jetDeepCsvMediumLightSfDown,
-			jetDeepCsvTightLightSfUp, jetDeepCsvTightLightSfDown,
 			jetDeepJetLooseLightSfUp, jetDeepJetLooseLightSfDown,
 			jetDeepJetMediumLightSfUp, jetDeepJetMediumLightSfDown,
 			jetDeepJetTightLightSfUp, jetDeepJetTightLightSfDown;

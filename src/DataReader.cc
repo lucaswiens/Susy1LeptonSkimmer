@@ -58,7 +58,6 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	jetEtaLeaf      = inputTree->GetLeaf("Jet_eta");
 	jetPhiLeaf      = inputTree->GetLeaf("Jet_phi");
 	jetAreaLeaf     = inputTree->GetLeaf("Jet_area");
-	jetDeepCsvLeaf  = inputTree->GetLeaf("Jet_btagDeepB");
 	jetDeepJetLeaf  = inputTree->GetLeaf("Jet_btagDeepFlavB");
 	if (!isData) {
 		jetPartFlavLeaf = inputTree->GetLeaf("Jet_partonFlavour");
@@ -267,7 +266,6 @@ void DataReader::ReadJetEntry() {
 	jetEtaLeaf->GetBranch()->GetEntry(entry);
 	jetPhiLeaf->GetBranch()->GetEntry(entry);
 	jetAreaLeaf->GetBranch()->GetEntry(entry);
-	jetDeepCsvLeaf->GetBranch()->GetEntry(entry);
 	jetDeepJetLeaf->GetBranch()->GetEntry(entry);
 	if (!isData) {
 		jetPartFlavLeaf->GetBranch()->GetEntry(entry);
@@ -283,7 +281,6 @@ void DataReader::GetJetValues(const int &index) {
 	jetEta = jetEtaLeaf->GetValue(index);
 	jetPhi = jetPhiLeaf->GetValue(index);
 	jetArea = jetAreaLeaf->GetValue(index);
-	jetDeepCsv = jetDeepCsvLeaf->GetValue(index);
 	jetDeepJet = jetDeepJetLeaf->GetValue(index);
 	if (!isData) {
 		jetPartFlav = jetPartFlavLeaf->GetValue(index);

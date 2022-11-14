@@ -31,7 +31,6 @@ ElectronProducer::ElectronProducer(const pt::ptree &configTree, const pt::ptree 
 
 void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	dataReader.ReadElectronEntry();
-	//product.nElectron = dataReader.nElectron;
 	assert(dataReader.nElectron < product.nMax);
 
 	int electronCounter = 0, goodElectronCounter = 0, vetoElectronCounter = 0, antiSelectedElectronCounter = 0;
@@ -97,24 +96,6 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.nLepton = product.nMuon + product.nElectron;
 	product.nGoodLepton = product.nGoodMuon + product.nGoodElectron;
 	product.nVetoLepton = product.nVetoMuon + product.nVetoElectron;
-
-	/* this could be moved to the DeltaPhiProducer or just removed
-	if (product.nLepton!=0 && false) { //nLepton can be 0 since unselected leptons are not counted
-		ROOT::Math::PtEtaPhiMVector leadingLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(0), Eta.at(0), Phi.at(0), Mass.at(0));
-		for (int i = 1; i < product.nLepton; i++){
-			ROOT::Math::PtEtaPhiMVector otherLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(i), Eta.at(i), Phi.at(i), Mass.at(i));
-			ROOT::Math::PtEtaPhiMVector diLeptonP4 = leadingLeptonP4 + otherLeptonP4;
-			dileptonMass[muonCounter] = diLeptonP4.M();
-		}
-	}
-	*/
 }
 
-void ElectronProducer::EndJob(TFile &file) {
-	//muonIdSFFile->Close();
-	//muonIsolationSFFile->Close();
-	//muonTriggerSFFile->Close();
-
-	//electronGSFSFFile->Close();
-	//electronMVASFFile->Close();
-}
+void ElectronProducer::EndJob(TFile &file) {}

@@ -32,9 +32,6 @@ MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFa
 }
 
 void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
-	//Initialize all variables as -999
-	product.muonPtVector.clear(); // Just for testing, this is required for vectors
-
 	dataReader.ReadMuonEntry();
 	product.nMuon = dataReader.nMuon;
 	assert(product.nMuon < product.nMax);
@@ -45,7 +42,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 
 		// Rochester Correction
 		int muonMatchedGenIndex = -999;
-		float dataScaleFactor = 1., mcScaleFactor = 1., scaleFactorUnc = 0.; // TODO think about how to do this better
+		float dataScaleFactor = 1., mcScaleFactor = 1., scaleFactorUnc = 0.;
 		if (!product.GetIsData()) {
 			muonMatchedGenIndex = dataReader.GetGenMatchedIndex(dataReader.muonPt, dataReader.muonPhi, dataReader.muonEta, 13, 0.4, 0.4);
 			if(muonMatchedGenIndex > 0){
@@ -72,7 +69,6 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 				!dataReader.muonIsPfCand)
 		{ continue;}
 
-		product.muonPtVector.push_back(muonPt);
 		product.muonPt[muonCounter] = muonPt;
 		product.muonEta[muonCounter] = dataReader.muonEta;
 		product.muonPhi[muonCounter] = dataReader.muonPhi;
@@ -108,18 +104,6 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 	product.nGoodMuon = goodMuonCounter;
 	product.nVetoMuon = vetoMuonCounter;
 	product.nAntiSelectedMuon = vetoMuonCounter;
-
-	/*
-	if (product.nLepton!=0 && false) { //nLepton can be 0 since unselected leptons are not counted
-		ROOT::Math::PtEtaPhiMVector leadingLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(0), Eta.at(0), Phi.at(0), Mass.at(0));
-		for (int i = 1; i < product.nLepton; i++){
-			ROOT::Math::PtEtaPhiMVector otherLeptonP4 = ROOT::Math::PtEtaPhiMVector(Pt.at(i), Eta.at(i), Phi.at(i), Mass.at(i));
-			ROOT::Math::PtEtaPhiMVector diLeptonP4 = leadingLeptonP4 + otherLeptonP4;
-			dileptonMass[muonCounter] = diLeptonP4.M();
-		}
-	}
-	*/
-
 }
 
 void MuonProducer::EndJob(TFile &file) { }

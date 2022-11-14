@@ -19,17 +19,14 @@ class JetProducer : public BaseProducer {
 
 	private:
 		// Configuration Variables
-		bool isData, doSystematics, isUp, isJERSystematic, isJECSystematic, preVFP;
 		float jetPtCut, jetEtaCut;
-
-		// Top quark and W boson mass
-		float pdgTopMass     = 172.76,
-			pdgWBosonMass = 80.379;
 
 		// JEC and JER from json library
 		std::unique_ptr<correction::CorrectionSet> ak4CorrectionSet, ak8CorrectionSet, jmeCorrectionSet;
 		std::string era, dataType, runPeriod, jerVersion, ak4Algorithm, ak8Algorithm;
 
+		// JEC for FastSim
+		std::shared_ptr<FactorizedJetCorrector> fastJetCorrectorAk4, fastJetCorrectorAk8;
 
 		//JEC systematics
 		std::vector<std::string> jecSystematics;
@@ -43,9 +40,9 @@ class JetProducer : public BaseProducer {
 		// Btag Map
 		std::map<char, float> deepCsvBTagMap, deepJetBTagMap;
 
-		float CorrectEnergy(const float &pt, const float &eta, const float &rho, const float &area);
-		float SmearEnergy(DataReader &dataReader, const float &jetPtCorrected, const bool &isAk4);
-		float SmearFatEnergy(DataReader &dataReader, const float &jetPtCorrected);
+		float CorrectEnergy(DataReader &dataReader, const float &jetPtRaw, const bool &isAk4, const bool &isFastSim);
+		std::map<char, float> SmearEnergy(DataReader &dataReader, const float &jetPtCorrected, const bool &isAk4);
+		std::map<char, float> SmearFatEnergy(DataReader &dataReader, const float &jetPtCorrected);
 
 	public:
 		JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product);

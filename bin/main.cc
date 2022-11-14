@@ -43,14 +43,22 @@ int main(int argc, char *argv[]) {
 
 	std::string inputFileName  = std::string(argv[1]);
 	std::string outputFileName = std::string(argv[2]);
-	bool isData                = std::string(argv[3]) == "True" ? true : false;
-	int era                    = std::stoi(argv[4]);
-	char runPeriod             = (char)*argv[5]; //If it is MC, then runPeriod does not matter but still has to be given (e.g. just use "m")
-	float xSection             = std::stod(argv[6]);
+	const int &era             = std::stoi(argv[3]);
+	const char &runPeriod      = (char)*argv[4]; // Data : A-H; MC : M; FastSim : S
+	const float &xSection      = std::stod(argv[5]);
+	const bool &isData         = (runPeriod == 'M' || runPeriod == 'S') ? false : true;
+	const bool &isFastSim      = runPeriod == 'S' ? true : false;
+
+	std::cout << "Producing NTuples for a " << (isFastSim ? "fastsim " : "") << (isData ? "data" : "MC") << " sample." << std::endl <<
+		"Year = " << era << std::endl <<
+		"RunPeriod = " << runPeriod << std::endl <<
+		"Cross Section  = " << xSection << std::endl <<
+	std::endl;
+
 
 	int nMaxEvents;
-	if (argc >= 8) {
-		nMaxEvents = std::stoi(std::string(argv[7]));
+	if (argc >= 7) {
+		nMaxEvents = std::stoi(std::string(argv[6]));
 	} else {
 		nMaxEvents = -999;
 	}
@@ -65,13 +73,11 @@ int main(int argc, char *argv[]) {
 
 	std::vector<CutFlow> cutflows;
 	std::vector<std::shared_ptr<TTree>> outputTrees;
-	std::vector<std::string> channels = {"Muon", "MuonIncl", "Electron", "ElectronIncl"};
 	std::vector<std::string> triggerNames, metTriggerNames, metFilterNames;
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
-	Susy1LeptonProduct product(era, isData, outputFileName, runPeriod, xSection, configTree, outputFile);
 
 	// Create a TTree and CutFlow for each channel
-	static const long autoFlush = 10000;
+	static const long autoFlush = - 50 * 1024 * 1024;
 	for (const std::string &channel : channels) {
 		std::shared_ptr<TTree> tree = std::make_shared<TTree>(channel.c_str(), channel.c_str());
 		tree->SetAutoFlush(autoFlush);
@@ -164,7 +170,7 @@ int main(int argc, char *argv[]) {
 
 	for (std::shared_ptr<TTree> tree : outputTrees) {
 		int finalNumberOfEvents = tree->GetEntries();
-		std::cout << std::setw(20) << tree->GetDirectory()->GetName() << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(float)finalNumberOfEvents/nEvents << "%)" << std::endl;
+		std::cout << std::setw(20) << tree->GetDirectory()->GetName() << std::setw(10) << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(float)finalNumberOfEvents/nEvents << "%)" << std::endl;
 	}
 
 	for (int iTree = 0; iTree < outputTrees.size(); iTree++) {

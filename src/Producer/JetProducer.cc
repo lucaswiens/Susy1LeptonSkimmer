@@ -36,7 +36,7 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 	**************************************************************/
 	if (product.GetIsFastSim()) {
 		std::vector<JetCorrectorParameters> ak4Vec, ak8Vec;
-		for (std::string fileName: Utility::GetVector<std::string>(scaleFactorTree, "Jet.JERC." + product.GetEraSelector() + ".FASTSIM")) {
+		for (std::string fileName: Utility::GetVector<std::string>(scaleFactorTree, "Jet.JERC." + product.GetEraSelector() + ".FastSim")) {
 			ak4Vec.push_back(JetCorrectorParameters(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + fileName + ak4Algorithm + ".txt"));
 			ak8Vec.push_back(JetCorrectorParameters(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + fileName + ak8Algorithm + ".txt"));
 		}
@@ -46,12 +46,27 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 
 
 	// Set object to get JEC uncertainty
-	jecSystematics = !product.GetIsData() ? Utility::GetVector<std::string>(configTree, "Producer.Jet.JECSystematic") : std::vector<std::string>{};
-	const std::string &jecAk4SystematicPath = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + scaleFactorTree.get<std::string>("Jet.JECSystematic.AK4." + product.GetEraSelector());
-	const std::string &jecAk8SystematicPath = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + scaleFactorTree.get<std::string>("Jet.JECSystematic.AK8." + product.GetEraSelector());
-	for (std::string systematic : jecSystematics) {
-		ak4CorrectionUncertainty.insert({systematic, std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(jecAk4SystematicPath, systematic))});
-		ak8CorrectionUncertainty.insert({systematic, std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(jecAk8SystematicPath, systematic))});
+	if (product.GetIsData()) {
+		jecSystematics = std::vector<std::string>{};
+	} else if (product.GetIsFastSim()) {
+		jecSystematics = {"Total"}; // hardcoded for now because only one kind of uncertainty exists for this.
+		//!product.GetIsData() ? Utility::GetVector<std::string>(configTree, "Producer.Jet.JECSystematic") : std::vector<std::string>{};
+	} else {
+		jecSystematics = Utility::GetVector<std::string>(configTree, "Producer.Jet.JECSystematic");
+	}
+
+	const std::string &jecAk4SystematicPath = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + scaleFactorTree.get<std::string>("Jet.JECSystematic." + (product.GetIsFastSim() ? "FastSim." : std::string()) + product.GetEraSelector()) + ak4Algorithm + ".txt";
+	const std::string &jecAk8SystematicPath = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + scaleFactorTree.get<std::string>("Jet.JECSystematic." + (product.GetIsFastSim() ? "FastSim." : std::string()) + product.GetEraSelector()) + ak8Algorithm + ".txt";
+
+	//fastAk4CorrectionUncertainty, fastAk8CorrectionUncertainty;
+	if (product.GetIsFastSim()) {
+		ak4CorrectionUncertainty.insert({"Total", std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(jecAk4SystematicPath, ""))});
+		ak8CorrectionUncertainty.insert({"Total", std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(jecAk8SystematicPath, ""))});
+	} else {
+		for (std::string systematic : jecSystematics) {
+			ak4CorrectionUncertainty.insert({systematic, std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(jecAk4SystematicPath, systematic))});
+			ak8CorrectionUncertainty.insert({systematic, std::make_shared<JetCorrectionUncertainty>(JetCorrectorParameters(jecAk8SystematicPath, systematic))});
+		}
 	}
 
 	// Smearing for fat jets not available in jsonpog -> use old school smearing TODO update when jsonpog makes them available

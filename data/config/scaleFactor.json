@@ -37,13 +37,12 @@
 					"G" : "FGH",
 					"H" : "FGH"
 				},
-				"FASTSIM" : {
+				"FastSim" : {
 					"L1"          : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_L1FastJet_",
 					"L2Relative"  : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_L2Relative_",
 					"L3Absolute"  : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_L3Absolute_",
 					"L2L3"        : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_L2L3Residual_"
 				},
-				"FASTSIMUNC" : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_Uncertainty_",
 				"AK4" : {
 					"JSON"      : "jsonpog-integration/POG/JME/2016postVFP_UL/jet_jerc.json",
 					"Algorithm" : "AK4PFchs"
@@ -69,13 +68,12 @@
 					"E" : "E",
 					"F" : "F"
 				},
-				"FASTSIM" : {
+				"FastSim" : {
 					"L1"          : "Fall17_FastSimV1_MC/Fall17_FastSimV1_MC_L1FastJet_",
 					"L2Relative"  : "Fall17_FastSimV1_MC/Fall17_FastSimV1_MC_L2Relative_",
 					"L3Absolute"  : "Fall17_FastSimV1_MC/Fall17_FastSimV1_MC_L3Absolute_",
 					"L2L3"        : "Fall17_FastSimV1_MC/Fall17_FastSimV1_MC_L2L3Residual_"
 				},
-				"FASTSIMUNC" : "Fall17_FastSimV1_MC/Fall17_FastSimV1_MC_Uncertainty_",
 				"AK4" : {
 					"JSON"      : "jsonpog-integration/POG/JME/2017_UL/jet_jerc.json",
 					"Algorithm" : "AK4PFchs"
@@ -100,13 +98,12 @@
 					"C" : "C",
 					"D" : "D"
 				},
-				"FASTSIM" : {
+				"FastSim" : {
 					"L1"          : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_L1FastJet_",
 					"L2Relative"  : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_L2Relative_",
 					"L3Absolute"  : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_L3Absolute_",
 					"L2L3"        : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_L2L3Residual_"
 				},
-				"FASTSIMUNC" : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_Uncertainty_",
 				"AK4" : {
 					"JSON"      : "jsonpog-integration/POG/JME/2018_UL/jet_jerc.json",
 					"Algorithm" : "AK4PFchs"
@@ -122,18 +119,16 @@
 		},
 
 		"JECSystematic" : {
-			"AK4" : {
-				"2016PreVFP"  : "2016PreVFP/Summer19UL16APV_V7_MC_UncertaintySources_AK4PFchs.txt",
-				"2016PostVFP" : "2016PostVFP/Summer19UL16_V7_MC_UncertaintySources_AK4PFchs.txt",
-				"2017"        : "2017/Summer19UL17_V5_MC_UncertaintySources_AK4PFchs.txt",
-				"2018"        : "2018/Summer19UL18_V5_MC_UncertaintySources_AK4PFchs.txt"
+			"FastSim" : {
+				"2016PreVFP"  : "not-available",
+				"2016PostVFP" : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_Uncertainty_",
+				"2017"        : "Fall17_FastSimV1_MC/Fall17_FastSimV1_MC_Uncertainty_",
+				"2018"        : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_Uncertainty_"
 			},
-			"AK8" : {
-				"2016PreVFP"  : "2016PreVFP/Summer19UL16APV_V7_MC_UncertaintySources_AK8PFchs.txt",
-				"2016PostVFP" : "2016PostVFP/Summer19UL16_V7_MC_UncertaintySources_AK8PFchs.txt",
-				"2017"        : "2017/Summer19UL17_V5_MC_UncertaintySources_AK8PFchs.txt",
-				"2018"        : "2018/Summer19UL18_V5_MC_UncertaintySources_AK8PFchs.txt"
-			}
+			"2016PreVFP"  : "Summer19UL16APV_V7_MC_UncertaintySources_",
+			"2016PostVFP" : "Summer19UL16_V7_MC_UncertaintySources_",
+			"2017"        : "Summer19UL17_V5_MC_UncertaintySources_",
+			"2018"        : "Summer19UL18_V5_MC_UncertaintySources_"
 		},
 
 		"JME" : {
@@ -159,55 +154,112 @@
 	},
 	"Electron" : {
 		"2016PreVFP" : {
+			"FastSim" : {
+				"Path" : "not-available",
+				"Hist" : {
+					"Selected"     : "",
+					"AntiSelected" : ""
+				}
+			},
 			"JSON" : "/jsonpog-integration/POG/EGM/2016preVFP_UL/electron.json",
-			"eraAlias" : "2016preVFP"
+			"EraAlias" : "2016preVFP"
 		},
 
 		"2016PostVFP" : {
+			"FastSim" : {
+				"Path" : "not-available",
+				"Hist" : {
+					"Selected"     : "",
+					"AntiSelected" : ""
+				}
+			},
 			"JSON" : "/jsonpog-integration/POG/EGM/2016postVFP_UL/electron.json",
-			"eraAlias" : "2016postVFP"
+			"EraAlias" : "2016postVFP"
 		},
 
 		"2017" : {
+			"FastSim" : {
+				"Path" : "detailed_ele_full_fast_sf_17.root",
+				"Hist" : {
+					"Selected"     : "",
+					"AntiSelected" : ""
+				}
+			},
 			"JSON" : "/jsonpog-integration/POG/EGM/2017_UL/electron.json",
-			"eraAlias" : "2017"
+			"EraAlias" : "2017"
 		},
 
 		"2018" : {
+			"FastSim" : {
+				"Path" : "detailed_ele_full_fast_sf_18.root",
+				"Hist" : {
+					"Selected"     : "",
+					"AntiSelected" : ""
+				}
+			},
 			"JSON" : "/jsonpog-integration/POG/EGM/2018_UL/electron.json",
-			"eraAlias" : "2018"
+			"EraAlias" : "2018"
 		}
 	},
 	"Muon" : {
 		"2016PreVFP" : {
 			"ScaleFactor" : {
+				"FastSim" : {
+					"Path" : "not-available",
+					"Hist" : {
+						"Selected"     : "",
+						"AntiSelected" : ""
+					}
+				},
 				"JSON" : "/jsonpog-integration/POG/MUO/2016preVFP_UL/muon_Z.json",
-				"eraAlias" : "2016preVFP_UL",
-				"triggerName" : "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+				"EraAlias" : "2016preVFP_UL",
+				"TriggerName" : "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
 			},
 			"RoccoR" : "/RoccoR/RoccoR2016aUL.txt"
 		},
 		"2016PostVFP" : {
 			"ScaleFactor" : {
+				"FastSim" : {
+					"Path" : "not-available",
+					"Hist" : {
+						"Selected"     : "",
+						"AntiSelected" : ""
+					}
+				},
 				"JSON" : "/jsonpog-integration/POG/MUO/2016postVFP_UL/muon_Z.json",
-				"eraAlias" : "2016postVFP_UL",
-				"triggerName" : "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+				"EraAlias" : "2016postVFP_UL",
+				"TriggerName" : "NUM_IsoMu24_or_IsoTkMu24_DEN_CutBasedIdTight_and_PFIsoTight"
 			},
 			"RoccoR" : "/RoccoR/RoccoR2016bUL.txt"
 		},
 		"2017" : {
 			"ScaleFactor" : {
+
 				"JSON" : "/jsonpog-integration/POG/MUO/2017_UL/muon_Z.json",
-				"eraAlias" : "2017_UL",
-				"triggerName" : "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight"
+				"FastSim" : {
+					"Path" : "detailed_mu_full_fast_sf_17.root",
+					"Hist" : {
+						"Selected"     : "",
+						"AntiSelected" : ""
+					}
+				},
+				"EraAlias" : "2017_UL",
+				"TriggerName" : "NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight"
 			},
 			"RoccoR" : "/RoccoR/RoccoR2017.txt"
 		},
 		"2018" : {
 			"ScaleFactor" : {
+				"FastSim" : {
+					"Path" : "detailed_mu_full_fast_sf_18.root",
+					"Hist" : {
+						"Selected"     : "",
+						"AntiSelected" : ""
+					}
+				},
 				"JSON" : "/jsonpog-integration/POG/MUO/2018_UL/muon_Z.json",
-				"eraAlias" : "2018_UL",
-				"triggerName" : "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight"
+				"EraAlias" : "2018_UL",
+				"TriggerName" : "NUM_IsoMu24_DEN_CutBasedIdTight_and_PFIsoTight"
 			},
 			"RoccoR" : "/RoccoR/RoccoR2018.txt"
 		}

@@ -4,7 +4,11 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
+#include<iostream>
 #include <cmath>
+
+#include<TH1F.h>
+#include<TH2F.h>
 
 namespace Utility{
 	template <typename T>
@@ -35,6 +39,12 @@ namespace Utility{
 	std::vector<std::string> GetKeys(const boost::property_tree::ptree &tree, const std::string path);
 	float DeltaPhi(float phi1, float phi2);
 	float DeltaR(const float &eta1, const float &phi1, const float &eta2, const float &phi2);
+
+	// Reading histogram entries for fastsim SF
+	float GetWeight(float x, TH1F* histogram);
+	float GetWeightErr(float x, TH1F* histogram);
+	float Get2DWeight(float x, float y, TH2F* histogram);
+	float Get2DWeightErr(float x, float y, TH2F* histogram);
 }
 
 #endif

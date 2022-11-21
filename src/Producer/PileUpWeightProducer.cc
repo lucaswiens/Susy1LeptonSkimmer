@@ -22,9 +22,11 @@ void PileUpWeightProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &p
 	product.pileUpWeightUp   = pileUpCorrectionSet->at(goldenJsonString)->evaluate({dataReader.nTrueInt, "up"});
 	product.pileUpWeightDown = pileUpCorrectionSet->at(goldenJsonString)->evaluate({dataReader.nTrueInt, "down"});
 
-	product.preFire     = dataReader.preFire;
-	product.preFireUp   = dataReader.preFireUp;
-	product.preFireDown = dataReader.preFireDown;
+	if (!product.GetIsFastSim()) {
+		product.preFire     = dataReader.preFire;
+		product.preFireUp   = dataReader.preFireUp;
+		product.preFireDown = dataReader.preFireDown;
+	}
 }
 
 void PileUpWeightProducer::EndJob(TFile &file) {}

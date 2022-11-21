@@ -14,9 +14,9 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 	muonSf = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.JSON"));
 	bTagSf = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.BTag." + eraSelector));
 
-	electronEraAlias = scaleFactorTree.get<std::string>("Electron." + eraSelector + ".eraAlias");
-	muonEraAlias = scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.eraAlias");
-	muonTriggName = scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.triggerName");
+	electronEraAlias = scaleFactorTree.get<std::string>("Electron." + eraSelector + ".EraAlias");
+	muonEraAlias = scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.EraAlias");
+	muonTriggName = scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.TriggerName");
 
 	bTagSyst = Utility::GetVector<std::string>(configTree, "Producer.Jet.BTagSystematic"); bTagSystLight = Utility::GetVector<std::string>(configTree, "Producer.Jet.LightTagSystematic");
 	////Set histograms
@@ -83,21 +83,21 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 
 		//Scale factors
 		product.muonLooseIsoSf[iMuon] = muonSf->at("NUM_LooseRelIso_DEN_LooseID")->evaluate({muonEraAlias, muonEta, muonPt, "sf"});
-		product.muonTightIsoSf[iMuon] = muonSf->at("NUM_TightRelIso_DEN_TightIDandIPCut")->evaluate({muonEraAlias, muonEta, muonPt, "sf"});
+		product.muonMediumIsoSf[iMuon] = muonSf->at("NUM_LooseRelIso_DEN_MediumID")->evaluate({muonEraAlias, muonEta, muonPt, "sf"});
 		product.muonLooseSf[iMuon]    = muonSf->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "sf"});
 		product.muonMediumSf[iMuon]   = muonSf->at("NUM_MediumID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "sf"});
 		product.muonTightSf[iMuon]    = muonSf->at("NUM_TightID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "sf"});
 		product.muonTriggerSf[iMuon]  = muonSf->at(muonTriggName)->evaluate({muonEraAlias, muonEta, muonPt, "sf"});
 
 		product.muonLooseIsoSfUp[iMuon] = muonSf->at("NUM_LooseRelIso_DEN_LooseID")->evaluate({muonEraAlias, muonEta, muonPt, "systup"});
-		product.muonTightIsoSfUp[iMuon] = muonSf->at("NUM_TightRelIso_DEN_TightIDandIPCut")->evaluate({muonEraAlias, muonEta, muonPt, "systup"});
+		product.muonMediumIsoSfUp[iMuon] = muonSf->at("NUM_LooseRelIso_DEN_MediumID")->evaluate({muonEraAlias, muonEta, muonPt, "systup"});
 		product.muonLooseSfUp[iMuon]    = muonSf->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "systup"});
 		product.muonMediumSfUp[iMuon]   = muonSf->at("NUM_MediumID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "systup"});
 		product.muonTightSfUp[iMuon]    = muonSf->at("NUM_TightID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "systup"});
 		product.muonTriggerSfUp[iMuon]  = muonSf->at(muonTriggName)->evaluate({muonEraAlias, muonEta, muonPt, "systup"});
 
 		product.muonLooseIsoSfDown[iMuon] = muonSf->at("NUM_LooseRelIso_DEN_LooseID")->evaluate({muonEraAlias, muonEta, muonPt, "systdown"});
-		product.muonTightIsoSfDown[iMuon] = muonSf->at("NUM_TightRelIso_DEN_TightIDandIPCut")->evaluate({muonEraAlias, muonEta, muonPt, "systdown"});
+		product.muonMediumIsoSfDown[iMuon] = muonSf->at("NUM_LooseRelIso_DEN_MediumID")->evaluate({muonEraAlias, muonEta, muonPt, "systdown"});
 		product.muonLooseSfDown[iMuon]    = muonSf->at("NUM_LooseID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "systdown"});
 		product.muonMediumSfDown[iMuon]   = muonSf->at("NUM_MediumID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "systdown"});
 		product.muonTightSfDown[iMuon]    = muonSf->at("NUM_TightID_DEN_TrackerMuons")->evaluate({muonEraAlias, muonEta, muonPt, "systdown"});

@@ -15,7 +15,7 @@ class DataReader {
 
 		// Event Number and meta information
 		int entry;
-		bool isData;
+		bool isData, isFastSim;
 
 		// MetaData Leafs
 		TLeaf *processNameLeaf;
@@ -81,8 +81,11 @@ class DataReader {
 			*genWeightLeaf,
 			*genStatusLeaf, *genStatusFlagsLeaf;
 
+		// FastSim Leafs
+		std::vector<TLeaf*> genModel;
+
 	public:
-		DataReader(const std::string &fileName, const std::string &treeName, const bool &isData);
+		DataReader(const std::string &fileName, const std::string &treeName, const bool &isData, const bool &isFastSim);
 
 		// Event entry information
 		int GetEntries(){return inputTree->GetEntries();}
@@ -180,6 +183,7 @@ class DataReader {
 		int LastGenCopy(const int &index);
 		std::vector<int> alreadyMatchedIndex;
 
+		std::pair<int, int> GetGenModel();
 };
 
 #endif

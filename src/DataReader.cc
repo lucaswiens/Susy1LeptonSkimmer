@@ -1,7 +1,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/DataReader.h>
 #include<iostream>
 
-DataReader::DataReader(const std::string &fileName, const std::string &treeName, const bool &isData) : isData(isData) {
+DataReader::DataReader(const std::string &fileName, const std::string &treeName, const bool &isData, const bool &isFastSim) : isData(isData), isFastSim(isFastSim) {
 	std::cout << std::endl << "Starting to open:" << std::endl << fileName << std::endl;
 	inputFile = std::shared_ptr<TFile>(TFile::Open(fileName.c_str(), "READ"));
 	std::cout << "File Opened!" << std::endl;
@@ -46,10 +46,13 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	electronTightMvaIdLeaf      = inputTree->GetLeaf("Electron_mvaFall17V2Iso_WP80"); // 80% signal efficiency
 	electronConvVetoLeaf        = inputTree->GetLeaf("Electron_convVeto");
 	electronNLostHitsLeaf       = inputTree->GetLeaf("Electron_lostHits");
-	electronEnergyScaleUpLeaf   = inputTree->GetLeaf("Electron_dEscaleUp");
-	electronEnergyScaleDownLeaf = inputTree->GetLeaf("Electron_dEscaleDown");
-	electronEnergySigmaUpLeaf   = inputTree->GetLeaf("Electron_dEsigmaUp");
-	electronEnergySigmaDownLeaf = inputTree->GetLeaf("Electron_dEsigmaDown");
+
+	if (!isFastSim) {
+		electronEnergyScaleUpLeaf   = inputTree->GetLeaf("Electron_dEscaleUp");
+		electronEnergyScaleDownLeaf = inputTree->GetLeaf("Electron_dEscaleDown");
+		electronEnergySigmaUpLeaf   = inputTree->GetLeaf("Electron_dEsigmaUp");
+		electronEnergySigmaDownLeaf = inputTree->GetLeaf("Electron_dEsigmaDown");
+	}
 
 	// Jets
 	nJetLeaf        = inputTree->GetLeaf("nJet");
@@ -109,9 +112,11 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	pdfWeightLeaf    = inputTree->GetLeaf("LHEPdfWeight");
 	nScaleWeightLeaf = inputTree->GetLeaf("nLHEScaleWeight");
 	scaleWeightLeaf  = inputTree->GetLeaf("LHEScaleWeight");
-	preFireLeaf      = inputTree->GetLeaf("L1PreFiringWeight_Nom");
-	preFireUpLeaf    = inputTree->GetLeaf("L1PreFiringWeight_Up");
-	preFireDownLeaf  = inputTree->GetLeaf("L1PreFiringWeight_Dn");
+	if (!isFastSim) {
+		preFireLeaf      = inputTree->GetLeaf("L1PreFiringWeight_Nom");
+		preFireUpLeaf    = inputTree->GetLeaf("L1PreFiringWeight_Up");
+		preFireDownLeaf  = inputTree->GetLeaf("L1PreFiringWeight_Dn");
+	}
 
 	//Gen part related
 	nGenPartLeaf       = inputTree->GetLeaf("nGenPart");
@@ -124,6 +129,18 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	genEtaLeaf         = inputTree->GetLeaf("GenPart_eta");
 	genMassLeaf        = inputTree->GetLeaf("GenPart_mass");
 	genWeightLeaf      = inputTree->GetLeaf("genWeight");
+
+	if (isFastSim) {
+		//for (TBranch *branch : inputTree->GetListOfBranches()) {
+		for (TBranch *branch : TRangeDynCast<TBranch>(inputTree->GetListOfBranches())) {
+			const std::string &branchName = branch->GetName();
+			if (branchName.find("GenModel") != std::string::npos) {
+				std::cout << branchName << std::endl;
+				genModel.push_back(inputTree->GetLeaf(branch->GetName()));
+			}
+		}
+		std::cout << genModel.size() << std::endl;
+	}
 }
 
 void DataReader::ReadMuonEntry() {
@@ -199,10 +216,12 @@ void DataReader::ReadElectronEntry() {
 	electronTightMvaIdLeaf->GetBranch()->GetEntry(entry);
 	electronConvVetoLeaf->GetBranch()->GetEntry(entry);
 	electronNLostHitsLeaf->GetBranch()->GetEntry(entry);
-	electronEnergyScaleUpLeaf->GetBranch()->GetEntry(entry);
-	electronEnergyScaleDownLeaf->GetBranch()->GetEntry(entry);
-	electronEnergySigmaUpLeaf->GetBranch()->GetEntry(entry);
-	electronEnergySigmaDownLeaf->GetBranch()->GetEntry(entry);
+	if (!isFastSim) {
+		electronEnergyScaleUpLeaf->GetBranch()->GetEntry(entry);
+		electronEnergyScaleDownLeaf->GetBranch()->GetEntry(entry);
+		electronEnergySigmaUpLeaf->GetBranch()->GetEntry(entry);
+		electronEnergySigmaDownLeaf->GetBranch()->GetEntry(entry);
+	}
 
 	nElectron = nElectronLeaf->GetValue();
 }
@@ -227,10 +246,12 @@ void DataReader::GetElectronValues(const int &index) {
 	electronTightMvaId      = electronTightMvaIdLeaf->GetValue(index);
 	electronConvVeto        = electronConvVetoLeaf->GetValue(index);
 	electronNLostHits       = electronNLostHitsLeaf->GetValue(index);
-	electronEnergyScaleUp   = electronEnergyScaleUpLeaf->GetValue(index);
-	electronEnergyScaleDown = electronEnergyScaleDownLeaf->GetValue(index);
-	electronEnergySigmaUp   = electronEnergySigmaUpLeaf->GetValue(index);
-	electronEnergySigmaDown = electronEnergySigmaDownLeaf->GetValue(index);
+	if (!isFastSim) {
+		electronEnergyScaleUp   = electronEnergyScaleUpLeaf->GetValue(index);
+		electronEnergyScaleDown = electronEnergyScaleDownLeaf->GetValue(index);
+		electronEnergySigmaUp   = electronEnergySigmaUpLeaf->GetValue(index);
+		electronEnergySigmaDown = electronEnergySigmaDownLeaf->GetValue(index);
+	}
 
 	electronIdMap = {
 		{'T', electronCutBasedId >= 4},
@@ -354,9 +375,11 @@ void DataReader::ReadPileUpEntry() {
 
 	pdfWeightLeaf->GetBranch()->GetEntry(entry);
 	scaleWeightLeaf->GetBranch()->GetEntry(entry);
-	preFireLeaf->GetBranch()->GetEntry(entry);
-	preFireUpLeaf->GetBranch()->GetEntry(entry);
-	preFireDownLeaf->GetBranch()->GetEntry(entry);
+	if (!isFastSim) {
+		preFireLeaf->GetBranch()->GetEntry(entry);
+		preFireUpLeaf->GetBranch()->GetEntry(entry);
+		preFireDownLeaf->GetBranch()->GetEntry(entry);
+	}
 }
 
 void DataReader::GetPileUpValues() {
@@ -500,6 +523,11 @@ void DataReader::GetGenValues(const int &index) {
 	genEta         = genEtaLeaf->GetValue(index);
 	genMass        = genMassLeaf->GetValue(index);
 }
+
+std::pair<int, int> DataReader::GetGenModel() {
+	//TODO
+}
+
 
 int DataReader::LastGenCopy(const int& index) {
 	GetGenValues(index);

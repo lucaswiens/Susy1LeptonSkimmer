@@ -17,6 +17,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/ElectronProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/JetProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/ScaleFactorProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/FastSimProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/METFilterProducer.h>
@@ -73,8 +74,10 @@ int main(int argc, char *argv[]) {
 
 	std::vector<CutFlow> cutflows;
 	std::vector<std::shared_ptr<TTree>> outputTrees;
+	std::vector<std::string> channels = {"Muon", "Electron", "LeptonIncl"};
 	std::vector<std::string> triggerNames, metTriggerNames, metFilterNames;
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
+	Susy1LeptonProduct product(era, isData, isFastSim, outputFileName, runPeriod, xSection, configTree, outputFile);
 
 	// Create a TTree and CutFlow for each channel
 	static const long autoFlush = - 50 * 1024 * 1024;
@@ -141,8 +144,11 @@ int main(int argc, char *argv[]) {
 		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 		producers.push_back(std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
 	}
+	if (isFastSim) {
+		producers.push_back(std::shared_ptr<FastSimProducer>(new FastSimProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
+	}
 
-	DataReader dataReader(inputFileName, "Events", isData);
+	DataReader dataReader(inputFileName, "Events", isData, isFastSim);
 	dataReader.RegisterTrigger(triggerNames, metTriggerNames);
 	dataReader.RegisterMetFilter(Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector()));
 	int nEvents = nMaxEvents > 0 ? nMaxEvents : dataReader.GetEntries();

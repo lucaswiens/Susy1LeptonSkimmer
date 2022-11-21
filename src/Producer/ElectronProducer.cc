@@ -50,10 +50,12 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		//product.electronIso03[electronCounter] = dataReader.electronIso03;
 		//product.electronIso04[electronCounter] = dataReader.electronIso04;
 		product.electronRelJetIso[electronCounter] = dataReader.electronRelJetIso;
-		product.electronEnergyScaleUp[electronCounter] = dataReader.electronEnergyScaleUp;
-		product.electronEnergyScaleDown[electronCounter] = dataReader.electronEnergyScaleDown;
-		product.electronEnergySigmaUp[electronCounter] = dataReader.electronEnergySigmaUp;
-		product.electronEnergySigmaDown[electronCounter] = dataReader.electronEnergySigmaDown;
+		if (product.GetIsFastSim()) {
+			product.electronEnergyScaleUp[electronCounter] = dataReader.electronEnergyScaleUp;
+			product.electronEnergyScaleDown[electronCounter] = dataReader.electronEnergyScaleDown;
+			product.electronEnergySigmaUp[electronCounter] = dataReader.electronEnergySigmaUp;
+			product.electronEnergySigmaDown[electronCounter] = dataReader.electronEnergySigmaDown;
+		}
 
 		product.electronCharge[electronCounter] = dataReader.electronCharge;
 		product.electronCutBasedId[electronCounter] = dataReader.electronCutBasedId;

@@ -119,13 +119,14 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("MuonIsGood", muonIsGood.data(), "MuonIsGood[nMuon]/O");
 		tree->Branch("MuonIsVeto", muonIsVeto.data(), "MuonIsVeto[nMuon]/O");
 		tree->Branch("MuonIsAntiSelected", muonIsAntiSelected.data(), "MuonIsAntiSelected[nMuon]/O");
+
 		if (isData) {
 			tree->Branch("MuonLooseIsoSf", muonLooseIsoSf.data(), "MuonLooseIsoSf[nMuon]/F");
 			tree->Branch("MuonLooseIsoSfUp", muonLooseIsoSfUp.data(), "MuonLooseIsoSfUp[nMuon]/F");
 			tree->Branch("MuonLooseIsoSfDown", muonLooseIsoSfDown.data(), "MuonLooseIsoSfDown[nMuon]/F");
-			tree->Branch("MuonTightIsoSf", muonTightIsoSf.data(), "MuonTightIsoSf[nMuon]/F");
-			tree->Branch("MuonTightIsoSfUp", muonTightIsoSfUp.data(), "MuonTightIsoSfUp[nMuon]/F");
-			tree->Branch("MuonTightIsoSfDown", muonTightIsoSfDown.data(), "MuonTightIsoSfDown[nMuon]/F");
+			tree->Branch("MuonMediumIsoSf", muonMediumIsoSf.data(), "MuonMediumIsoSf[nMuon]/F");
+			tree->Branch("MuonMediumIsoSfUp", muonMediumIsoSfUp.data(), "MuonMediumIsoSfUp[nMuon]/F");
+			tree->Branch("MuonMediumIsoSfDown", muonMediumIsoSfDown.data(), "MuonMediumIsoSfDown[nMuon]/F");
 			tree->Branch("MuonLooseSf", muonLooseSf.data(), "MuonLooseSf[nMuon]/F");
 			tree->Branch("MuonLooseSfUp", muonLooseSfUp.data(), "MuonLooseSfUp[nMuon]/F");
 			tree->Branch("MuonLooseSfDown", muonLooseSfDown.data(), "MuonLooseSfDown[nMuon]/F");
@@ -138,6 +139,32 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("MuonTriggerSf", muonTriggerSf.data(), "MuonTriggerSf[nMuon]/F");
 			tree->Branch("MuonTriggerSfUp", muonTriggerSfUp.data(), "MuonTriggerSfUp[nMuon]/F");
 			tree->Branch("MuonTriggerSfDown", muonTriggerSfDown.data(), "MuonTriggerSfDown[nMuon]/F");
+
+			if (isFastSim) {
+				tree->Branch("MuonLooseFastSf", muonLooseFastSf.data(), "MuonLooseFastSf[nMuon]/F");
+				tree->Branch("MuonLooseFastSfUp", muonLooseFastSfUp.data(), "MuonLooseFastSfUp[nMuon]/F");
+				tree->Branch("MuonLooseFastSfDown", muonLooseFastSfDown.data(), "MuonLooseFastSfDown[nMuon]/F");
+
+				tree->Branch("MuonMediumFastSf", muonLooseFastSf.data(), "MuonLooseFastSf[nMuon]/F");
+				tree->Branch("MuonMediumFastSfUp", muonLooseFastSfUp.data(), "MuonLooseFastSfUp[nMuon]/F");
+				tree->Branch("MuonMediumFastSfDown", muonLooseFastSfDown.data(), "MuonLooseFastSfDown[nMuon]/F");
+
+				tree->Branch("ElectronVetoFastSf", electronVetoFastSf.data(), "ElectronVetoFastSf[nElectron]/F");
+				tree->Branch("ElectronVetoFastSfUp", electronVetoFastSfUp.data(), "ElectronVetoFastSfUp[nElectron]/F");
+				tree->Branch("ElectronVetoFastSfDown", electronVetoFastSfDown.data(), "ElectronVetoFastSfDown[nElectron]/F");
+
+				tree->Branch("ElectronTightFastSf", electronTightFastSf.data(), "ElectronTightFastSf[nElectron]/F");
+				tree->Branch("ElectronTightFastSfUp", electronTightFastSfUp.data(), "ElectronTightFastSfUp[nElectron]/F");
+				tree->Branch("ElectronTightFastSfDown", electronTightFastSfDown.data(), "ElectronTightFastSfDown[nElectron]/F");
+
+				tree->Branch("ElectronVetoMVAFastSf", electronVetoMvaFastSf.data(), "ElectronVetoMVAFastSf[nElectron]/F");
+				tree->Branch("ElectronVetoMVAFastSfUp", electronVetoMvaFastSfUp.data(), "ElectronVetoMVAFastSfUp[nElectron]/F");
+				tree->Branch("ElectronVetoMVAFastSfDown", electronVetoMvaFastSfDown.data(), "ElectronVetoMVAFastSfDown[nElectron]/F");
+
+				tree->Branch("ElectronTightMVAFastSf", electronTightMvaFastSf.data(), "ElectronTightMVAFastSf[nElectron]/F");
+				tree->Branch("ElectronTightMVAFastSfUp", electronTightMvaFastSfUp.data(), "ElectronTightMVAFastSfUp[nElectron]/F");
+				tree->Branch("ElectronTightMVAFastSfDown", electronTightMvaFastSfDown.data(), "ElectronTightMVAFastSfDown[nElectron]/F");
+			}
 		}
 
 		tree->Branch("MuonCharge", muonCharge.data(), "MuonCharge[nMuon]/I");
@@ -161,10 +188,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		//tree->Branch("ElectronIso03", electronIso03.data(), "ElectronIso03[nMuon]/F");
 		//tree->Branch("ElectronIso04", electronIso04.data(), "ElectronIso04[nMuon]/F");
 		tree->Branch("ElectronRelJetIso", electronRelJetIso.data(), "ElectronRelJetIso,[nMuon]/F");
-		tree->Branch("ElectronEnergyScaleUp", electronEnergyScaleUp.data(), "ElectronEnergyScaleUp[nMuon]/F");
-		tree->Branch("ElectronEnergyScaleDown", electronEnergyScaleDown.data(), "ElectronEnergyScaleDown,[nMuon]/F");
-		tree->Branch("ElectronEnergySigmaUp", electronEnergySigmaUp.data(), "ElectronEnergySigmaUp[nMuon]/F");
-		tree->Branch("ElectronEnergySigmaDown", electronEnergySigmaDown.data(), "ElectronEnergySigmaDown[nMuon]/F");
+		if (isFastSim) {
+			tree->Branch("ElectronEnergyScaleUp", electronEnergyScaleUp.data(), "ElectronEnergyScaleUp[nMuon]/F");
+			tree->Branch("ElectronEnergyScaleDown", electronEnergyScaleDown.data(), "ElectronEnergyScaleDown,[nMuon]/F");
+			tree->Branch("ElectronEnergySigmaUp", electronEnergySigmaUp.data(), "ElectronEnergySigmaUp[nMuon]/F");
+			tree->Branch("ElectronEnergySigmaDown", electronEnergySigmaDown.data(), "ElectronEnergySigmaDown[nMuon]/F");
+		}
 
 		tree->Branch("ElectronLooseMvaId", electronLooseMvaId.data(), "ElectronLooseMvaId[nMuon]/O");
 		tree->Branch("ElectronMediumMvaId", electronMediumMvaId.data(), "ElectronMediumMvaId[nMuon]/O");
@@ -259,9 +288,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("PileUpWeight", &pileUpWeight);
 			tree->Branch("PileUpWeightUp", &pileUpWeightUp);
 			tree->Branch("PileUpWeightDown", &pileUpWeightDown);
-			tree->Branch("PreFireWeight", &preFire);
-			tree->Branch("PreFireWeightUp", &preFireUp);
-			tree->Branch("PreFireWeightDown", &preFireDown);
+
+			if (!isFastSim) {
+				tree->Branch("PreFireWeight", &preFire);
+				tree->Branch("PreFireWeightUp", &preFireUp);
+				tree->Branch("PreFireWeightDown", &preFireDown);
+			}
 			tree->Branch("nPdfWeight", &nPdfWeight);
 			tree->Branch("LHEPdfWeight", pdfWeight.data(), "pdfWeight[nPdfWeight]/F");
 			tree->Branch("nScaleWeight", &nScaleWeight);

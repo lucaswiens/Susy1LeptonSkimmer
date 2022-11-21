@@ -41,11 +41,13 @@ class Susy1LeptonProduct {
 		int nMuon, nGoodMuon, nVetoMuon, nAntiSelectedMuon;
 		std::array<float, nMax> muonPt, muonEta, muonPhi, muonMass, muonMiniIso, muonDxy, muonDz, muonSip3d,
 			muonLooseIsoSf, muonLooseIsoSfUp, muonLooseIsoSfDown,
-			muonTightIsoSf, muonTightIsoSfUp, muonTightIsoSfDown,
+			muonMediumIsoSf, muonMediumIsoSfUp, muonMediumIsoSfDown,
 			muonLooseSf, muonLooseSfUp, muonLooseSfDown,
 			muonMediumSf, muonMediumSfUp, muonMediumSfDown,
 			muonTightSf, muonTightSfUp, muonTightSfDown,
-			muonTriggerSf, muonTriggerSfUp, muonTriggerSfDown;
+			muonTriggerSf, muonTriggerSfUp, muonTriggerSfDown,
+			muonLooseFastSf, muonLooseFastSfUp, muonLooseFastSfDown,
+			muonMediumFastSf, muonMediumFastSfUp, muonMediumFastSfDown;
 		std::array<int, nMax> muonPdgId, muonCharge, muonCutBasedId, muonGenMatchedIndex;
 		std::array<bool, nMax> muonTightId, muonMediumId, muonLooseId,
 			muonMvaId, muonIsPfCand,
@@ -65,7 +67,11 @@ class Susy1LeptonProduct {
 			electronMediumSf, electronMediumSfUp, electronMediumSfDown,
 			electronTightSf, electronTightSfUp, electronTightSfDown,
 			electronMediumMvaSf, electronMediumMvaSfUp, electronMediumMvaSfDown,
-			electronTightMvaSf, electronTightMvaSfUp, electronTightMvaSfDown;
+			electronTightMvaSf, electronTightMvaSfUp, electronTightMvaSfDown,
+			electronVetoFastSf, electronVetoFastSfUp, electronVetoFastSfDown,
+			electronTightFastSf, electronTightFastSfUp, electronTightFastSfDown,
+			electronVetoMvaFastSf, electronVetoMvaFastSfUp, electronVetoMvaFastSfDown,
+			electronTightMvaFastSf,electronTightMvaFastSfUp,electronTightMvaFastSfDown;
 		std::array<int, nMax> electronCharge, electronCutBasedId, electronNLostHits;
 		std::array<short, nMax> electronLooseMvaId, electronMediumMvaId, electronTightMvaId,
 			electronTightId, electronMediumId, electronLooseId, electronVetoId,

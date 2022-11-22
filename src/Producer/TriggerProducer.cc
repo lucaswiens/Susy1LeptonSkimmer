@@ -1,11 +1,9 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TriggerProducer.h>
-#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/WeightCalculator.h>
 
 TriggerProducer::TriggerProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product, const std::vector<std::string> &triggerNames) : triggerNames(triggerNames) {
 	Name = "TriggerProducer";
 }
 
-//TODO Think about missing triggers
 void TriggerProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	dataReader.ReadTrigger();
 	dataReader.GetTrigger();

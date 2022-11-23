@@ -82,7 +82,7 @@ if __name__=="__main__":
 
 	submitFile = open(args.output + "/condor.submit", "w")
 	submitFile.write(f"executable = {cmsswBase}/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim\n")
-	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(year) $(runPeriod) $(Process) $(cmsswBase)\n")
+	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(year) $(runPeriod) $(Process) $(cmsswBase) $(outputDir)\n")
 	submitFile.write(f"\n")
 	submitFile.write(f"universe       = vanilla\n")
 	submitFile.write(f"request_memory = 500 MB\n")
@@ -91,7 +91,7 @@ if __name__=="__main__":
 	submitFile.write(f"error  = {args.output}/error/job$(Cluster)_$(Process).stderr\n")
 	submitFile.write(f"log    = {args.output}/logs/job$(Cluster)_$(Process).log\n")
 	submitFile.write(f"\n")
-	submitFile.write(f"queue inputFile outputFile year runPeriod cmsswBase from arguments.md\n")
+	submitFile.write(f"queue inputFile outputFile year runPeriod cmsswBase outputDir from arguments.md\n")
 	submitFile.close()
 
 	sampleFile = open(args.input_file, "r")
@@ -100,7 +100,6 @@ if __name__=="__main__":
 		sample = sample.strip()
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			fileList = findFileLocation(sample)
-			fileList = [fileList[0]]
 			year, runPeriod, xSection = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 

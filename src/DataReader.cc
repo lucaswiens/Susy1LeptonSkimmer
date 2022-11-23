@@ -135,11 +135,9 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 		for (TBranch *branch : TRangeDynCast<TBranch>(inputTree->GetListOfBranches())) {
 			const std::string &branchName = branch->GetName();
 			if (branchName.find("GenModel") != std::string::npos) {
-				std::cout << branchName << std::endl;
 				genModel.push_back(inputTree->GetLeaf(branch->GetName()));
 			}
 		}
-		std::cout << genModel.size() << std::endl;
 	}
 }
 
@@ -391,9 +389,11 @@ void DataReader::GetPileUpValues() {
 		scaleWeight [iScale] = scaleWeightLeaf->GetValue(iScale);
 	}
 
-	preFire     = preFireLeaf->GetValue();
-	preFireUp   = preFireUpLeaf->GetValue();
-	preFireDown = preFireDownLeaf->GetValue();
+	if (!isFastSim) {
+		preFire     = preFireLeaf->GetValue();
+		preFireUp   = preFireUpLeaf->GetValue();
+		preFireDown = preFireDownLeaf->GetValue();
+	}
 }
 
 void DataReader::RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames) {

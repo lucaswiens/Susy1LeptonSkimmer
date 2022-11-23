@@ -11,7 +11,7 @@ std::vector<std::string> Utility::GetKeys(const boost::property_tree::ptree &tre
 	return keys;
 };
 
-float Utility::DeltaPhi(float phi1, float phi2) {
+float Utility::DeltaPhi(const float &phi1, const float &phi2) {
 	float deltaPhi = phi1 - phi2;
 	while (deltaPhi >  M_PI) deltaPhi -= 2 * M_PI;
 	while (deltaPhi < -M_PI) deltaPhi += 2 * M_PI;
@@ -19,12 +19,12 @@ float Utility::DeltaPhi(float phi1, float phi2) {
 }
 
 float Utility::DeltaR(const float &eta1, const float &phi1, const float &eta2, const float &phi2) {
-	float deltaEta = eta1 - eta2;
-	float deltaPhi = Utility::DeltaPhi(phi1, phi2);
+	const float &deltaEta = eta1 - eta2;
+	const float &deltaPhi = Utility::DeltaPhi(phi1, phi2);
 	return std::sqrt(deltaPhi * deltaPhi + deltaEta * deltaEta);
 }
 
-float Utility::GetWeight(float x, TH1F* histogram) {
+float Utility::GetWeight(const float &x, TH1F* histogram) {
 	if(histogram==NULL) {
 		std::cerr << "ERROR! The weights input* histogram is not loaded. Returning weight 0!" << std::endl;
 		return 0.;
@@ -33,7 +33,7 @@ float Utility::GetWeight(float x, TH1F* histogram) {
 	return histogram->GetBinContent(bin);
 }
 
-float Utility::GetWeightErr(float x, TH1F* histogram) {
+float Utility::GetWeightErr(const float &x, TH1F* histogram) {
 	if(histogram==NULL) {
 		std::cerr << "ERROR! The weights input* histogram is not loaded. Returning weight 0!" << std::endl;
 		return 0.;
@@ -42,7 +42,7 @@ float Utility::GetWeightErr(float x, TH1F* histogram) {
 	return histogram->GetBinError(bin);
 }
 
-float Utility::Get2DWeight(float x, float y, TH2F* histogram) {
+float Utility::Get2DWeight(const float &x, const float &y, TH2F* histogram) {
 	if(histogram==NULL) {
 		std::cerr << "ERROR! The weights input* histogram is not loaded. Returning weight 0!" << std::endl;
 		return 0.;
@@ -52,7 +52,7 @@ float Utility::Get2DWeight(float x, float y, TH2F* histogram) {
 	return histogram->GetBinContent(binX, binY);
 }
 
-float Utility::Get2DWeightErr(float x, float y, TH2F* histogram) {
+float Utility::Get2DWeightErr(const float &x, const float &y, TH2F* histogram) {
 	if(histogram==NULL) {
 		std::cerr << "ERROR! The weights input* histogram is not loaded. Returning weight 0!" << std::endl;
 		return 0.;

@@ -37,7 +37,7 @@ namespace pt = boost::property_tree;
 
 int main(int argc, char *argv[]) {
 	//Extract informations of command line
-	if (argc < 7) {
+	if (argc < 6) {
 		std::cerr << "It seems like you did not parse the arguments correctly..\nCheck the bin/main.cc to see which argument takes which position or use the python/createBatch.py that should handle everything automatically for you." << std::endl;
 		std::exit(-1);
 	}

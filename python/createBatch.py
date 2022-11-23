@@ -55,7 +55,7 @@ def GetOSVariable(Var):
 	return variable
 
 if __name__=="__main__":
-	date = GetOSVariable("DATE")
+	date = subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).decode().replace("\n", "")#GetOSVariable("DATE")
 	cmsswBase = GetOSVariable("CMSSW_BASE")
 	#redirector = "root://cms-xrd-global.cern.ch/"
 	redirector = "root://xrootd-cms.infn.it/"
@@ -100,11 +100,12 @@ if __name__=="__main__":
 		sample = sample.strip()
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			fileList = findFileLocation(sample)
+			fileList = [fileList[0]]
 			year, runPeriod, xSection = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 
 			for filename in fileList:
-				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src\n")
+				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src " + args.output + "\n")
 	sampleFile.close()
 	argumentFile.close()
 

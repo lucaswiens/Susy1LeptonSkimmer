@@ -27,5 +27,5 @@
 <flags ADD_SUBDIR="1"/>
 
 <export>
-    <lib name="1"/>
+	<lib name="1"/>
 </export>

@@ -3,18 +3,20 @@ TARGETDIR=${PWD##*/}
 
 INFILE=$1
 OUT=$2
-ISDATA=$3
-ERA=$4
-RUNPERIOD=$5
-XSECTION=$6
-JOB=$7
+ERA=$3
+RUNPERIOD=$4
+XSECTION=$5
+JOB=$6
+BASEDIR=$7
+OUTPUTDIR=$8
 echo INFILE         $INFILE
 echo OUT            $OUT
-echo ISDATA         $ISDATA
 echo ERA            $ERA
 echo RUNPERIOD      $RUNPERIOD
 echo XSECTION       $XSECTION
 echo JOB            $JOB
+echo BASEDIR        $BASEDIR
+echo OUTPUTDIR      $OUTPUTDIR
 
 
 
@@ -26,14 +28,14 @@ source /cvmfs/grid.desy.de/etc/profile.d/grid-ui-env.sh
 
 module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
-cd $9
+cd ${BASEDIR}
 eval `scramv1 runtime -sh` #cmsenv
 
 export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
 
 #Do the skimming
-mkdir -p $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
-cd $CMSSW_BASE/Skimming/$TARGETDIR/`date +"%Y_%m_%d"`/$OUT
-pwd
-echo NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $ERA $RUNPERIOD $XSECTION
-NanoSkim ${INFILE} ${OUT}_${JOB}.root $ISDATA $ERA $RUNPERIOD $XSECTION
+mkdir -p ${OUTPUTDIR}
+cd ${OUTPUTDIR}
+
+echo NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
+NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}

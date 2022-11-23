@@ -31,7 +31,7 @@ module load cmssw
 cd ${BASEDIR}
 eval `scramv1 runtime -sh` #cmsenv
 
-export X509_USER_PROXY=/nfs/dust/cms/user/wiens/x509up
+export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
 
 #Do the skimming
 mkdir -p ${OUTPUTDIR}

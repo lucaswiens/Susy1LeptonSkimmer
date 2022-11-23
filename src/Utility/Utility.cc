@@ -63,3 +63,14 @@ float Utility::Get2DWeightErr(const float &x, const float &y, TH2F* histogram) {
 	return 1.;
 }
 
+std::vector<std::string> Utility::SplitString(const std::string &text, const std::string &delimiter) {
+	int currPos = 0, prevPos = 0;
+	std::vector<std::string> splitText;
+	while (currPos < text.size()) {
+		currPos = text.find(delimiter, prevPos);
+		splitText.push_back(text.substr(prevPos, currPos - prevPos));
+		currPos++;
+		prevPos = currPos;
+	}
+	return splitText;
+}

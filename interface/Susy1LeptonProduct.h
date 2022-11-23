@@ -148,6 +148,9 @@ class Susy1LeptonProduct {
 		bool isDiLeptonEvent, isHadTauEvent, leptonsInAcceptance;
 		std::array<float, nMax> genDeltaPhiLepWSum, genDeltaPhiLepWDirect, genWSumMass, genWDirectMass, genMTLepNu, genNeutrinoPt;
 		std::array<int, nMax> grandMotherPdgId, genTauGrandMotherPdgId, genTauMotherPdgId, genLepGrandMotherPdgId, genLepMotherPdgId;
+
+		// Fast Sim Model Information
+		float stopMass, gluinoMass, neutralinoMass, charginoMass;
 };
 
 #endif;

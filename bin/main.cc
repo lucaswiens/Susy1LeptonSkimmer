@@ -80,7 +80,8 @@ int main(int argc, char *argv[]) {
 	Susy1LeptonProduct product(era, isData, isFastSim, outputFileName, runPeriod, xSection, configTree, outputFile);
 
 	// Create a TTree and CutFlow for each channel
-	static const long autoFlush = - 50 * 1024 * 1024;
+	//static const long autoFlush = - 50 * 1024 * 1024;
+	static const long autoFlush = 10000;
 	for (const std::string &channel : channels) {
 		std::shared_ptr<TTree> tree = std::make_shared<TTree>(channel.c_str(), channel.c_str());
 		tree->SetAutoFlush(autoFlush);

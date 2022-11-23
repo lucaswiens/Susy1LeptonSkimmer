@@ -13,6 +13,7 @@ class FastSimProducer : public BaseProducer {
 		std::string era, electronEraAlias, muonEraAlias;
 		std::string muonTriggName;
 		std::string run;
+		int stopPdgId, gluinoPdgId, neutralinoPdgId, charginoPdgId;
 
 	TFile *electronSfFile, *muonSfFile;
 

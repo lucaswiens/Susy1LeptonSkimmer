@@ -4,6 +4,11 @@ FastSimProducer::FastSimProducer(const pt::ptree &configTree, const pt::ptree &s
 	Name = "FastSimProducer";
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 
+	stopPdgId       = configTree.get<int>("Producer.FastSim.StopPdgId");
+	gluinoPdgId     = configTree.get<int>("Producer.FastSim.GluinoPdgId");
+	neutralinoPdgId = configTree.get<int>("Producer.FastSim.NeutralinoPdgId");
+	charginoPdgId   = configTree.get<int>("Producer.FastSim.CharginoPdgId");
+
 	// Open root files stored in root files
 	electronSfFile = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Electron." + eraSelector + ".FastSim.Path")).c_str());
 	muonSfFile     = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.FastSim.Path")).c_str());
@@ -64,6 +69,25 @@ void FastSimProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produc
 
 	//TODO
 	// https://twiki.cern.ch/twiki/bin/view/CMS/SUSRecommendations18#Cleaning_up_of_fastsim_jets_from
+	product.stopMass = -999;
+	product.gluinoMass = -999;
+	product.neutralinoMass = -999;
+	product.charginoMass = -999;
+	dataReader.ReadGenEntry();
+	for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
+		dataReader.GetGenValues(iGen);
+		if (std::abs(dataReader.genPdgId) == stopPdgId) {
+			product.stopMass = dataReader.genMass;
+		} else if (std::abs(dataReader.genPdgId) == gluinoPdgId) {
+			product.gluinoMass = dataReader.genMass;
+		} else if (std::abs(dataReader.genPdgId) == neutralinoPdgId) {
+			product.neutralinoMass = dataReader.genMass;
+		} else if (std::abs(dataReader.genPdgId) == charginoPdgId) {
+			product.charginoMass = dataReader.genMass;
+		}
+
+		if (product.stopMass > -999 && product.gluinoMass > -999 && product.neutralinoMass > -999 && product.charginoMass > -999) { break;}
+	}
 }
 
 void FastSimProducer::EndJob(TFile &file) {

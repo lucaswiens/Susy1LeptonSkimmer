@@ -368,6 +368,13 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 				iSyst++;
 			}
 		}
+
+		if (isFastSim) {
+			tree->Branch("mStop", &stopMass);
+			tree->Branch("mGluino", &gluinoMass);
+			tree->Branch("mNeutralino", &neutralinoMass);
+			tree->Branch("mChargino", &charginoMass);
+		}
 	}
 }
 

@@ -496,6 +496,12 @@
 				"Hadronic": 60,
 				"Leptonic": 80
 			}
+		},
+		"FastSim": {
+			"StopPdgId" : 1000006,
+			"GluinoPdgId" : 1000021,
+			"NeutralinoPdgId" : 1000022,
+			"CharginoPdgId" : 1000024
 		}
 	}
 }

@@ -52,8 +52,6 @@ class CutFlow{
 			cutNames.insert(cutNames.begin(), "Trigger(HLT_" + channel + "Or || HLT_METOr)");
 		}
 
-
-
 		bool Passed();
 		void Count(){hist->Fill("No cuts", 1);}; // TODO maybe just use GetEntries()?
 		void FillCutflow();

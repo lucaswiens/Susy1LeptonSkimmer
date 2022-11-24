@@ -1,6 +1,4 @@
 #!/bin/bash
-TARGETDIR=${PWD##*/}
-
 INFILE=$1
 OUT=$2
 ERA=$3
@@ -18,8 +16,6 @@ echo JOB            $JOB
 echo BASEDIR        $BASEDIR
 echo OUTPUTDIR      $OUTPUTDIR
 
-
-
 echo "Processing ${INFILE} for Job ${OUT}_${JOB}"
 
 source /etc/profile
@@ -33,9 +29,8 @@ eval `scramv1 runtime -sh` #cmsenv
 
 export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
 
-#Do the skimming
-mkdir -p ${OUTPUTDIR}
-cd ${OUTPUTDIR}
+cd ${OUTPUTDIR}/root
 
+#Do the skimming
 echo NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
 NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}

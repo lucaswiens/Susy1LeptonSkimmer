@@ -39,7 +39,7 @@ def prepareArguments(sample):
 
 	if "/NANOAODSIM" in sample:
 		isData = False
-	if "/SMS-T1tttt" in sample:
+	if "/SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample:
 		isSignal = True
 	if isData:
 		runPeriod = findall("Run201..", sample)[0][-1]
@@ -77,6 +77,7 @@ if __name__=="__main__":
 		os.makedirs(str(args.output) + "/logs")
 		os.makedirs(str(args.output) + "/error")
 		os.makedirs(str(args.output) + "/output")
+		os.makedirs(str(args.output) + "/root")
 	except:
 		print("Output Dir already exists")
 

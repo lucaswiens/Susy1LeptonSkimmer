@@ -29,7 +29,7 @@ eval `scramv1 runtime -sh` #cmsenv
 
 export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
 
-cd ${OUTPUTDIR}/root
+cd ${OUTPUTDIR}
 
 #Do the skimming
 echo NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}

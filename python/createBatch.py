@@ -73,11 +73,11 @@ if __name__=="__main__":
 	executable = cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim"
 
 	try:
-		os.makedirs(str(args.output))
-		os.makedirs(str(args.output) + "/logs")
-		os.makedirs(str(args.output) + "/error")
-		os.makedirs(str(args.output) + "/output")
-		os.makedirs(str(args.output) + "/root")
+		os.makedirs(args.output)
+		os.makedirs(args.output + "/logs")
+		os.makedirs(args.output + "/error")
+		os.makedirs(args.output + "/output")
+		os.makedirs(args.output + "/root")
 	except:
 		print("Output Dir already exists")
 
@@ -100,12 +100,17 @@ if __name__=="__main__":
 	for sample in sampleFile:
 		sample = sample.strip()
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
+			print("Collecting files from: " + sample)
+			sampleCollection = sample.split("/")[1]
 			fileList = findFileLocation(sample)
 			year, runPeriod, xSection = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
-
+			try:
+				os.makedirs(args.output + "/root/" + sampleCollection)
+			except:
+				pass
 			for filename in fileList:
-				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src " + args.output + "\n")
+				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src " + args.output + "/root/" + sampleCollection + "\n")
 	sampleFile.close()
 	argumentFile.close()
 

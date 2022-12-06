@@ -1,11 +1,5 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/JetProducer.h>
 
-#include <Math/LorentzVector.h>
-#include <Math/PtEtaPhiM4D.h>
-
-#include <cmath>
-#include <random>
-
 JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product) {
 	Name = "JetProducer";
 	std::string cmsswBase = std::getenv("CMSSW_BASE");

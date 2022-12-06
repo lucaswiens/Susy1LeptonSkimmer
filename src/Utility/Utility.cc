@@ -63,14 +63,30 @@ float Utility::Get2DWeightErr(const float &x, const float &y, TH2F* histogram) {
 	return 1.;
 }
 
-std::vector<std::string> Utility::SplitString(const std::string &text, const std::string &delimiter) {
-	int currPos = 0, prevPos = 0;
-	std::vector<std::string> splitText;
-	while (currPos < text.size()) {
-		currPos = text.find(delimiter, prevPos);
-		splitText.push_back(text.substr(prevPos, currPos - prevPos));
-		currPos++;
-		prevPos = currPos;
+std::vector<std::string> Utility::SplitString(const std::string &text, const std::string &delimiter, const bool removeSpaces) {
+	int position = text.find(delimiter);
+	int initialPosition = 0;
+	std::vector<std::string> values;
+
+	// Decompose statement
+	while(position != std::string::npos) {
+		std::string subString = text.substr(initialPosition, position - initialPosition);
+		if (removeSpaces) {
+			subString.erase(std::remove_if(subString.begin(), subString.end(), ::isspace), subString.end());
+		}
+
+		values.push_back(subString);
+		initialPosition = position + 1;
+
+		position = text.find(delimiter, initialPosition);
 	}
-	return splitText;
+
+	// Add the last one
+	std::string subString = text.substr(initialPosition, std::min(position, (int)text.size()) - initialPosition + 1);
+	if (removeSpaces) {
+		subString.erase(std::remove_if(subString.begin(), subString.end(), ::isspace), subString.end());
+	}
+	values.push_back(subString);
+
+	return values;
 }

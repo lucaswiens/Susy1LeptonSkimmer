@@ -2,6 +2,7 @@
 #define FASTSIMPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/BTagCSVReader.h>
 
 #include <TH2F.h>
 
@@ -15,12 +16,14 @@ class FastSimProducer : public BaseProducer {
 		std::string run;
 		int stopPdgId, gluinoPdgId, neutralinoPdgId, charginoPdgId;
 
-	TFile *electronSfFile, *muonSfFile;
-
 		// Histograms with SF information for all used working points
+		TFile *electronSfFile, *muonSfFile;
 		std::shared_ptr<TH2F> electronVetoSf, electronTightSf,
 			electronVetoMvaSf, electronTightMvaSf,
 			muonLooseSf, muonMediumSf;
+
+		// BTag ScaleFactors requrie the btag csv reader
+		std::unique_ptr<BTagCSVReader> btagCsvReader;
 
 	public:
 		FastSimProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile);

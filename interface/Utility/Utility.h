@@ -37,7 +37,7 @@ namespace Utility{
 	}
 
 	std::vector<std::string> GetKeys(const boost::property_tree::ptree &tree, const std::string path);
-	std::vector<std::string> SplitString(const std::string &text, const std::string &delimiter);
+	std::vector<std::string> SplitString(const std::string &text, const std::string &delimiter, const bool removeSpaces = false);
 	float DeltaPhi(const float &phi1, const float &phi2);
 	float DeltaR(const float &eta1, const float &phi1, const float &eta2, const float &phi2);
 	// Function to read bin content or error by value (e.g. muonPt or muonEta)

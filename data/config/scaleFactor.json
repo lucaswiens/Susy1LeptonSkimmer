@@ -146,6 +146,20 @@
 		},
 
 		"BTag" : {
+			"FastSim" : {
+				"BTag" : {
+					"2016PreVFP"  : "not-available",
+					"2016PostVFP" : "DeepFlav_13TEV_16SL_18_3_2019.csv  ",
+					"2017"        : "DeepFlav_13TEV_17SL_18_3_2019.csv",
+					"2018"        : "DeepFlav_13TEV_18SL_7_5_2019.csv"
+				},
+				"LightTag" : {
+					"2016PreVFP"  : "not-available",
+					"2016PostVFP" : "DFlCvsctag_13TEV_16SL_18_3_2019.csv",
+					"2017"        : "look-for-something",
+					"2018"        : "DFlCvsctag_13TEV_18SL_7_5_2019.csv"
+				}
+			},
 			"2016PreVFP" : "/jsonpog-integration/POG/BTV/2016preVFP_UL/btagging.json",
 			"2016PostVFP" : "/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json",
 			"2017" : "/jsonpog-integration/POG/BTV/2017_UL/btagging.json",

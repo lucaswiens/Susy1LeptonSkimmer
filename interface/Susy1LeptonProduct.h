@@ -92,6 +92,12 @@ class Susy1LeptonProduct {
 			jetArea,
 			jetDeepJetLooseSf, jetDeepJetMediumSf, jetDeepJetTightSf,
 			jetDeepJetLooseLightSf, jetDeepJetMediumLightSf, jetDeepJetTightLightSf,
+			jetDeepJetLooseFastSf, jetDeepJetMediumFastSf, jetDeepJetTightFastSf,
+			jetDeepJetLooseLightFastSf, jetDeepJetMediumLightFastSf, jetDeepJetTightLightFastSf,
+			jetDeepJetLooseFastSfUp, jetDeepJetMediumFastSfUp, jetDeepJetTightFastSfUp,
+			jetDeepJetLooseLightFastSfUp, jetDeepJetMediumLightFastSfUp, jetDeepJetTightLightFastSfUp,
+			jetDeepJetLooseFastSfDown, jetDeepJetMediumFastSfDown, jetDeepJetTightFastSfDown,
+			jetDeepJetLooseLightFastSfDown, jetDeepJetMediumLightFastSfDown, jetDeepJetTightLightFastSfDown,
 			jetDeepJet;
 		std::vector<std::array<float, nMax>> jetPtJecUp, jetPtJecDown,
 			jetMassJecUp, jetMassJecDown;

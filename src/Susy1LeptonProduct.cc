@@ -254,6 +254,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("JetDeepJetLooseSf", jetDeepJetLooseSf.data(), "JetDeepJetLooseSf[nJet]/F");
 			tree->Branch("JetDeepJetMediumSf", jetDeepJetMediumSf.data(), "JetDeepJetMediumSf[nJet]/F");
 			tree->Branch("JetDeepJetTightSf", jetDeepJetTightSf.data(), "JetDeepJetTightSf[nJet]/F");
+
+			if (isFastSim) {
+				tree->Branch("JetDeepJetLooseFastSf", jetDeepJetLooseFastSf.data(), "JetDeepJetLooseFastSf[nJet]/F");
+				tree->Branch("JetDeepJetMediumFastSf", jetDeepJetMediumFastSf.data(), "JetDeepJetMediumFastSf[nJet]/F");
+				tree->Branch("JetDeepJetTightFastSf", jetDeepJetTightFastSf.data(), "JetDeepJetTightFastSf[nJet]/F");
+			}
 		}
 
 		tree->Branch("nFatJet", &nFatJet);
@@ -367,6 +373,17 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 				tree->Branch(("JetDeepJetTightLightSf_" + bSyst + "Down").c_str (), jetDeepJetTightLightSfDown[iSyst].data(), ("JetDeepJetTightLightSf_" + bSyst + "Down[nJet]/F").c_str ());
 				iSyst++;
 			}
+
+			if (isFastSim) {
+				tree->Branch("JetDeepJetLooseFastSfUp", jetDeepJetLooseFastSfUp.data(), "JetDeepJetLooseFastSfUp[nJet]/F");
+				tree->Branch("JetDeepJetMediumFastSfUp", jetDeepJetMediumFastSfUp.data(), "JetDeepJetMediumFastSfUp[nJet]/F");
+				tree->Branch("JetDeepJetTightFastSfUp", jetDeepJetTightFastSfUp.data(), "JetDeepJetTightFastSfUp[nJet]/F");
+
+				tree->Branch("JetDeepJetLooseFastSfDown", jetDeepJetLooseFastSfDown.data(), "JetDeepJetLooseFastSfDown[nJet]/F");
+				tree->Branch("JetDeepJetMediumFastSfDown", jetDeepJetMediumFastSfDown.data(), "JetDeepJetMediumFastSfDown[nJet]/F");
+				tree->Branch("JetDeepJetTightFastSfDown", jetDeepJetTightFastSfDown.data(), "JetDeepJetTightFastSfDown[nJet]/F");
+			}
+
 		}
 
 		if (isFastSim) {

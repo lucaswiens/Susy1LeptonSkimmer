@@ -51,9 +51,9 @@ int main(int argc, char *argv[]) {
 	const bool &isFastSim      = runPeriod == 'S' ? true : false;
 
 	std::cout << "Producing NTuples for a " << (isFastSim ? "fastsim " : "") << (isData ? "data" : "MC") << " sample." << std::endl <<
-		"Year = " << era << std::endl <<
-		"RunPeriod = " << runPeriod << std::endl <<
-		"Cross Section  = " << xSection << std::endl <<
+		"Year          = " << era << std::endl <<
+		"RunPeriod     = " << runPeriod << std::endl <<
+		"Cross Section = " << xSection << std::endl <<
 	std::endl;
 
 
@@ -147,6 +147,11 @@ int main(int argc, char *argv[]) {
 	}
 	if (isFastSim) {
 		producers.push_back(std::shared_ptr<FastSimProducer>(new FastSimProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
+	}
+
+	std::cout << "\nThe following producers are used:" << std::endl;
+	for (std::shared_ptr<BaseProducer> producer : producers) {
+		std::cout << producer->Name << std::endl; // Debug Information
 	}
 
 	DataReader dataReader(inputFileName, "Events", isData, isFastSim);

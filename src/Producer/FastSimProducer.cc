@@ -23,6 +23,9 @@ FastSimProducer::FastSimProducer(const pt::ptree &configTree, const pt::ptree &s
 	//Muon keys
 	muonLooseSf      = std::make_shared<TH2F>(*(TH2F*)muonSfFile->Get("miniIso04_LooseId_sf"));
 	muonMediumSf      = std::make_shared<TH2F>(*(TH2F*)muonSfFile->Get("miniIso02_MediumId_sf"));
+
+	std::cout << "Opening the btagging csv file:\n" << cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Jet.BTag.FastSim.BTag." + eraSelector) << std::endl;
+	btagCsvReader = std::make_unique<BTagCSVReader>(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Jet.BTag.FastSim.BTag." + eraSelector), true);
 }
 
 void FastSimProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -67,13 +70,25 @@ void FastSimProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produc
 		product.electronTightMvaFastSfDown[iElectron]= product.electronTightMvaFastSf[iElectron] - tightMvaFastSfErr;
 	}
 
-	//TODO
-	// https://twiki.cern.ch/twiki/bin/view/CMS/SUSRecommendations18#Cleaning_up_of_fastsim_jets_from
+	for (int iJet = 0; iJet < product.nJet; iJet++) {
+		product.jetDeepJetLooseFastSf[iJet]      = btagCsvReader->Get(product.jetPt.at(iJet), 'L');
+		product.jetDeepJetMediumFastSf[iJet]     = btagCsvReader->Get(product.jetPt.at(iJet), 'M');
+		product.jetDeepJetTightFastSf[iJet]      = btagCsvReader->Get(product.jetPt.at(iJet), 'T');
+
+		product.jetDeepJetLooseFastSfUp[iJet]    = btagCsvReader->GetUp(product.jetPt.at(iJet), 'L');
+		product.jetDeepJetMediumFastSfUp[iJet]   = btagCsvReader->GetUp(product.jetPt.at(iJet), 'M');
+		product.jetDeepJetTightFastSfUp[iJet]    = btagCsvReader->GetUp(product.jetPt.at(iJet), 'T');
+
+		product.jetDeepJetLooseFastSfDown[iJet]  = btagCsvReader->GetDown(product.jetPt.at(iJet), 'L');
+		product.jetDeepJetMediumFastSfDown[iJet] = btagCsvReader->GetDown(product.jetPt.at(iJet), 'M');
+		product.jetDeepJetTightFastSfDown[iJet]  = btagCsvReader->GetDown(product.jetPt.at(iJet), 'T');
+	}
+
+	dataReader.ReadGenEntry();
 	product.stopMass = -999;
 	product.gluinoMass = -999;
 	product.neutralinoMass = -999;
 	product.charginoMass = -999;
-	dataReader.ReadGenEntry();
 	for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
 		dataReader.GetGenValues(iGen);
 		if (std::abs(dataReader.genPdgId) == stopPdgId) {

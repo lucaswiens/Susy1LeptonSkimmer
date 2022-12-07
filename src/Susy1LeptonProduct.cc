@@ -387,6 +387,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		}
 
 		if (isFastSim) {
+			tree->Branch("susyXSectionNLO", &susyXSectionNLO);
+			tree->Branch("susyXSectionNLLO", &susyXSectionNLLO);
+			tree->Branch("susyXSectionNLOUp", &susyXSectionNLOUp);
+			tree->Branch("susyXSectionNLLOUp", &susyXSectionNLLOUp);
+			tree->Branch("susyXSectionNLODown", &susyXSectionNLODown);
+			tree->Branch("susyXSectionNLLODown", &susyXSectionNLLODown);
 			tree->Branch("mStop", &stopMass);
 			tree->Branch("mGluino", &gluinoMass);
 			tree->Branch("mNeutralino", &neutralinoMass);

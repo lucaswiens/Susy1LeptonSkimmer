@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
 
 	std::cout << std::endl << "Starting Event loop over " << nEvents << " Events" << std::endl;
 	for (int entry = 0; entry < nEvents; ++entry) {
-		if (entry % 10000 == 0) {
+		if (entry % 50000 == 0) {
 			std::cout  << "Processed " << int(100*(float)(entry + 1)/nEvents) << "% Events at a rate of " + std::to_string(entry / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
 		}
 

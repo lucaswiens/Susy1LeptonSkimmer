@@ -9,23 +9,41 @@ FastSimProducer::FastSimProducer(const pt::ptree &configTree, const pt::ptree &s
 	neutralinoPdgId = configTree.get<int>("Producer.FastSim.NeutralinoPdgId");
 	charginoPdgId   = configTree.get<int>("Producer.FastSim.CharginoPdgId");
 
-	// Open root files stored in root files
-	electronSfFile = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Electron." + eraSelector + ".FastSim.Path")).c_str());
-	muonSfFile     = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.FastSim.Path")).c_str());
+	// Open json file with cross section
+	pt::read_json(std::string(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + configTree.get<std::string>("Producer.FastSim.CrossSection")).c_str(), xSectionTree);
 
-	// electron keys
-	// https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Electrons_FullSim_FastSim
+	// Open root files stored in root files
+	electronSfFile = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/leptonScaleFactor/" + scaleFactorTree.get<std::string>("Electron." + eraSelector + ".FastSim.Path")).c_str());
+	muonSfFile     = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/leptonScaleFactor/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.FastSim.Path")).c_str());
+
+	/*************************************************************************************************
+	*   Electron Fastsim Scale Factors                                                               *
+	*   2016 https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Data_leading_order_FullSim_MC_co   *
+	*   2017 https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Electrons_FullSim_FastSim_AN1      *
+	*   2018 https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#FullSim_FastSim_TTBar_MC_compari   *
+	*************************************************************************************************/
 	electronVetoSf     = std::make_shared<TH2F>(*(TH2F*)electronSfFile->Get("CutBasedVetoNoIso94XV2_sf"));
 	electronTightSf    = std::make_shared<TH2F>(*(TH2F*)electronSfFile->Get("CutBasedTightNoIso94XV2_sf"));
 	electronVetoMvaSf = std::make_shared<TH2F>(*(TH2F*)electronSfFile->Get("MVAVLooseTightIP2DMini4_sf")); // not sure if this is correct
 	electronTightMvaSf = std::make_shared<TH2F>(*(TH2F*)electronSfFile->Get("ConvIHit0_sf"));
 
-	//Muon keys
+	/*************************************************************************************************
+	*   Muon Scale Factors                                                                           *
+	*   2016 https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#FullSim_FastSim_TTBar_MC_com_AN1   *
+	*   2017 https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Muons_FullSim_FastSim_AN1          *
+	*   2018 https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Muons_FullSim_FastSim              *
+	*************************************************************************************************/
 	muonLooseSf      = std::make_shared<TH2F>(*(TH2F*)muonSfFile->Get("miniIso04_LooseId_sf"));
 	muonMediumSf      = std::make_shared<TH2F>(*(TH2F*)muonSfFile->Get("miniIso02_MediumId_sf"));
 
-	std::cout << "Opening the btagging csv file:\n" << cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Jet.BTag.FastSim.BTag." + eraSelector) << std::endl;
-	btagCsvReader = std::make_unique<BTagCSVReader>(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/" + scaleFactorTree.get<std::string>("Jet.BTag.FastSim.BTag." + eraSelector), true);
+	/***********************************************************************************************************
+	*   bTag scale factor csv files                                                                            *
+	*   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy#FastSim_correction_factors   *
+	*   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X#FastSim_correction_factors          *
+	*   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X#FastSim_correction_factors         *
+	/***********************************************************************************************************
+	***********************************************************************************************************/
+	btagCsvReader = std::make_unique<BTagCSVReader>(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/bTagScaleFactor/" + scaleFactorTree.get<std::string>("Jet.BTag.FastSim.BTag." + eraSelector), true);
 }
 
 void FastSimProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -89,6 +107,14 @@ void FastSimProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produc
 	product.gluinoMass = -999;
 	product.neutralinoMass = -999;
 	product.charginoMass = -999;
+
+	product.susyXSectionNLO    = -999;
+	product.susyXSectionNLLO   = -999;
+	product.susyXSectionNLOUp  = -999;
+	product.susyXSectionNLLOUp = -999;
+	product.susyXSectionNLODown  = -999;
+	product.susyXSectionNLLODown = -999;
+
 	for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
 		dataReader.GetGenValues(iGen);
 		if (std::abs(dataReader.genPdgId) == stopPdgId) {
@@ -101,7 +127,20 @@ void FastSimProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produc
 			product.charginoMass = dataReader.genMass;
 		}
 
-		if (product.stopMass > -999 && product.gluinoMass > -999 && product.neutralinoMass > -999 && product.charginoMass > -999) { break;}
+		// Check if the mass exists in the cross section json file... Sometimes the masses are set to strange unexpected values, one might needs to correct this later or discard those events
+		boost::optional< pt::ptree& > child = xSectionTree.get_child_optional("NLO+NLL Cross section [pb]." + std::to_string((int)product.gluinoMass));
+		if (!child) { continue;}
+
+		product.susyXSectionNLO                  = xSectionTree.get<float>("NLO+NLL Cross section [pb]." + std::to_string((int)product.gluinoMass));
+		const float &susyXSectionNLOUncertainty  = xSectionTree.get<float>("Uncertainty (NLO + NLL) [%]." + std::to_string((int)product.gluinoMass));
+		product.susyXSectionNLLO                 = xSectionTree.get<float>("NNLO+NNLL Cross section [pb]." + std::to_string((int)product.gluinoMass));
+		const float &susyXSectionNLLOUncertainty = xSectionTree.get<float>("Uncertainty (NNLOapprox + NNLL) [%]." + std::to_string((int)product.gluinoMass));
+
+		product.susyXSectionNLOUp  = product.susyXSectionNLO  + susyXSectionNLOUncertainty;
+		product.susyXSectionNLLOUp = product.susyXSectionNLLO + susyXSectionNLLOUncertainty;
+
+		product.susyXSectionNLODown  = product.susyXSectionNLO  - susyXSectionNLOUncertainty;
+		product.susyXSectionNLLODown = product.susyXSectionNLLO - susyXSectionNLLOUncertainty;
 	}
 }
 

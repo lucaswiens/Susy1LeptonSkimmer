@@ -8,6 +8,8 @@
 
 #include <correction.h>
 
+#include <boost/optional/optional.hpp>
+
 class FastSimProducer : public BaseProducer {
 	private:
 		//Era information
@@ -24,6 +26,9 @@ class FastSimProducer : public BaseProducer {
 
 		// BTag ScaleFactors requrie the btag csv reader
 		std::unique_ptr<BTagCSVReader> btagCsvReader;
+
+		// Cross Section Json File
+		pt::ptree xSectionTree;
 
 	public:
 		FastSimProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile);

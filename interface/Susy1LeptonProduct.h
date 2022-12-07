@@ -156,7 +156,8 @@ class Susy1LeptonProduct {
 		std::array<int, nMax> grandMotherPdgId, genTauGrandMotherPdgId, genTauMotherPdgId, genLepGrandMotherPdgId, genLepMotherPdgId;
 
 		// Fast Sim Model Information
-		float stopMass, gluinoMass, neutralinoMass, charginoMass;
+		float susyXSectionNLO, susyXSectionNLLO, susyXSectionNLOUp, susyXSectionNLLOUp, susyXSectionNLODown, susyXSectionNLLODown,
+			stopMass, gluinoMass, neutralinoMass, charginoMass;
 };
 
 #endif;

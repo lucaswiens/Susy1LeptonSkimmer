@@ -498,6 +498,7 @@
 			}
 		},
 		"FastSim": {
+			"CrossSection" : "SUSYCrossSections13TeVgluglu.json",
 			"StopPdgId" : 1000006,
 			"GluinoPdgId" : 1000021,
 			"NeutralinoPdgId" : 1000022,

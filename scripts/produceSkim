@@ -29,8 +29,19 @@ eval `scramv1 runtime -sh` #cmsenv
 
 export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
 
-cd ${OUTPUTDIR}
+# Do the skimming
+#cd ${OUTPUTDIR}
+#echo NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
+#NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
+
+# Copy the input file and run over it
+cd /tmp #${TMP}
+xrdcp ${INFILE} inputFile_${JOB}.root || exit
 
 #Do the skimming
-echo NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
-NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
+cd ${OUTPUTDIR}
+echo NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
+NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
+
+#mv ${OUT}_${JOB}.root ${OUTPUTDIR}
+rm /tmp/inputFile_${JOB}.root

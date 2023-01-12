@@ -57,8 +57,8 @@ def GetOSVariable(Var):
 if __name__=="__main__":
 	date = subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).decode().replace("\n", "")#GetOSVariable("DATE")
 	cmsswBase = GetOSVariable("CMSSW_BASE")
-	#redirector = "root://cms-xrd-global.cern.ch/"
-	redirector = "root://xrootd-cms.infn.it/"
+	redirector = "root://cms-xrd-global.cern.ch/"
+	#redirector = "root://xrootd-cms.infn.it/"
 
 	parser = argparse.ArgumentParser(description="Runs a NAF batch system for nanoAOD", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-i", "--input-file", required=True, help="Path to the file containing a list of samples.")

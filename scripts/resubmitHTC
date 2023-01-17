@@ -1,5 +1,5 @@
 #!/bin/sh
-#Do not overwrite any of the old arguments.md, instead create a new one
+# Do not overwrite any of the old arguments.md, instead create a new one
 eval "DEST=arguments.md"
 if [ -e "$DEST" ] && ! [ -d "$DEST" ];then
 	PREFIX=${DEST%.*}
@@ -13,31 +13,38 @@ if [ -e "$DEST" ] && ! [ -d "$DEST" ];then
 	done
 fi
 
-#Look for failed jobs and find the arguments of this job.
-#Create a new arguments file
-for arg in $(for out in $(
-			grep -rv '\[' error/ |
-			awk -F: '{printf $1 "\n"}' |
-			uniq |
-			sed "s@error@output@g" |
-			sed "s@stderr@stdout@g"
-		)
-		do
-			if ! grep -q "Finished event loop" $out; then
-				grep Processing $out |
-				awk '{printf $2 "\n"}'
-			fi
-		done
-	)
+# Look for failed jobs and find the arguments of this job.
+# Check if lines without "[" appear in error. If only lines with "[" appear they are likely only the messages from downloading the inputilfes
+# awk makes sure to only get the filename from the grep output
+# uniq makes sure that there are no duplicates
+# sed convert the path to the error file to the path of the output file
+LISTOFERRORS=$(
+	grep -rv '\[' error/ |
+	awk -F: '{printf $1 "\n"}' |
+	uniq |
+	sed "s@error@output@g" |
+	sed "s@stderr@stdout@g"
+)
+# Create a list of input files if the event loop has not finished
+LISTOFINPUTS=$(for out in $LISTOFERRORS
+	do
+		if ! grep -q "Finished event loop" $out; then
+			grep Processing $out |
+			awk '{printf $2 "\n"}'
+		fi
+	done
+)
+# Fetch the rest of the arguments that correspond to your input file and write them to the new arguments file
+for arg in $LISTOFINPUTS
 do
 	grep $arg arguments.md >> $DEST
 done
 
-#Create a new submit file using the new arguments file in the queue statement
+# Create a new submit file using the new arguments file in the queue statement
 cp condor.submit re.submit
 sed -i "s@arguments\.md@${DEST}@g" re.submit
 
-#Create backup of current logfiles
+## Create backup of current logfiles
 mv error error$((COUNT-1))
 mv output output$((COUNT-1))
 mv logs logs$((COUNT-1))

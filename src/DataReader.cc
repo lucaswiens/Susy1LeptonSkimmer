@@ -524,24 +524,6 @@ void DataReader::GetGenValues(const int &index) {
 	genMass        = genMassLeaf->GetValue(index);
 }
 
-std::vector<int> DataReader::GetGenModel() {
-	int mGluino = -999, mLSP = -999;
-	std::vector<std::string> modelParameter;
-
-	for (int i = 0; i < genModel.size(); i++) {
-		const bool isThisModel = genModel.at(i)->GetValue();
-		std::cout << genModel.at(i)->GetName() << " = " << isThisModel << "; true = " << true << "; false = " << false << std::endl;
-		if (!isThisModel) { continue;}
-		std::string modelName = genModel.at(i)->GetName();
-		modelParameter = Utility::SplitString(modelName, "_");
-		mGluino = std::stoi(modelParameter.at(0));
-		mLSP    = std::stoi(modelParameter.at(1));
-	}
-	for (auto a : modelParameter) { std::cout << a << "; ";} std::cout << std::endl;
-	return {mGluino, mLSP};
-}
-
-
 int DataReader::LastGenCopy(const int& index) {
 	GetGenValues(index);
 

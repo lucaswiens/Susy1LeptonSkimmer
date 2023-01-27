@@ -524,6 +524,10 @@ void DataReader::GetGenValues(const int &index) {
 	genMass        = genMassLeaf->GetValue(index);
 }
 
+std::pair<int, int> DataReader::GetGenModel() {
+	//TODO
+}
+
 int DataReader::LastGenCopy(const int& index) {
 	GetGenValues(index);
 

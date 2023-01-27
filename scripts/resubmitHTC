@@ -18,18 +18,11 @@ fi
 # awk makes sure to only get the filename from the grep output
 # uniq makes sure that there are no duplicates
 # sed convert the path to the error file to the path of the output file
-LISTOFERRORS=$(
-	grep -rv '\[' error/ |
-	awk -F: '{printf $1 "\n"}' |
-	uniq |
-	sed "s@error@output@g" |
-	sed "s@stderr@stdout@g"
-)
 # Create a list of input files if the event loop has not finished
-LISTOFINPUTS=$(for out in $LISTOFERRORS
+LISTOFINPUTS=$(for out in $(ls output/*stdout)
 	do
 		if ! grep -q "Finished event loop" $out; then
-			grep Processing $out |
+			grep INFILE $out |
 			awk '{printf $2 "\n"}'
 		fi
 	done

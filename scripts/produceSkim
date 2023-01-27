@@ -36,7 +36,7 @@ export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
 
 # Copy the input file and run over it
 cd /tmp #${TMP}
-xrdcp ${INFILE} inputFile_${JOB}.root || exit
+xrdcp ${INFILE} inputFile_${JOB}.root --verbose -d 1 || exit
 
 #Do the skimming
 cd ${OUTPUTDIR}

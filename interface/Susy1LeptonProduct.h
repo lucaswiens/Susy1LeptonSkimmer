@@ -32,7 +32,7 @@ class Susy1LeptonProduct {
 		char GetRunPeriod() {return runPeriod;}
 
 		// Max value for static arrays, should use assert to enforce nObject < nMax, so you know when to increase nMax
-		static const int nMax = 50;
+		static const int nMax = 200; //FIXME 50
 
 		// Lepton Information
 		int nLepton, nGoodLepton, nVetoLepton;

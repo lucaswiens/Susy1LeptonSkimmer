@@ -47,6 +47,7 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		product.electronDz[electronCounter] = dataReader.electronDz;
 		product.electronECorr[electronCounter] = dataReader.electronECorr;
 		product.electronMiniIso[electronCounter] = dataReader.electronMiniIso;
+		product.electronPdgId[electronCounter] = dataReader.electronPdgId;
 		//product.electronIso03[electronCounter] = dataReader.electronIso03;
 		//product.electronIso04[electronCounter] = dataReader.electronIso04;
 		product.electronRelJetIso[electronCounter] = dataReader.electronRelJetIso;
@@ -77,6 +78,7 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 								dataReader.electronIdMap.at(electronGoodCutBasedIdCut);
 
 		product.electronIsVeto[electronCounter] = dataReader.electronPt <= electronGoodPtCut &&
+								dataReader.electronPt >= electronVetoPtCut &&
 								dataReader.electronMiniIso < electronVetoIsoCut &&
 								dataReader.electronIdMap.at(electronVetoCutBasedIdCut);
 

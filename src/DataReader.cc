@@ -34,6 +34,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	electronMassLeaf            = inputTree->GetLeaf("Electron_mass");
 	electronDxyLeaf             = inputTree->GetLeaf("Electron_dxy");
 	electronDzLeaf              = inputTree->GetLeaf("Electron_dz");
+	electronPdgIdLeaf           = inputTree->GetLeaf("Electron_pdgId");
 	electronChargeLeaf          = inputTree->GetLeaf("Electron_charge");
 	electronECorrLeaf           = inputTree->GetLeaf("Electron_eCorr");
 	electronMiniIsoLeaf         = inputTree->GetLeaf("Electron_miniPFRelIso_all");

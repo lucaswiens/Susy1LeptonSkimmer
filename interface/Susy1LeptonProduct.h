@@ -72,7 +72,7 @@ class Susy1LeptonProduct {
 			electronTightFastSf, electronTightFastSfUp, electronTightFastSfDown,
 			electronVetoMvaFastSf, electronVetoMvaFastSfUp, electronVetoMvaFastSfDown,
 			electronTightMvaFastSf,electronTightMvaFastSfUp,electronTightMvaFastSfDown;
-		std::array<int, nMax> electronCharge, electronCutBasedId, electronNLostHits;
+		std::array<int, nMax> electronPdgId, electronCharge, electronCutBasedId, electronNLostHits;
 		std::array<short, nMax> electronLooseMvaId, electronMediumMvaId, electronTightMvaId,
 			electronTightId, electronMediumId, electronLooseId, electronVetoId,
 			electronIsGood, electronIsVeto, electronIsAntiSelected,

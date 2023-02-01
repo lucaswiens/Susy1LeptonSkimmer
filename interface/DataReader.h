@@ -29,7 +29,7 @@ class DataReader {
 		TLeaf *nElectronLeaf,
 			*electronPtLeaf, *electronEtaLeaf, *electronPhiLeaf, *electronMassLeaf,
 			*electronDxyLeaf, *electronDzLeaf,
-			*electronChargeLeaf,
+			*electronPdgIdLeaf, *electronChargeLeaf,
 			*electronECorrLeaf,
 			*electronMiniIsoLeaf, *electronIso03Leaf, *electronIso04Leaf, *electronRelJetIsoLeaf,
 			*electronCutBasedIdLeaf, *electronLooseMvaIdLeaf, *electronMediumMvaIdLeaf, *electronTightMvaIdLeaf,
@@ -110,7 +110,7 @@ class DataReader {
 			electronMiniIso, electronIso03, electronIso04, electronRelJetIso,
 			electronEnergyScaleUp, electronEnergyScaleDown,
 			electronEnergySigmaUp, electronEnergySigmaDown;
-		int electronCharge, electronCutBasedId, electronConvVeto, electronNLostHits;
+		int electronPdgId, electronCharge, electronCutBasedId, electronConvVeto, electronNLostHits;
 		bool electronLooseMvaId, electronMediumMvaId, electronTightMvaId;
 		std::map<char, bool> electronIdMap;
 

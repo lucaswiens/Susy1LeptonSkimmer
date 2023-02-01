@@ -204,6 +204,7 @@ void DataReader::ReadElectronEntry() {
 	electronDxyLeaf->GetBranch()->GetEntry(entry);
 	electronDzLeaf->GetBranch()->GetEntry(entry);
 	electronChargeLeaf->GetBranch()->GetEntry(entry);
+	electronPdgIdLeaf->GetBranch()->GetEntry(entry);
 	electronECorrLeaf->GetBranch()->GetEntry(entry);
 	electronMiniIsoLeaf->GetBranch()->GetEntry(entry);
 	//electronIso03Leaf->GetBranch()->GetEntry(entry);
@@ -234,6 +235,7 @@ void DataReader::GetElectronValues(const int &index) {
 	electronDxy             = electronDxyLeaf->GetValue(index);
 	electronDz              = electronDzLeaf->GetValue(index);
 	electronCharge          = electronChargeLeaf->GetValue(index);
+	electronPdgId          = electronPdgIdLeaf->GetValue(index);
 	electronECorr           = electronECorrLeaf->GetValue(index);
 	electronMiniIso         = electronMiniIsoLeaf->GetValue(index);
 	//electronIso03           = electronIso03Leaf->GetValue(index);

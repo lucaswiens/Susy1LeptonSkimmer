@@ -235,6 +235,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		}
 
 		tree->Branch("MetPt", &metPt);
+		tree->Branch("CaloMET_pt", &CaloMET_pt);
 		tree->Branch("MetPhi", &metPhi);
 		tree->Branch("nJet", &nJet);
 		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/F");

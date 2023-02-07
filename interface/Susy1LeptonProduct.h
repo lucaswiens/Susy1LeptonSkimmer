@@ -13,7 +13,7 @@ class Susy1LeptonProduct {
 	private:
 		int era;
 		bool preVFP, isData, isFastSim;
-		std::string eraSelector, sampleName;
+		std::string eraSelector, sampleName;//, datasetDecider;
 		char runPeriod;
 		float xSection, luminosity;
 
@@ -30,6 +30,9 @@ class Susy1LeptonProduct {
 		bool GetIsData() {return isData;}
 		bool GetIsFastSim() {return isFastSim;}
 		char GetRunPeriod() {return runPeriod;}
+
+		std::string primaryDataset;
+		//std::string GetDatasetDecider() { return datasetDecider;}
 
 		// Max value for static arrays, should use assert to enforce nObject < nMax, so you know when to increase nMax
 		static const int nMax = 200; //FIXME 50

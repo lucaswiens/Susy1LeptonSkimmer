@@ -9,6 +9,7 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 	runPeriod(runPeriod),
 	xSection(xSection) {
 		std::string outputFileName = outputFile.GetName();
+		//std::string &primaryDataset;
 		if (era == 2016) {
 			if (outputFileName.find("UL16NanoAODAPVv") != std::string::npos) {
 				// See Eras: https://twiki.cern.ch/twiki/bin/view/CMS/PdmVDatasetsUL2016
@@ -22,6 +23,23 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 			eraSelector = std::to_string(era);
 			this->preVFP = false; // aka postVFP, no-HIPM, no-APV which is just default track construction
 		}
+
+		// if clause has to be shorter than length of str but > 0
+		if (sampleName.find("SingleEle") < 20) {
+				this->primaryDataset = "isSingleElectron";
+				//datasetDecider = "PD_SingleEle";
+				//std::cout << primaryDataset << sampleName.find("SingleEle") << std::endl;
+			}
+		else if (sampleName.find("SingleMu") < 20) {
+				this->primaryDataset = "isSingleMuon";
+				//datasetDecider = "PD_SingleMu";
+				//std::cout << primaryDataset << sampleName.find("SingleMu") << std::endl;
+			}
+		else if (sampleName.find("MET_") < 20) {
+				this->primaryDataset = "isMet";
+				//std::cout << primaryDataset << std::endl;
+			}
+
 
 		for (const std::pair<std::string, boost::property_tree::ptree> jecSyst : configTree.get_child("Producer.Jet.JECSystematic")) {
 			jetPtJecUp.push_back(std::array<float, nMax>());
@@ -415,6 +433,7 @@ void Susy1LeptonProduct::WriteMetaData(TFile &outputFile) {
 	metaData.Branch("IsData", &isData);
 	metaData.Branch("IsFastSim", &isFastSim);
 	metaData.Branch("SampleName", &sampleName);
+	metaData.Branch("primaryDataset", &primaryDataset);
 	if (isData) {
 		metaData.Branch("runPeriod", &runPeriod);
 	} else {
@@ -432,7 +451,7 @@ void Susy1LeptonProduct::WriteMetaData(TFile &outputFile) {
 		}
 		metaData.Branch("Luminosity", &luminosity);
 	}
-
+	//std::cout << "Filling MetaData primaryDataset with" <<  primaryDataset <<  std::endl; // datasetDecider <<
 	metaData.SetDirectory(&outputFile);
 	metaData.Fill();
 	metaData.Write(0, TObject::kOverwrite);

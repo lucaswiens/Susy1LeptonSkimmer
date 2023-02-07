@@ -27,9 +27,9 @@ def prepareArguments(sample):
 		year = 2016
 		if "PUSummer16v3Fast" in str(sample): #FastSim
 			runPeriod = "S"
-	elif "RunIISummer20UL17" in str(sample) or "Run2017" in str(sample) or "T5qqqqVV" in str(sample):
+	elif "RunIISummer20UL17" in str(sample) or "Run2017" in str(sample) or "T5qqqqVV_FS" in str(sample):
 		year = 2017
-		if "TuneCP2" in str(sample) or "FS" in str(sample): #FastSim
+		if "TuneCP2" in str(sample) or "T5qqqqVV_FS" in str(sample): #FastSim
 			runPeriod = "S"
 	elif "RunIISummer20UL18" in str(sample) or "Run2018" in str(sample):
 		year = 2018

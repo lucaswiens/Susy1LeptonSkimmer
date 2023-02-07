@@ -1,19 +1,21 @@
 #!/cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_6_8/external/slc7_amd64_gcc700/bin/python3
-import sys, os
 import argparse
-import subprocess
+import os
 import shutil
+import subprocess
+import sys
 from re import findall
 
 import getXSection
+
 
 def createFileList(sampleFileName):
 	fileList = []
 	sampleFile = open(sampleFileName, "r")
 	return findFileLocation(sample)
 
-def findFileLocation(sample):
-	return subprocess.check_output("dasgoclient -query=\"file dataset=" + str(sample) + "\"", shell=True).split()
+def findFileLocation(sample,private=False):
+	return subprocess.check_output("dasgoclient -query=\"file dataset=" + str(sample) + private*" instance=prod/phys03" + "\"", shell=True).split()
 
 def prepareArguments(sample):
 	isData = True
@@ -25,9 +27,9 @@ def prepareArguments(sample):
 		year = 2016
 		if "PUSummer16v3Fast" in str(sample): #FastSim
 			runPeriod = "S"
-	elif "RunIISummer20UL17" in str(sample) or "Run2017" in str(sample):
+	elif "RunIISummer20UL17" in str(sample) or "Run2017" in str(sample) or "T5qqqqVV" in str(sample):
 		year = 2017
-		if "TuneCP2" in str(sample): #FastSim
+		if "TuneCP2" in str(sample) or "FS" in str(sample): #FastSim
 			runPeriod = "S"
 	elif "RunIISummer20UL18" in str(sample) or "Run2018" in str(sample):
 		year = 2018

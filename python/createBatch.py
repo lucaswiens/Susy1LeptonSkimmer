@@ -85,7 +85,7 @@ if __name__=="__main__":
 
 	submitFile = open(args.output + "/condor.submit", "w")
 	submitFile.write(f"executable = {cmsswBase}/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/scripts/produceSkim\n")
-	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(year) $(runPeriod) $(xSection) $(Process) $(cmsswBase) $(outputDir)\n")
+	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(year) $(runPeriod) $(xSection) $(iJob) $(cmsswBase) $(outputDir)\n")
 	submitFile.write(f"\n")
 	submitFile.write(f"universe       = vanilla\n")
 	submitFile.write(f"request_memory = 500 MB\n")
@@ -94,11 +94,12 @@ if __name__=="__main__":
 	submitFile.write(f"error  = {args.output}/error/job$(Cluster)_$(Process).stderr\n")
 	submitFile.write(f"log    = {args.output}/logs/job$(Cluster)_$(Process).log\n")
 	submitFile.write(f"\n")
-	submitFile.write(f"queue inputFile outputFile year runPeriod xSection cmsswBase outputDir from arguments.md\n")
+	submitFile.write(f"queue inputFile outputFile year runPeriod xSection iJob cmsswBase outputDir from arguments.md\n")
 	submitFile.close()
 
 	sampleFile = open(args.input_file, "r")
 	argumentFile = open(args.output + "/arguments.md", "w")
+	iJob = 0
 	for sample in sampleFile:
 		sample = sample.strip()
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
@@ -112,7 +113,8 @@ if __name__=="__main__":
 			except:
 				pass
 			for filename in fileList:
-				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + cmsswBase + "/src " + args.output + "/root/" + sampleCollection + "\n")
+				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + str(iJob) + " " + cmsswBase + "/src " + args.output + "/root/" + sampleCollection + "\n")
+				iJob += 1
 	sampleFile.close()
 	argumentFile.close()
 

@@ -39,13 +39,16 @@ def prepareArguments(sample):
 		print("Could not determine era of the sample:\n" + str(sample) + "\nCheck the prepareArguments function to configure it properly")
 		sys.exit(1)
 
-	if "/NANOAODSIM" in sample:
+	if "/NANOAODSIM" in sample or "Nano" in sample:
 		isData = False
-	if "/SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample:
-		isSignal = True
+	
 	if isData:
 		runPeriod = findall("Run201..", sample)[0][-1]
 	xSection = getXSection.GetXSection(sample)
+
+	if "/SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample or "T5qqqqVV" in sample:
+		isSignal = True
+		xSection=1
 	return year, runPeriod, xSection
 
 def GetOSVariable(Var):
@@ -64,7 +67,8 @@ if __name__=="__main__":
 
 	parser = argparse.ArgumentParser(description="Runs a NAF batch system for nanoAOD", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-i", "--input-file", required=True, help="Path to the file containing a list of samples.")
-	parser.add_argument("-o", "--output", help="Path to the output directory", default = cmsswBase + "/" "Batch/" + date)
+	parser.add_argument("-o", "--output", default = cmsswBase + "/" "Batch/" + date, help="Path to the output directory", )
+	parser.add_argument("-p", "--private", default = False, action = "store_true", help="Private Production files flag (searches prod/phys03 instance of DAS)")
 
 	args = parser.parse_args()
 
@@ -105,7 +109,7 @@ if __name__=="__main__":
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			print("Collecting files from: " + sample)
 			sampleCollection = sample.split("/")[1]
-			fileList = findFileLocation(sample)
+			fileList = findFileLocation(sample, args.private)
 			year, runPeriod, xSection = prepareArguments(sample)
 			sampleName = sample.replace("/", "_")[1:]
 			try:

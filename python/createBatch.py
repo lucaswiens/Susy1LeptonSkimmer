@@ -14,24 +14,23 @@ def createFileList(sampleFileName):
 	sampleFile = open(sampleFileName, "r")
 	return findFileLocation(sample)
 
-def findFileLocation(sample,private=False):
-	return subprocess.check_output("dasgoclient -query=\"file dataset=" + str(sample) + private*" instance=prod/phys03" + "\"", shell=True).split()
+def findFileLocation(sample, isPrivate=False):
+	return subprocess.check_output("dasgoclient -query=\"file dataset=" + str(sample) + isPrivate * " instance=prod/phys03" + "\"", shell=True).split()
 
 def prepareArguments(sample):
-	isData = True
-	isSignal = False
-	isUSER = False
+	isPrivate = "/USER" in sample
+	isData = not isPrivate and "/NANOAODSIM" not in sample
 	year = "unknown"
 	runPeriod = "M"
-	if "RunIISummer20UL16" in str(sample) or "Run2016" in str(sample):
+	if "RunIISummer20UL16" in str(sample) or "RunIISummer16" in str(sample)or "Run2016" in str(sample):
 		year = 2016
 		if "PUSummer16v3Fast" in str(sample): #FastSim
 			runPeriod = "S"
-	elif "RunIISummer20UL17" in str(sample) or "Run2017" in str(sample) or "T5qqqqVV_FS" in str(sample):
+	elif "RunIISummer20UL17" in str(sample) or "RunIIFall17" in str(sample) or "Run2017" in str(sample) or "T5qqqqVV_FS" in str(sample):
 		year = 2017
 		if "TuneCP2" in str(sample) or "T5qqqqVV_FS" in str(sample): #FastSim
 			runPeriod = "S"
-	elif "RunIISummer20UL18" in str(sample) or "Run2018" in str(sample):
+	elif "RunIISummer20UL18" in str(sample) or "RunIIAutumn18" in str(sample) or "Run2018" in str(sample):
 		year = 2018
 		if "TuneCP2" in str(sample): #FastSim
 			runPeriod = "S"
@@ -39,17 +38,14 @@ def prepareArguments(sample):
 		print("Could not determine era of the sample:\n" + str(sample) + "\nCheck the prepareArguments function to configure it properly")
 		sys.exit(1)
 
-	if "/NANOAODSIM" in sample or "Nano" in sample:
-		isData = False
-	
 	if isData:
 		runPeriod = findall("Run201..", sample)[0][-1]
 	xSection = getXSection.GetXSection(sample)
 
-	if "/SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample or "T5qqqqVV" in sample:
-		isSignal = True
-		xSection=1
-	return year, runPeriod, xSection
+	if "SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample or "T5qqqqVV" in sample:
+		xSection = 1
+
+	return year, runPeriod, xSection, isPrivate
 
 def GetOSVariable(Var):
 	try:
@@ -62,13 +58,12 @@ def GetOSVariable(Var):
 if __name__=="__main__":
 	date = subprocess.check_output("date +\"%Y_%m_%d\"", shell=True).decode().replace("\n", "")#GetOSVariable("DATE")
 	cmsswBase = GetOSVariable("CMSSW_BASE")
-	redirector = "root://cms-xrd-global.cern.ch/"
-	#redirector = "root://xrootd-cms.infn.it/"
+	#redirector = "root://cms-xrd-global.cern.ch/"
+	redirector = "root://xrootd-cms.infn.it/"
 
 	parser = argparse.ArgumentParser(description="Runs a NAF batch system for nanoAOD", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 	parser.add_argument("-i", "--input-file", required=True, help="Path to the file containing a list of samples.")
 	parser.add_argument("-o", "--output", default = cmsswBase + "/" "Batch/" + date, help="Path to the output directory", )
-	parser.add_argument("-p", "--private", default = False, action = "store_true", help="Private Production files flag (searches prod/phys03 instance of DAS)")
 
 	args = parser.parse_args()
 
@@ -109,8 +104,8 @@ if __name__=="__main__":
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			print("Collecting files from: " + sample)
 			sampleCollection = sample.split("/")[1]
-			fileList = findFileLocation(sample, args.private)
-			year, runPeriod, xSection = prepareArguments(sample)
+			year, runPeriod, xSection, isPrivate = prepareArguments(sample)
+			fileList = findFileLocation(sample, isPrivate)
 			sampleName = sample.replace("/", "_")[1:]
 			try:
 				os.makedirs(args.output + "/root/" + sampleCollection)

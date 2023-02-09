@@ -950,7 +950,7 @@ def GetXSection(fileName): #[pb]
 	elif fileName.find("DYToLL_1J") !=-1 : return 859.589402
 	elif fileName.find("DYToLL_2J") !=-1 : return 338.258531
 	elif fileName.find("TTTo2L2Nu") !=-1 : return 88.29
-	elif fileName.find("SingleMuon")!=-1  or fileName.find("SingleElectron") !=-1 or fileName.find("JetHT")  !=-1 or fileName.find("MET") !=-1 or fileName.find("MTHT") !=-1 or fileName.find("T5qqqq"): return 1.
+	elif fileName.find("SingleMuon")!=-1  or fileName.find("SingleElectron") !=-1 or fileName.find("JetHT")  !=-1 or fileName.find("MET") !=-1 or fileName.find("MTHT") !=-1 or fileName.find("T1tttt") or fileName.find("T5qqqq"): return 1.
 	else:
 		print("Cross section not defined! Returning 0 and skipping sample:\n{}\n".format(fileName))
 		return 0

@@ -24,20 +24,14 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 			this->preVFP = false; // aka postVFP, no-HIPM, no-APV which is just default track construction
 		}
 
-		// if clause has to be shorter than length of str but > 0
 		if (sampleName.find("SingleEle") < 20) {
 				this->primaryDataset = "isSingleElectron";
-				//datasetDecider = "PD_SingleEle";
-				//std::cout << primaryDataset << sampleName.find("SingleEle") << std::endl;
 			}
 		else if (sampleName.find("SingleMu") < 20) {
 				this->primaryDataset = "isSingleMuon";
-				//datasetDecider = "PD_SingleMu";
-				//std::cout << primaryDataset << sampleName.find("SingleMu") << std::endl;
 			}
 		else if (sampleName.find("MET_") < 20) {
 				this->primaryDataset = "isMet";
-				//std::cout << primaryDataset << std::endl;
 			}
 
 
@@ -253,7 +247,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		}
 
 		tree->Branch("MetPt", &metPt);
-		tree->Branch("CaloMET_pt", &CaloMET_pt);
+		tree->Branch("CaloMET_pt", &caloMetPt);
 		tree->Branch("MetPhi", &metPhi);
 		tree->Branch("nJet", &nJet);
 		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/F");
@@ -411,10 +405,10 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 
 		if (isFastSim) {
 			tree->Branch("susyXSectionNLO", &susyXSectionNLO);
-			tree->Branch("susyXSectionNLLO", &susyXSectionNLLO);
 			tree->Branch("susyXSectionNLOUp", &susyXSectionNLOUp);
-			tree->Branch("susyXSectionNLLOUp", &susyXSectionNLLOUp);
 			tree->Branch("susyXSectionNLODown", &susyXSectionNLODown);
+			tree->Branch("susyXSectionNLLO", &susyXSectionNLLO);
+			tree->Branch("susyXSectionNLLOUp", &susyXSectionNLLOUp);
 			tree->Branch("susyXSectionNLLODown", &susyXSectionNLLODown);
 			tree->Branch("mStop", &stopMass);
 			tree->Branch("mGluino", &gluinoMass);
@@ -451,7 +445,6 @@ void Susy1LeptonProduct::WriteMetaData(TFile &outputFile) {
 		}
 		metaData.Branch("Luminosity", &luminosity);
 	}
-	//std::cout << "Filling MetaData primaryDataset with" <<  primaryDataset <<  std::endl; // datasetDecider <<
 	metaData.SetDirectory(&outputFile);
 	metaData.Fill();
 	metaData.Write(0, TObject::kOverwrite);

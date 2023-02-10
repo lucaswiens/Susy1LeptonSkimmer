@@ -46,7 +46,7 @@ class DataReader {
 			*jetAreaLeaf, *jetRawFactorLeaf,
 			*jetDeepJetLeaf,
 			*rhoLeaf,
-			*metPhiLeaf, *metPtLeaf, *CaloMET_ptLeaf;
+			*metPhiLeaf, *metPtLeaf, *caloMetPtLeaf;
 		// Fat Jet Leafs
 		TLeaf *nFatJetLeaf,
 			*fatJetIdLeaf,
@@ -124,7 +124,7 @@ class DataReader {
 			jetArea, jetRawFactor,
 			jetDeepJet,
 			rho,
-			metPhi, metPt, CaloMET_pt;
+			metPhi, metPt, caloMetPt;
 
 		void ReadFatJetEntry();
 		void GetFatJetValues(const int &index);

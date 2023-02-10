@@ -50,19 +50,6 @@ int main(int argc, char *argv[]) {
 	const bool &isData         = (runPeriod == 'M' || runPeriod == 'S') ? false : true;
 	const bool &isFastSim      = runPeriod == 'S' ? true : false;
 
-    // if (inputFileName.find("SingleEle") > 0) {
-                    // const std::string &PrimaryDataset = "PD_SingleEle";
-                    // std::cout << PrimaryDataset << std::endl;
-            // }
-    // else if (inputFileName.find("SingleMu") > 0) {
-                    // const std::string &PrimaryDataset = "PD_SingleMu"; //.c_str()
-                    // std::cout << PrimaryDataset << std::endl;
-            // }
-    // else if (inputFileName.find("MET_") > 0) {
-                    // const std::string &PrimaryDataset = "PD_MET";
-                    // std::cout << PrimaryDataset << std::endl;
-            // }
-
 	std::cout << "Producing NTuples for a " << (isFastSim ? "fastsim " : "") << (isData ? "data" : "MC") << " sample." << std::endl <<
 		"Year          = " << era << std::endl <<
 		"RunPeriod     = " << runPeriod << std::endl <<

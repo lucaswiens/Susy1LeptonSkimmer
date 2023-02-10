@@ -13,7 +13,7 @@ class Susy1LeptonProduct {
 	private:
 		int era;
 		bool preVFP, isData, isFastSim;
-		std::string eraSelector, sampleName;
+		std::string eraSelector, sampleName;//, datasetDecider;
 		char runPeriod;
 		float xSection, luminosity;
 
@@ -31,8 +31,11 @@ class Susy1LeptonProduct {
 		bool GetIsFastSim() {return isFastSim;}
 		char GetRunPeriod() {return runPeriod;}
 
+		std::string primaryDataset;
+		//std::string GetDatasetDecider() { return datasetDecider;}
+
 		// Max value for static arrays, should use assert to enforce nObject < nMax, so you know when to increase nMax
-		static const int nMax = 50;
+		static const int nMax = 200; //FIXME 50
 
 		// Lepton Information
 		int nLepton, nGoodLepton, nVetoLepton;
@@ -72,7 +75,7 @@ class Susy1LeptonProduct {
 			electronTightFastSf, electronTightFastSfUp, electronTightFastSfDown,
 			electronVetoMvaFastSf, electronVetoMvaFastSfUp, electronVetoMvaFastSfDown,
 			electronTightMvaFastSf,electronTightMvaFastSfUp,electronTightMvaFastSfDown;
-		std::array<int, nMax> electronCharge, electronCutBasedId, electronNLostHits;
+		std::array<int, nMax> electronPdgId, electronCharge, electronCutBasedId, electronNLostHits;
 		std::array<short, nMax> electronLooseMvaId, electronMediumMvaId, electronTightMvaId,
 			electronTightId, electronMediumId, electronLooseId, electronVetoId,
 			electronIsGood, electronIsVeto, electronIsAntiSelected,
@@ -82,7 +85,7 @@ class Susy1LeptonProduct {
 		int nJet,
 			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
 			jetId;
-		float rho, metPt, metPtJerUp, metPtJerDown, metPhi;
+		float rho, metPt, metPtJerUp, metPtJerDown, metPhi, CaloMET_pt;
 		std::vector<float> metPtJecUp, metPtJecDown;
 		std::array<int, nMax> jetPartFlav,
 			jetDeepJetId;

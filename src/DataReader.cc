@@ -34,6 +34,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	electronMassLeaf            = inputTree->GetLeaf("Electron_mass");
 	electronDxyLeaf             = inputTree->GetLeaf("Electron_dxy");
 	electronDzLeaf              = inputTree->GetLeaf("Electron_dz");
+	electronPdgIdLeaf           = inputTree->GetLeaf("Electron_pdgId");
 	electronChargeLeaf          = inputTree->GetLeaf("Electron_charge");
 	electronECorrLeaf           = inputTree->GetLeaf("Electron_eCorr");
 	electronMiniIsoLeaf         = inputTree->GetLeaf("Electron_miniPFRelIso_all");
@@ -105,6 +106,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	// MET
 	metPtLeaf  = inputTree->GetLeaf("MET_pt");
 	metPhiLeaf = inputTree->GetLeaf("MET_phi");
+	caloMetPtLeaf = inputTree->GetLeaf("CaloMET_pt");
 
 	// PileUp
 	nTrueIntLeaf     = inputTree->GetLeaf("Pileup_nTrueInt");
@@ -203,6 +205,7 @@ void DataReader::ReadElectronEntry() {
 	electronDxyLeaf->GetBranch()->GetEntry(entry);
 	electronDzLeaf->GetBranch()->GetEntry(entry);
 	electronChargeLeaf->GetBranch()->GetEntry(entry);
+	electronPdgIdLeaf->GetBranch()->GetEntry(entry);
 	electronECorrLeaf->GetBranch()->GetEntry(entry);
 	electronMiniIsoLeaf->GetBranch()->GetEntry(entry);
 	//electronIso03Leaf->GetBranch()->GetEntry(entry);
@@ -233,6 +236,7 @@ void DataReader::GetElectronValues(const int &index) {
 	electronDxy             = electronDxyLeaf->GetValue(index);
 	electronDz              = electronDzLeaf->GetValue(index);
 	electronCharge          = electronChargeLeaf->GetValue(index);
+	electronPdgId          = electronPdgIdLeaf->GetValue(index);
 	electronECorr           = electronECorrLeaf->GetValue(index);
 	electronMiniIso         = electronMiniIsoLeaf->GetValue(index);
 	//electronIso03           = electronIso03Leaf->GetValue(index);
@@ -279,6 +283,9 @@ void DataReader::ReadJetEntry() {
 
 	metPhiLeaf->GetBranch()->GetEntry(entry);
 	metPhi = metPhiLeaf->GetValue();
+
+	caloMetPtLeaf->GetBranch()->GetEntry(entry);
+	caloMetPt = caloMetPtLeaf->GetValue();
 
 	jetMassLeaf->GetBranch()->GetEntry(entry);
 	jetPtLeaf->GetBranch()->GetEntry(entry);
@@ -522,6 +529,10 @@ void DataReader::GetGenValues(const int &index) {
 	genPhi         = genPhiLeaf->GetValue(index);
 	genEta         = genEtaLeaf->GetValue(index);
 	genMass        = genMassLeaf->GetValue(index);
+}
+
+std::pair<int, int> DataReader::GetGenModel() {
+	//TODO
 }
 
 int DataReader::LastGenCopy(const int& index) {

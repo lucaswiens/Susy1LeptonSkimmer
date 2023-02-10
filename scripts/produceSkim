@@ -38,9 +38,11 @@ eval `scramv1 runtime -sh` #cmsenv
 
 # Copy the input file and run over it
 cd /tmp #${TMP}
+
 echo trying xrdcp
 xrdcp ${INFILE} inputFile_${JOB}.root || exit
 echo done
+
 #Do the skimming
 cd ${OUTPUTDIR}
 echo NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}

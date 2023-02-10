@@ -88,6 +88,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 							dataReader.muonIdMap.at(muonGoodCutBasedIdCut);
 
 		product.muonIsVeto[muonCounter] = muonPt <= muonGoodPtCut &&
+							muonPt >= muonVetoPtCut &&
 							dataReader.muonMiniIso < muonVetoIsoCut &&
 							dataReader.muonIdMap.at(muonVetoCutBasedIdCut);
 

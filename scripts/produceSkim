@@ -1,4 +1,8 @@
 #!/bin/bash
+
+export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
+if  test -f $X509_USER_PROXY ; then
+    
 INFILE=$1
 OUT=$2
 ERA=$3
@@ -27,8 +31,6 @@ module load cmssw
 cd ${BASEDIR}
 eval `scramv1 runtime -sh` #cmsenv
 
-export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
-
 # Do the skimming
 #cd ${OUTPUTDIR}
 #echo NanoSkim ${INFILE} ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
@@ -36,7 +38,10 @@ export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
 
 # Copy the input file and run over it
 cd /tmp #${TMP}
-xrdcp ${INFILE} inputFile_${JOB}.root --verbose -d 1 || exit
+
+echo trying xrdcp
+xrdcp ${INFILE} inputFile_${JOB}.root || exit
+echo done
 
 #Do the skimming
 cd ${OUTPUTDIR}
@@ -45,3 +50,7 @@ NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSE
 
 #mv ${OUT}_${JOB}.root ${OUTPUTDIR}
 rm /tmp/inputFile_${JOB}.root
+
+else   
+     echo "can not find grid certificate at location $X509_USER_PROXY "
+fi

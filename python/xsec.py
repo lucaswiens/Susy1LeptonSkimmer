@@ -19,7 +19,7 @@ if __name__ == "__main__":
 	cmsswBase = GetOSVariable("CMSSW_BASE")
 	xsDict = {}
 	#List of json files download from xsdb, edit manually
-	jsonList = ["DY.json",  "QCD.json",  "ST.json",  "TTJets.json",  "TTW.json",  "TTZ.json",  "WJets.json",  "WW.json",  "WZ.json",  "ZZ.json",  "tZq.json", "TTTo.json"]
+	jsonList = ["DY.json",  "QCD.json",  "ST.json",  "TTJets.json",  "TTW.json",  "TTZ.json",  "WJets.json",  "WW.json",  "WZ.json",  "ZZ.json",  "tZq.json", "TTTo.json","WJets_HT.json"]
 
 	xsFile = open("python/getXSection.py", "w")
 	xsFile.write("def GetXSection(fileName): #[pb]" + "\n")

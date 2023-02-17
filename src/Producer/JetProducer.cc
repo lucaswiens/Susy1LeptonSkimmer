@@ -261,7 +261,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 	product.metPt  = std::sqrt(std::pow(metPx, 2) + std::pow(metPy, 2));
 	product.metPhi = std::atan2(metPy, metPx);
-	product.CaloMET_pt = dataReader.CaloMET_pt;
+	product.caloMetPt = dataReader.caloMetPt;
 
 	int fatJetCounter = 0;
 	dataReader.ReadFatJetEntry();

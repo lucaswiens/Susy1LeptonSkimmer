@@ -104,7 +104,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 	product.nMuon = muonCounter;
 	product.nGoodMuon = goodMuonCounter;
 	product.nVetoMuon = vetoMuonCounter;
-	product.nAntiSelectedMuon = vetoMuonCounter;
+	product.nAntiSelectedMuon = antiSelectedMuonCounter;
 }
 
 void MuonProducer::EndJob(TFile &file) { }

@@ -329,9 +329,24 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("GenLepMotherPdgId", genLepMotherPdgId.data(), "GenLepMotherPdgId[nGenLepton]/I");
 
 			tree->Branch("nGenTau", &nGenTau);
+			tree->Branch("nGenMatchedMuon", &nGenMatchedMuon);
+			tree->Branch("nGenMatchedElectron", &nGenMatchedElectron);
+			tree->Branch("nGenMatchedJet", &nGenMatchedJet);
+			tree->Branch("GenMetPhi", &genMetPhi);
+			tree->Branch("GenMetPt", &genMetPt);
 			tree->Branch("GenTauGrandMotherPdgId", genTauGrandMotherPdgId.data(), "GenTauGrandMotherPdgId[nGenTau]/I");
 			tree->Branch("GenTauMotherPdgId", genTauMotherPdgId.data(), "GenTauMotherPdgId[nGenTau]/I");
-
+			tree->Branch("GenJetPt_1", &genJetPt_1);
+			tree->Branch("GenJetPhi_1", &genJetPhi_1);
+			tree->Branch("GenJetEta_1", &genJetEta_1);
+			tree->Branch("GenJetMass_1", &genJetMass_1);
+			tree->Branch("GenJetPt_1", &genJetPt_1);
+			tree->Branch("GenJetPhi_2", &genJetPhi_2);
+			tree->Branch("GenJetEta_2", &genJetEta_2);
+			tree->Branch("GenJetMass_2", &genJetMass_2);
+			tree->Branch("GenMuonPt_1", &genMuonPt_1);
+			tree->Branch("GenMuonPhi_1", &genMuonPhi_1);
+			tree->Branch("GenMuonEta_1", &genMuonEta_1);
 			tree->Branch("nGenLeptonFromTau", &nGenLeptonFromTau);
 			tree->Branch("LeptonDecayChannelFlag", &leptonDecayChannelFlag);
 			tree->Branch("IsDiLeptonEvent", &isDiLeptonEvent);

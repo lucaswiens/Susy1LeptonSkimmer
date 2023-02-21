@@ -151,13 +151,16 @@ class Susy1LeptonProduct {
 		bool hltEleOr, hltMuOr, hltMetOr;
 
 		// Gen Level Information
-		int nGenPart, nGenLepton, nGenTau, nGenLeptonFromTau, nGenMatchedW, nGenNeutrino,
-			leptonDecayChannelFlag;
-		float genWeight;
+		int nGenPart, nGenLepton, nGenMatchedMuon, nGenMatchedElectron, nGenMatchedJet, nGenTau, nGenLeptonFromTau, nGenMatchedW, nGenNeutrino, leptonDecayChannelFlag;
+		float genWeight, genMetPhi, genMetPt, 
+			genJetPt_1, genJetPhi_1, genJetEta_1, genJetMass_1, genJetPt_2,  genJetPhi_2, genJetEta_2, genJetMass_2, 
+			genMuonPt_1,  genMuonPhi_1, genMuonEta_1, 
+			genElectronPt_1,  genElectronPhi_1, genElectronEta_1;
 		bool isDiLeptonEvent, isHadTauEvent, leptonsInAcceptance;
-		std::array<float, nMax> genDeltaPhiLepWSum, genDeltaPhiLepWDirect, genWSumMass, genWDirectMass, genMTLepNu, genNeutrinoPt;
+		std::array<float, nMax> genDeltaPhiLepWSum, genDeltaPhiLepWDirect, genWSumMass, genWDirectMass, genMTLepNu, genNeutrinoPt, genMatchedMuonGenPt, genMatchedMuonGenPhi, genMatchedMuonGenMass, genMatchedMuonGenEta, 
+			genMatchedElectronGenPt, genMatchedElectronGenPhi, genMatchedElectronGenMass, genMatchedElectronGenEta, 
+			genMatchedJetGenPt, genMatchedJetGenPhi, genMatchedJetGenMass, genMatchedJetGenEta;
 		std::array<int, nMax> grandMotherPdgId, genTauGrandMotherPdgId, genTauMotherPdgId, genLepGrandMotherPdgId, genLepMotherPdgId;
-
 		// Fast Sim Model Information
 		float susyXSectionNLO, susyXSectionNLLO, susyXSectionNLOUp, susyXSectionNLLOUp, susyXSectionNLODown, susyXSectionNLLODown,
 			stopMass, gluinoMass, neutralinoMass, charginoMass;

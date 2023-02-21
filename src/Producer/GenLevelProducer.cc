@@ -8,6 +8,8 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	ROOT::Math::PtEtaPhiMVector leptonP4;
 	ROOT::Math::PtEtaPhiMVector neutrinoP4;
 	float maxLeptonPt;
+	bool hardestMuon = false;
+	bool hardestElectron = false;
 	int genPartCounter = 0, genLeptonCounter = 0, genTauCounter = 0, genLeptonFromTauCounter = 0, genWCounter = 0, genMatchedWCounter = 0, genNeutrinoCounter = 0, genTopCounter = 0;
 	std::vector<int> tauLeptonIndices;
 	dataReader.ReadGenEntry();
@@ -45,7 +47,17 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 				const float leptonEta  = dataReader.genEta;
 				const float leptonMass = dataReader.genMass;
 				const int leptonStatus = dataReader.genStatus;
-
+				if (std::abs(dataReader.genPdgId) == 13 && !hardestMuon) {
+					product.genMuonPt_1 = leptonPt;
+					product.genMuonPhi_1 = leptonPhi;
+					product.genMuonEta_1 = leptonEta;
+					hardestMuon = true;
+				} else if (std::abs(dataReader.genPdgId) == 13 && !hardestElectron) {
+					product.genElectronPt_1 = leptonPt;
+					product.genElectronPhi_1 = leptonPhi;
+					product.genElectronEta_1 = leptonEta;
+					hardestElectron = true;
+				}
 				const int motherIndex = dataReader.genMotherIndex;
 				dataReader.GetGenValues(motherIndex); // Read Mother Info
 				const float motherPt   = dataReader.genPt;
@@ -138,13 +150,31 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	} else {
 		product.leptonDecayChannelFlag = -999;
 	}
-
+	
+	int nGenJet = dataReader.nGenJet;
+	for(int iGen = 0; iGen < 2; iGen++) {
+		dataReader.GetGenJetValues(iGen);
+		if (iGen == 0){
+			product.genJetPt_1 = dataReader.genJetPt;
+			product.genJetEta_1 = dataReader.genJetEta;
+			product.genJetPhi_1 = dataReader.genJetPhi;
+			product.genJetMass_1 = dataReader.jetMass;
+		} else {
+			product.genJetPt_2 = dataReader.genJetPt;
+			product.genJetEta_2 = dataReader.genJetEta;
+			product.genJetPhi_2 = dataReader.genJetPhi;
+			product.genJetMass_2 = dataReader.jetMass;
+		}
+	}
 	product.nGenLepton = genLeptonCounter;
 	product.nGenTau = genTauCounter;
 	product.nGenLeptonFromTau = genLeptonFromTauCounter;
 	product.nGenMatchedW = genMatchedWCounter;
 	product.nGenNeutrino = genNeutrinoCounter;
 	product.genWeight = dataReader.genWeight;
+	product.genMetPt = dataReader.genMetPt;
+	product.genMetPhi = dataReader.genMetPhi;
+
 }
 
 void GenLevelProducer::EndJob(TFile &file) {}

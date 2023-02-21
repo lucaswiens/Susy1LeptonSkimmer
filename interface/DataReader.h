@@ -79,7 +79,8 @@ class DataReader {
 			*genPdgIdLeaf, *genMotherIndexLeaf,
 			*genPtLeaf, *genEtaLeaf, *genPhiLeaf, *genMassLeaf,
 			*genWeightLeaf,
-			*genStatusLeaf, *genStatusFlagsLeaf;
+			*genStatusLeaf, *genStatusFlagsLeaf,
+			*genMetPtLeaf, *genMetPhiLeaf;
 
 		// FastSim Leafs
 		std::vector<TLeaf*> genModel;
@@ -146,7 +147,7 @@ class DataReader {
 		void ReadGenJetEntry();
 		void GetGenJetValues(const int &index);
 		int nGenJet;
-		float genJetPt, genJetEta, genJetPhi;
+		float genJetPt, genJetEta, genJetPhi, genJetMass;
 		void ReadGenFatJetEntry();
 		void GetGenFatJetValues(const int &index);
 		int nGenFatJet;
@@ -176,8 +177,7 @@ class DataReader {
 		int nGenPart,
 			genPdgId, genMotherIndex,
 			genStatus, genStatusFlags;
-		float genPt, genEta, genPhi, genMass,
-			genWeight;
+		float genPt, genEta, genPhi, genMass, genWeight, genMetPt, genMetPhi;
 
 		int GetGenMatchedIndex(const float &recoPt, const float &recoPhi, const float &recoEta, const int &recoPDG, const float &deltaRCut, const float &deltaPtCut);
 		int LastGenCopy(const int &index);

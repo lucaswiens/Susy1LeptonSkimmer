@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 	std::vector<CutFlow> cutflows;
 	std::vector<std::shared_ptr<TTree>> outputTrees;
 	std::vector<std::string> channels = {"Muon", "Electron", "LeptonIncl"};
-	std::vector<std::string> triggerNames, metTriggerNames, metFilterNames;
+	DataReader dataReader(inputFileName, "Events", isData, isFastSim);
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
 	Susy1LeptonProduct product(era, isData, isFastSim, outputFileName, runPeriod, xSection, configTree, outputFile);
 
@@ -88,20 +88,20 @@ int main(int argc, char *argv[]) {
 		outputTrees.push_back(tree);
 
 		for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".Trigger." + product.GetEraSelector())) {
-			if (std::find(triggerNames.begin(), triggerNames.end(), name) == triggerNames.end()) {
-				triggerNames.push_back(name);
+			if (std::find(dataReader.triggerNames.begin(), dataReader.triggerNames.end(), name) == dataReader.triggerNames.end()) {
+				dataReader.triggerNames.push_back(name);
 			}
 		}
 
 		for (const std::string &name : Utility::GetVector<std::string>(configTree, "Channel." + channel + ".METTrigger")) {
-			if (std::find(metTriggerNames.begin(), metTriggerNames.end(), name) == metTriggerNames.end()) {
-				metTriggerNames.push_back(name);
+			if (std::find(dataReader.metTriggerNames.begin(), dataReader.metTriggerNames.end(), name) == dataReader.metTriggerNames.end()) {
+				dataReader.metTriggerNames.push_back(name);
 			}
 		}
 
 		for (const std::string &name : Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector())) {
-			if (std::find(metFilterNames.begin(), metFilterNames.end(), name) == metFilterNames.end()) {
-				metFilterNames.push_back(name);
+			if (std::find(dataReader.metFilterNames.begin(), dataReader.metFilterNames.end(), name) == dataReader.metFilterNames.end()) {
+				dataReader.metFilterNames.push_back(name);
 			}
 		}
 
@@ -117,9 +117,9 @@ int main(int argc, char *argv[]) {
 	// Register Trigger output
 	for (int iChannel = 0; iChannel < channels.size(); iChannel++) {
 		std::vector<int> triggerIndex;
-		for(int iTrigger = 0; iTrigger < triggerNames.size(); iTrigger++) {
+		for(int iTrigger = 0; iTrigger < dataReader.triggerNames.size(); iTrigger++) {
 			for(const std::string& triggerName : Utility::GetVector<std::string>(configTree, "Channel." + channels.at(iChannel) + ".Trigger." + product.GetEraSelector())) {
-				if(triggerName == triggerNames[iTrigger]) triggerIndex.push_back(iTrigger);
+				if(triggerName == dataReader.triggerNames[iTrigger]) triggerIndex.push_back(iTrigger);
 			}
 		}
 
@@ -127,13 +127,13 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Register branches that will be stored in the output
-	product.RegisterTrigger(triggerNames, metTriggerNames, outputTrees);
-	product.RegisterMetFilter(metFilterNames, outputTrees);
+	product.RegisterTrigger(dataReader.triggerNames, dataReader.metTriggerNames, outputTrees);
+	product.RegisterMetFilter(dataReader.metFilterNames, outputTrees);
 	product.RegisterOutput(outputTrees, configTree);
 
 	// Initialize Producers
 	std::vector<std::shared_ptr<BaseProducer>> producers = {
-		std::shared_ptr<TriggerProducer>(new TriggerProducer(configTree, scaleFactorTree, product, triggerNames)),
+		std::shared_ptr<TriggerProducer>(new TriggerProducer(configTree, scaleFactorTree, product)),
 		std::shared_ptr<METFilterProducer>(new METFilterProducer(configTree, scaleFactorTree, product)),
 		std::shared_ptr<MuonProducer>(new MuonProducer(configTree, scaleFactorTree, product.GetEraSelector())),
 		std::shared_ptr<ElectronProducer>(new ElectronProducer(configTree, scaleFactorTree)),
@@ -154,8 +154,7 @@ int main(int argc, char *argv[]) {
 		std::cout << producer->Name << std::endl; // Debug Information
 	}
 
-	DataReader dataReader(inputFileName, "Events", isData, isFastSim);
-	dataReader.RegisterTrigger(triggerNames, metTriggerNames);
+	dataReader.RegisterTrigger();
 	dataReader.RegisterMetFilter(Utility::GetVector<std::string>(configTree, "METFilter." + product.GetEraSelector()));
 	int nEvents = nMaxEvents > 0 ? nMaxEvents : dataReader.GetEntries();
 

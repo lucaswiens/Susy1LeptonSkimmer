@@ -403,11 +403,14 @@ void DataReader::GetPileUpValues() {
 	}
 }
 
-void DataReader::RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames) {
-	for(const std::string& name : triggerNames) {
+void DataReader::RegisterTrigger() {
+	std::vector<int> triggerRemovalIndices;
+	for (int iTrigger = 0; iTrigger < triggerNames.size(); iTrigger++) {
+		const std::string &name = triggerNames.at(iTrigger);
 		TLeaf *trigger = inputTree->GetLeaf(name.c_str());
 		if (trigger == nullptr) {
 			std::cout << "Not Found! Skipping Trigger: " << name << std::endl;
+			triggerRemovalIndices.push_back(iTrigger);
 			continue;
 		}
 		std::cout << "Register Trigger: " << name << std::endl;
@@ -415,7 +418,7 @@ void DataReader::RegisterTrigger(const std::vector<std::string> &triggerNames, c
 		triggerValues.push_back(true);
 	}
 
-	for(const std::string& name : metTriggerNames) {
+	for (const std::string &name : metTriggerNames) {
 		TLeaf *trigger = inputTree->GetLeaf(name.c_str());
 		if (trigger == nullptr) {
 			std::cout << "Not Found! Skipping Trigger: " << name << std::endl;
@@ -424,6 +427,13 @@ void DataReader::RegisterTrigger(const std::vector<std::string> &triggerNames, c
 		std::cout << "Register Trigger: " << name << std::endl;
 		metTriggerLeafs.push_back(trigger);
 		metTriggerValues.push_back(true);
+	}
+
+	// Remove trigger names if they are not available to get correct evaluation of the HLT_EleOr and HLT_MuonOr
+	for (int iRemove = triggerRemovalIndices.size() - 1; iRemove >= 0; iRemove--) {
+		const int &removeIndex = triggerRemovalIndices.at(iRemove);
+		std::cout << "Removing " << triggerNames.at(removeIndex) << " at index = " << removeIndex << std::endl;
+		triggerNames.erase(triggerNames.begin() + removeIndex);
 	}
 }
 

@@ -4,14 +4,6 @@ FastSimProducer::FastSimProducer(const pt::ptree &configTree, const pt::ptree &s
 	Name = "FastSimProducer";
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
 
-	stopPdgId       = configTree.get<int>("Producer.FastSim.StopPdgId");
-	gluinoPdgId     = configTree.get<int>("Producer.FastSim.GluinoPdgId");
-	neutralinoPdgId = configTree.get<int>("Producer.FastSim.NeutralinoPdgId");
-	charginoPdgId   = configTree.get<int>("Producer.FastSim.CharginoPdgId");
-
-	// Open json file with cross section
-	pt::read_json(std::string(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + configTree.get<std::string>("Producer.FastSim.CrossSection")).c_str(), xSectionTree);
-
 	// Open root files stored in root files
 	electronSfFile = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/leptonScaleFactor/" + scaleFactorTree.get<std::string>("Electron." + eraSelector + ".FastSim.Path")).c_str());
 	muonSfFile     = (TFile*) TFile::Open((cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/leptonScaleFactor/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.FastSim.Path")).c_str());
@@ -41,7 +33,6 @@ FastSimProducer::FastSimProducer(const pt::ptree &configTree, const pt::ptree &s
 	*   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy#FastSim_correction_factors   *
 	*   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X#FastSim_correction_factors          *
 	*   https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X#FastSim_correction_factors         *
-	/***********************************************************************************************************
 	***********************************************************************************************************/
 	btagCsvReader = std::make_unique<BTagCSVReader>(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + eraSelector + "/bTagScaleFactor/" + scaleFactorTree.get<std::string>("Jet.BTag.FastSim.BTag." + eraSelector), true);
 }
@@ -100,47 +91,6 @@ void FastSimProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produc
 		product.jetDeepJetLooseFastSfDown[iJet]  = btagCsvReader->GetDown(product.jetPt.at(iJet), 'L');
 		product.jetDeepJetMediumFastSfDown[iJet] = btagCsvReader->GetDown(product.jetPt.at(iJet), 'M');
 		product.jetDeepJetTightFastSfDown[iJet]  = btagCsvReader->GetDown(product.jetPt.at(iJet), 'T');
-	}
-
-	dataReader.ReadGenEntry();
-	product.stopMass = -999;
-	product.gluinoMass = -999;
-	product.neutralinoMass = -999;
-	product.charginoMass = -999;
-
-	product.susyXSectionNLO    = -999;
-	product.susyXSectionNLLO   = -999;
-	product.susyXSectionNLOUp  = -999;
-	product.susyXSectionNLLOUp = -999;
-	product.susyXSectionNLODown  = -999;
-	product.susyXSectionNLLODown = -999;
-
-	for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
-		dataReader.GetGenValues(iGen);
-		if (std::abs(dataReader.genPdgId) == stopPdgId) {
-			product.stopMass = dataReader.genMass;
-		} else if (std::abs(dataReader.genPdgId) == gluinoPdgId) {
-			product.gluinoMass = dataReader.genMass;
-		} else if (std::abs(dataReader.genPdgId) == neutralinoPdgId) {
-			product.neutralinoMass = dataReader.genMass;
-		} else if (std::abs(dataReader.genPdgId) == charginoPdgId) {
-			product.charginoMass = dataReader.genMass;
-		}
-
-		// Check if the mass exists in the cross section json file... Sometimes the masses are set to strange unexpected values, one might needs to correct this later or discard those events
-		boost::optional< pt::ptree& > child = xSectionTree.get_child_optional("NLO+NLL Cross section [pb]." + std::to_string((int)product.gluinoMass));
-		if (!child) { continue;}
-
-		product.susyXSectionNLO                  = xSectionTree.get<float>("NLO+NLL Cross section [pb]." + std::to_string((int)product.gluinoMass));
-		const float &susyXSectionNLOUncertainty  = xSectionTree.get<float>("Uncertainty (NLO + NLL) [%]." + std::to_string((int)product.gluinoMass));
-		product.susyXSectionNLLO                 = xSectionTree.get<float>("NNLO+NNLL Cross section [pb]." + std::to_string((int)product.gluinoMass));
-		const float &susyXSectionNLLOUncertainty = xSectionTree.get<float>("Uncertainty (NNLOapprox + NNLL) [%]." + std::to_string((int)product.gluinoMass));
-
-		product.susyXSectionNLOUp  = product.susyXSectionNLO  + susyXSectionNLOUncertainty;
-		product.susyXSectionNLLOUp = product.susyXSectionNLLO + susyXSectionNLLOUncertainty;
-
-		product.susyXSectionNLODown  = product.susyXSectionNLO  - susyXSectionNLOUncertainty;
-		product.susyXSectionNLLODown = product.susyXSectionNLLO - susyXSectionNLLOUncertainty;
 	}
 }
 

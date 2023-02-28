@@ -18,6 +18,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/JetProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/ScaleFactorProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/FastSimProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/SignalProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/METFilterProducer.h>
@@ -46,20 +47,21 @@ int main(int argc, char *argv[]) {
 	std::string outputFileName = std::string(argv[2]);
 	const int &era             = std::stoi(argv[3]);
 	const char &runPeriod      = (char)*argv[4]; // Data : A-H; MC : M; FastSim : S
-	const float &xSection      = std::stod(argv[5]);
+	const bool &isFastSim      = std::string(argv[5]) == "True" ? true : false;
+	const float &xSection      = std::stof(argv[6]);
 	const bool &isData         = (runPeriod == 'M' || runPeriod == 'S') ? false : true;
-	const bool &isFastSim      = runPeriod == 'S' ? true : false;
 
 	std::cout << "Producing NTuples for a " << (isFastSim ? "fastsim " : "") << (isData ? "data" : "MC") << " sample." << std::endl <<
-		"Year          = " << era << std::endl <<
+		"Year          = " << era       << std::endl <<
 		"RunPeriod     = " << runPeriod << std::endl <<
-		"Cross Section = " << xSection << std::endl <<
+		"Is FastSim    = " << isFastSim << std::endl <<
+		"Cross Section = " << xSection  << std::endl <<
 	std::endl;
 
 
 	int nMaxEvents;
-	if (argc >= 7) {
-		nMaxEvents = std::stoi(std::string(argv[6]));
+	if (argc >= 8) {
+		nMaxEvents = std::stoi(std::string(argv[7]));
 	} else {
 		nMaxEvents = -999;
 	}
@@ -144,6 +146,9 @@ int main(int argc, char *argv[]) {
 		producers.push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 		producers.push_back(std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
+	}
+	if (runPeriod == 'S') {
+		producers.push_back(std::shared_ptr<SignalProducer>(new SignalProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
 	}
 	if (isFastSim) {
 		producers.push_back(std::shared_ptr<FastSimProducer>(new FastSimProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));

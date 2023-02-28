@@ -497,7 +497,7 @@
 				"Leptonic": 80
 			}
 		},
-		"FastSim": {
+		"Signal": {
 			"CrossSection" : "SUSYCrossSections13TeVgluglu.json",
 			"StopPdgId" : 1000006,
 			"GluinoPdgId" : 1000021,

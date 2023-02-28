@@ -1,20 +1,26 @@
 #!/bin/bash
 
 export X509_USER_PROXY=/nfs/dust/cms/user/${USER}/x509up
-if  test -f $X509_USER_PROXY ; then
+if ! test -f $X509_USER_PROXY ; then
+	echo "Grid certificate not found at: $X509_USER_PROXY"
+	echo "Exiting now.."
+	exit
+fi
 
 INFILE=$1
 OUT=$2
 ERA=$3
 RUNPERIOD=$4
-XSECTION=$5
-JOB=$6
-BASEDIR=$7
-OUTPUTDIR=$8
+ISFASTSIM=$5
+XSECTION=$6
+JOB=$7
+BASEDIR=$8
+OUTPUTDIR=$9
 echo INFILE         $INFILE
 echo OUT            $OUT
 echo ERA            $ERA
 echo RUNPERIOD      $RUNPERIOD
+echo ISFASTSIM      $ISFASTSIM
 echo XSECTION       $XSECTION
 echo JOB            $JOB
 echo BASEDIR        $BASEDIR
@@ -39,19 +45,11 @@ eval `scramv1 runtime -sh` #cmsenv
 # Copy the input file and run over it
 cd /tmp #${TMP}
 
-echo trying xrdcp
 xrdcp ${INFILE} inputFile_${JOB}.root || exit
-echo done
 
 #Do the skimming
 cd ${OUTPUTDIR}
-echo NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
-echo "NOT EXECUTING FOR TESTING"
-exit
-NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${XSECTION}
+echo NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${ISFASTSIM} ${XSECTION}
+NanoSkim /tmp/inputFile_${JOB}.root ${OUT}_${JOB}.root ${ERA} ${RUNPERIOD} ${ISFASTSIM} ${XSECTION}
 
 rm /tmp/inputFile_${JOB}.root
-
-else
-     echo "can not find grid certificate at location $X509_USER_PROXY "
-fi

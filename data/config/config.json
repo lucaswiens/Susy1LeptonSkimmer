@@ -417,7 +417,7 @@
 			"Dz" : 0.5
 		},
 		"Jet": {
-			"Pt" : 20,
+			"Pt" : 30,
 			"Eta" : 2.4,
 			"JECSystematic" : [
 				"Total",

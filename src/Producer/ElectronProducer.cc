@@ -78,7 +78,6 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 								dataReader.electronIdMap.at(electronGoodCutBasedIdCut);
 
 		product.electronIsVeto[electronCounter] = dataReader.electronPt <= electronGoodPtCut &&
-								dataReader.electronPt >= electronVetoPtCut &&
 								dataReader.electronMiniIso < electronVetoIsoCut &&
 								dataReader.electronIdMap.at(electronVetoCutBasedIdCut);
 
@@ -88,6 +87,7 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		if (product.electronIsGood[electronCounter]) { goodElectronCounter++;}
 		if (product.electronIsVeto[electronCounter]) { vetoElectronCounter++;}
 		if (product.electronIsAntiSelected[electronCounter]) { antiSelectedElectronCounter++;}
+
 		electronCounter++;
 	}
 

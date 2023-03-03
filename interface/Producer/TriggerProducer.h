@@ -6,9 +6,8 @@
 
 class TriggerProducer : public BaseProducer {
 	private:
-		std::vector<std::string> triggerNames;
 	public:
-		TriggerProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product, const std::vector<std::string> &triggerNames);
+		TriggerProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, Susy1LeptonProduct &product);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
 		void EndJob(TFile &file);

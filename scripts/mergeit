@@ -3,20 +3,20 @@ MERGEDIR=${PWD##*/}
 DIRNUM=1
 MAXSIZE=1000000000
 
-for FILE in *; do
+for FILE in *.root; do
 	if [ `du -b -s "${FILE}" | cut -f 1` -gt ${MAXSIZE} ]; then
-		echo "${FILE} is too big for a single folder, skipping"
+		echo ${FILE} is too big for a single folder, skipping
 		continue
 	fi
 	if [ ! -d "${MERGEDIR}_${DIRNUM}" ]; then
-		echo "creating directory ${MERGEDIR}_${DIRNUM}"
+		echo creating directory ${MERGEDIR}_${DIRNUM}
 		mkdir "${MERGEDIR}_${DIRNUM}"
 	fi
 	if [ `du -b -s "${MERGEDIR}_${DIRNUM}" | cut -f 1` -gt ${MAXSIZE} ]; then
-		echo "${MERGEDIR}_${DIRNUM} has reached ${MAXSIZE}"
+		echo ${MERGEDIR}_${DIRNUM} has reached ${MAXSIZE}
 		let "DIRNUM += 1"
 		if [ ! -d "${MERGEDIR}_${DIRNUM}" ]; then
-			echo "creating directory ${MERGEDIR}_${DIRNUM}"
+			echo creating directory ${MERGEDIR}_${DIRNUM}
 			mkdir "${MERGEDIR}_${DIRNUM}"
 		fi
 		mv "${FILE}" "${MERGEDIR}_${DIRNUM}"
@@ -26,16 +26,13 @@ for FILE in *; do
 done
 
 for DIR in *; do
-	mkdir -p ../merged/$(echo ${DIR} | sed "s@NANOAOD_[1-100]*@NANOAOD@g")
 	cd ${DIR}
-	echo "Merging files in ${DIR}"
-	hadd ${PWD##*/}_merged.root *
-	echo "Moving merged file"
-	mv *_merged.root ../../merged/$(echo ${DIR} | sed "s@NANOAOD_[1-100]*@NANOAOD@g")
+	echo Merging files in ${DIR}
+	hadd ${DIR}_merged.root *
+	mv ${DIR}_merged.root ..
 	cd ..
-	echo "Deleting unmerged files:"
-	ls *.root
-	#rm *.root
-	#echo rm -rf ${DIR}
 done
 
+echo Moving all merged files to ../../merged/${PWD##*/}
+mkdir -p ../../merged/${PWD##*/}
+mv *_merged.root ../../merged/${PWD##*/}

@@ -184,6 +184,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		product.jetDeepJetLooseId[jetCounter]  = dataReader.jetDeepJet > deepJetBTagMap.at('L');
 		product.jetDeepJetMediumId[jetCounter] = dataReader.jetDeepJet > deepJetBTagMap.at('M');
 		product.jetDeepJetTightId[jetCounter]  = dataReader.jetDeepJet > deepJetBTagMap.at('T');
+
 		product.jetDeepJetId[jetCounter] = product.jetDeepJetLooseId[jetCounter] + product.jetDeepJetMediumId[jetCounter] + product.jetDeepJetTightId[jetCounter];
 
 		jetCounter++;

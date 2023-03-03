@@ -164,7 +164,8 @@ class DataReader {
 
 		// Trigger and MET Filter
 		std::vector<short> triggerValues, metTriggerValues, metFilterValues;
-		void RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metTriggerNames);
+		std::vector<std::string> triggerNames, metTriggerNames, metFilterNames;
+		void RegisterTrigger();
 		void ReadTrigger();
 		void GetTrigger();
 		void RegisterMetFilter(const std::vector<std::string> &metFilterNames);

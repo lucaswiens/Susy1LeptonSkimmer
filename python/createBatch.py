@@ -19,20 +19,22 @@ def findFileLocation(sample, isPrivate=False):
 
 def prepareArguments(sample):
 	isPrivate = "/USER" in sample
-	isData = not isPrivate and "/NANOAODSIM" not in sample
+	isData    = not isPrivate and "/NANOAODSIM" not in sample
+	isFastSim = "Fast" in sample
+	print(sample, isData, isPrivate)
 	year = "unknown"
 	runPeriod = "M"
 	if "RunIISummer20UL16" in str(sample) or "RunIISummer16" in str(sample)or "Run2016" in str(sample):
 		year = 2016
-		if "PUSummer16v3Fast" in str(sample): #FastSim
+		if "Fast" in str(sample): #FastSim
 			runPeriod = "S"
 	elif "RunIISummer20UL17" in str(sample) or "RunIIFall17" in str(sample) or "Run2017" in str(sample) or "T5qqqqVV_FS" in str(sample):
 		year = 2017
-		if "TuneCP2" in str(sample) or "T5qqqqVV_FS" in str(sample): #FastSim
+		if "Fast" in str(sample) or "T5qqqqVV_FS" in str(sample): #FastSim
 			runPeriod = "S"
 	elif "RunIISummer20UL18" in str(sample) or "RunIIAutumn18" in str(sample) or "Run2018" in str(sample):
 		year = 2018
-		if "TuneCP2" in str(sample): #FastSim
+		if "Fast" in str(sample): #FastSim
 			runPeriod = "S"
 	else:
 		print("Could not determine era of the sample:\n" + str(sample) + "\nCheck the prepareArguments function to configure it properly")
@@ -45,7 +47,7 @@ def prepareArguments(sample):
 	if "SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample or "T5qqqqVV" in sample:
 		xSection = 1
 
-	return year, runPeriod, xSection, isPrivate
+	return year, runPeriod, isFastSim, xSection, isPrivate
 
 def GetOSVariable(Var):
 	try:
@@ -104,7 +106,7 @@ if __name__=="__main__":
 		if not (sample.startswith("#") or sample in ["", "\n", "\r\n"]):
 			print("Collecting files from: " + sample)
 			sampleCollection = sample.split("/")[1]
-			year, runPeriod, xSection, isPrivate = prepareArguments(sample)
+			year, runPeriod, isFastSim, xSection, isPrivate = prepareArguments(sample)
 			fileList = findFileLocation(sample, isPrivate)
 			sampleName = sample.replace("/", "_")[1:]
 			try:
@@ -112,7 +114,7 @@ if __name__=="__main__":
 			except:
 				pass
 			for filename in fileList:
-				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(xSection) + " " + str(iJob) + " " + cmsswBase + "/src " + args.output + "/root/" + sampleCollection + "\n")
+				argumentFile.write(redirector + filename.decode('utf-8') + " " + str(sampleName) + " " + str(year) + " " + str(runPeriod) + " " + str(isFastSim) + " " + str(xSection) + " " + str(iJob) + " " + cmsswBase + "/src " + args.output + "/root/" + sampleCollection + "\n")
 				iJob += 1
 	sampleFile.close()
 	argumentFile.close()

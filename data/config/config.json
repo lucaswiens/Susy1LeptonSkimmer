@@ -417,7 +417,7 @@
 			"Dz" : 0.5
 		},
 		"Jet": {
-			"Pt" : 20,
+			"Pt" : 30,
 			"Eta" : 2.4,
 			"JECSystematic" : [
 				"Total",
@@ -497,7 +497,7 @@
 				"Leptonic": 80
 			}
 		},
-		"FastSim": {
+		"Signal": {
 			"CrossSection" : "SUSYCrossSections13TeVgluglu.json",
 			"StopPdgId" : 1000006,
 			"GluinoPdgId" : 1000021,

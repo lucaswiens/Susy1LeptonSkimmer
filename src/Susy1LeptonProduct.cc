@@ -342,13 +342,16 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("GenJetPhi_1", &genJetPhi_1);
 			tree->Branch("GenJetEta_1", &genJetEta_1);
 			tree->Branch("GenJetMass_1", &genJetMass_1);
-			tree->Branch("GenJetPt_1", &genJetPt_1);
+			tree->Branch("GenJetPt_2", &genJetPt_2);
 			tree->Branch("GenJetPhi_2", &genJetPhi_2);
 			tree->Branch("GenJetEta_2", &genJetEta_2);
 			tree->Branch("GenJetMass_2", &genJetMass_2);
 			tree->Branch("GenMuonPt_1", &genMuonPt_1);
 			tree->Branch("GenMuonPhi_1", &genMuonPhi_1);
 			tree->Branch("GenMuonEta_1", &genMuonEta_1);
+			tree->Branch("GenElectronPt_1", &genElectronPt_1);
+			tree->Branch("GenElectronPhi_1", &genElectronPhi_1);
+			tree->Branch("GenElectronEta_1", &genElectronEta_1);
 			tree->Branch("nGenLeptonFromTau", &nGenLeptonFromTau);
 			tree->Branch("LeptonDecayChannelFlag", &leptonDecayChannelFlag);
 			tree->Branch("IsDiLeptonEvent", &isDiLeptonEvent);

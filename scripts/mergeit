@@ -25,14 +25,11 @@ for FILE in *.root; do
 	fi
 done
 
+mkdir -p ../../merged/${MERGEDIR}
 for DIR in *; do
-	cd ${DIR}
 	echo Merging files in ${DIR}
-	hadd ${DIR}_merged.root *
-	mv ${DIR}_merged.root ..
-	cd ..
+	hadd ${DIR}_merged.root ${DIR}/*.root
+	mv ${DIR}_merged.root ../../merged/${MERGEDIR}
+	#mv ${DIR}/*root .
+	#rm -rf ${DIR}
 done
-
-echo Moving all merged files to ../../merged/${PWD##*/}
-mkdir -p ../../merged/${PWD##*/}
-mv *_merged.root ../../merged/${PWD##*/}

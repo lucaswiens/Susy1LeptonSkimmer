@@ -1,4 +1,3 @@
-//#include <stdlib.h>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -45,17 +44,20 @@ int main(int argc, char *argv[]) {
 
 	std::string inputFileName  = std::string(argv[1]);
 	std::string outputFileName = std::string(argv[2]);
-	const int &era             = std::stoi(argv[3]);
-	const char &runPeriod      = (char)*argv[4]; // Data : A-H; MC : M; FastSim : S
-	const bool &isFastSim      = std::string(argv[5]) == "True" ? true : false;
+	const int   &era           = std::stoi(argv[3]);
+	const char  &runPeriod     = (char)*argv[4]; // Data : A-H; MC : M; FastSim : S
+	const bool  &isFastSim     = std::string(argv[5]) == "True" ? true : false;
 	const float &xSection      = std::stof(argv[6]);
-	const bool &isData         = (runPeriod == 'M' || runPeriod == 'S') ? false : true;
+	const bool  &isData        = (runPeriod == 'M' || runPeriod == 'S') ? false : true;
+	const bool  &isSignal      = runPeriod == 'S';
 
 	std::cout << "Producing NTuples for a " << (isFastSim ? "fastsim " : "") << (isData ? "data" : "MC") << " sample." << std::endl <<
 		"Year          = " << era       << std::endl <<
 		"RunPeriod     = " << runPeriod << std::endl <<
-		"Is FastSim    = " << isFastSim << std::endl <<
 		"Cross Section = " << xSection  << std::endl <<
+		"Is Data       = " << isData    << std::endl <<
+		"Is Signal     = " << isSignal  << std::endl <<
+		"Is FastSim    = " << isFastSim << std::endl <<
 	std::endl;
 
 
@@ -79,7 +81,7 @@ int main(int argc, char *argv[]) {
 	std::vector<std::string> channels = {"Muon", "Electron", "LeptonIncl"};
 	DataReader dataReader(inputFileName, "Events", isData, isFastSim);
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
-	Susy1LeptonProduct product(era, isData, isFastSim, outputFileName, runPeriod, xSection, configTree, outputFile);
+	Susy1LeptonProduct product(era, isData, isSignal, isFastSim, outputFileName, runPeriod, xSection, configTree, outputFile);
 
 	// Create a TTree and CutFlow for each channel
 	//static const long autoFlush = - 50 * 1024 * 1024;
@@ -147,7 +149,7 @@ int main(int argc, char *argv[]) {
 		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 		producers.push_back(std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
 	}
-	if (runPeriod == 'S') {
+	if (isSignal) {
 		producers.push_back(std::shared_ptr<SignalProducer>(new SignalProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
 	}
 	if (isFastSim) {
@@ -156,7 +158,7 @@ int main(int argc, char *argv[]) {
 
 	std::cout << "\nThe following producers are used:" << std::endl;
 	for (std::shared_ptr<BaseProducer> producer : producers) {
-		std::cout << producer->Name << std::endl; // Debug Information
+		std::cout << producer->Name << std::endl;
 	}
 
 	dataReader.RegisterTrigger();
@@ -191,8 +193,8 @@ int main(int argc, char *argv[]) {
 
 	for (int iTree = 0; iTree < outputTrees.size(); iTree++) {
 		outputFile.cd();
-		outputTrees.at(iTree)->Write(0, TObject::kOverwrite);
 		cutflows.at(iTree).WriteOutput();
+		outputTrees.at(iTree)->Write(0, TObject::kOverwrite);
 	}
 
 	product.WriteMetaData(outputFile);

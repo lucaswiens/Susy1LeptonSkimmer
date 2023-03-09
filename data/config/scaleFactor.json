@@ -27,7 +27,7 @@
 				}
 			},
 			"2016PostVFP" : {
-				"Era"  : "Summer19UL16",
+				"Era"  : "Summer20UL16",
 				"MC"   : "V7_MC",
 				"DATA" : "V7_DATA",
 				"JER"  : "JRV3_MC",
@@ -112,7 +112,7 @@
 					"JSON"      : "jsonpog-integration/POG/JME/2018_UL/fatJet_jerc.json",
 					"Algorithm" : "AK8PFPuppi"
 				},
-				"JMAR" : {
+				"JME" : {
 					"JSON"      : "jsonpog-integration/POG/JME/2018_UL/jmar.json"
 				}
 			}
@@ -121,9 +121,9 @@
 		"JECSystematic" : {
 			"FastSim" : {
 				"2016PreVFP"  : "not-available",
-				"2016PostVFP" : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_Uncertainty_",
+				"2016PostVFP" : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_Uncertainty_",
 				"2017"        : "Fall17_FastSimV1_MC/Fall17_FastSimV1_MC_Uncertainty_",
-				"2018"        : "Summer16_FastSimV1_MC/Summer16_FastSimV1_MC_Uncertainty_"
+				"2018"        : "Autumn18_FastSimV1_MC/Autumn18_FastSimV1_MC_Uncertainty_"
 			},
 			"2016PreVFP"  : "Summer19UL16APV_V7_MC_UncertaintySources_",
 			"2016PostVFP" : "Summer19UL16_V7_MC_UncertaintySources_",

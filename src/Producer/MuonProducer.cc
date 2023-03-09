@@ -64,10 +64,12 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 			muonPtUp   = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor + scaleFactorUnc) : (mcScaleFactor + scaleFactorUnc)),
 			muonPtDown = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor - scaleFactorUnc) : (mcScaleFactor - scaleFactorUnc));
 
-		if (muonPt < muonVetoPtCut ||
-				std::abs(dataReader.muonEta) > muonEtaCut ||
-				!dataReader.muonIsPfCand)
-		{ continue;}
+
+		const bool &isVetoMuon = muonPt > muonVetoPtCut &&
+							dataReader.muonMiniIso < muonVetoIsoCut &&
+							dataReader.muonIdMap.at(muonVetoCutBasedIdCut);
+
+		if (!isVetoMuon || std::abs(dataReader.muonEta) >= muonEtaCut || !dataReader.muonIsPfCand) { continue;}
 
 		product.muonPt[muonCounter] = muonPt;
 		product.muonEta[muonCounter] = dataReader.muonEta;
@@ -80,17 +82,14 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 
 		product.muonLooseId[muonCounter]    = dataReader.muonLooseId;
 		product.muonMediumId[muonCounter]   = dataReader.muonMediumId;
-		product.muonLooseId[muonCounter]    = dataReader.muonLooseId;
+		product.muonTightId[muonCounter]    = dataReader.muonTightId;
 		product.muonCutBasedId[muonCounter] = dataReader.muonTightId ? 4 : dataReader.muonMediumId ? 3 : dataReader.muonLooseId ? 2 : 1;
 
 		product.muonIsGood[muonCounter] = muonPt > muonGoodPtCut &&
 							dataReader.muonMiniIso < muonGoodIsoCut &&
 							dataReader.muonIdMap.at(muonGoodCutBasedIdCut);
 
-		product.muonIsVeto[muonCounter] = muonPt <= muonGoodPtCut &&
-							muonPt >= muonVetoPtCut &&
-							dataReader.muonMiniIso < muonVetoIsoCut &&
-							dataReader.muonIdMap.at(muonVetoCutBasedIdCut);
+		product.muonIsVeto[muonCounter] = isVetoMuon;
 
 		product.muonIsAntiSelected[muonCounter] = dataReader.muonMiniIso >= muonAntiIsoCut &&
 							dataReader.muonIdMap.at(muonAntiCutBasedIdCut);
@@ -107,4 +106,4 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 	product.nAntiSelectedMuon = antiSelectedMuonCounter;
 }
 
-void MuonProducer::EndJob(TFile &file) { }
+void MuonProducer::EndJob(TFile &file) {}

@@ -37,7 +37,11 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	for (int iElectron = 0; iElectron < dataReader.nElectron; iElectron++) {
 		dataReader.GetElectronValues(iElectron);
 
-		if (dataReader.electronPt < electronVetoPtCut || abs(dataReader.electronEta) > electronEtaCut) { continue;}
+		const bool &isVetoElectron = dataReader.electronPt > electronVetoPtCut &&
+						dataReader.electronMiniIso < electronVetoIsoCut &&
+						dataReader.electronIdMap.at(electronVetoCutBasedIdCut);
+
+		if (!isVetoElectron || abs(dataReader.electronEta) >= electronEtaCut) { continue;}
 
 		product.electronPt[electronCounter] = dataReader.electronPt;
 		product.electronEta[electronCounter] = dataReader.electronEta;
@@ -77,11 +81,11 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 								dataReader.electronNLostHits == electronGoodNumberOfLostHitsCut &&
 								dataReader.electronIdMap.at(electronGoodCutBasedIdCut);
 
-		product.electronIsVeto[electronCounter] = dataReader.electronPt <= electronGoodPtCut &&
-								dataReader.electronMiniIso < electronVetoIsoCut &&
-								dataReader.electronIdMap.at(electronVetoCutBasedIdCut);
+		product.electronIsVeto[electronCounter] = isVetoElectron;
 
-		product.electronIsAntiSelected[electronCounter] = dataReader.electronMiniIso < electronAntiIsoCut && // FIXME Check if is Medium but not Tight is correct
+		product.electronIsAntiSelected[electronCounter] = dataReader.electronPt > electronGoodPtCut &&
+								dataReader.electronMiniIso < electronAntiIsoCut &&
+								dataReader.electronIdMap.at(electronAntiIsCutBasedIdCut);
 								!dataReader.electronIdMap.at(electronAntiIsNotCutBasedIdCut);
 
 		if (product.electronIsGood[electronCounter]) { goodElectronCounter++;}

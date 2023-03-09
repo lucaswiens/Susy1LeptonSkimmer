@@ -12,14 +12,14 @@ namespace pt = boost::property_tree;
 class Susy1LeptonProduct {
 	private:
 		int era;
-		bool preVFP, isData, isFastSim;
+		bool preVFP, isData, isSignal, isFastSim;
 		std::string eraSelector, sampleName;//, datasetDecider;
 		char runPeriod;
 		float xSection, luminosity;
 
 		TTree metaData;
 	public:
-		Susy1LeptonProduct(const int &era, const bool &isData, const bool &isFastSim, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile);
+		Susy1LeptonProduct(const int &era, const bool &isData, const bool &isSignal, const bool &isFastSim, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile);
 		void RegisterTrigger(const std::vector<std::string> &triggerNames, const std::vector<std::string> &metFilterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
 		void RegisterMetFilter(const std::vector<std::string> &filterNames, const std::vector<std::shared_ptr<TTree>> &outputTrees);
 		void RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees, const pt::ptree &configTree);

@@ -65,7 +65,7 @@
 					"Operator": "=="
 				},
 				"VetoLepton": {
-					"Threshold": 0,
+					"Threshold": 1,
 					"Operator": "=="
 				},
 				"Jet": {
@@ -218,11 +218,7 @@
 					"Operator": "=="
 				},
 				"VetoLepton": {
-					"Threshold": 0,
-					"Operator": "=="
-				},
-				"GoodElectron": {
-					"Threshold": 0,
+					"Threshold": 1,
 					"Operator": "=="
 				},
 				"Jet": {
@@ -271,11 +267,7 @@
 					"Operator": "=="
 				},
 				"VetoLepton": {
-					"Threshold": 0,
-					"Operator": "=="
-				},
-				"GoodMuon": {
-					"Threshold": 0,
+					"Threshold": 1,
 					"Operator": "=="
 				},
 				"Jet": {

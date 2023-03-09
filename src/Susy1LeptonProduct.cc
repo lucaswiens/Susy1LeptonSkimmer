@@ -1,10 +1,11 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Susy1LeptonProduct.h>
 #include<iostream>
 
-Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const bool &isFastSim, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile) :
+Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const bool &isSignal, const bool &isFastSim, const std::string &sampleName, const char &runPeriod, const float &xSection, const pt::ptree &configTree, TFile &outputFile) :
 	era(era),
 	isData(isData),
 	isFastSim(isFastSim),
+	isSignal(isSignal),
 	sampleName(sampleName),
 	runPeriod(runPeriod),
 	xSection(xSection) {
@@ -405,7 +406,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 
 		}
 
-		if (isFastSim) {
+		if (isSignal) {
 			tree->Branch("susyXSectionNLO", &susyXSectionNLO);
 			tree->Branch("susyXSectionNLOUp", &susyXSectionNLOUp);
 			tree->Branch("susyXSectionNLODown", &susyXSectionNLODown);

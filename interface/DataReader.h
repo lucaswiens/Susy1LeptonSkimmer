@@ -78,6 +78,7 @@ class DataReader {
 		TLeaf *nGenPartLeaf,
 			*genPdgIdLeaf, *genMotherIndexLeaf,
 			*genPtLeaf, *genEtaLeaf, *genPhiLeaf, *genMassLeaf,
+			*genMetPtLeaf, *genMetPhiLeaf,
 			*genWeightLeaf,
 			*genStatusLeaf, *genStatusFlagsLeaf;
 
@@ -178,6 +179,7 @@ class DataReader {
 			genPdgId, genMotherIndex,
 			genStatus, genStatusFlags;
 		float genPt, genEta, genPhi, genMass,
+			genMetPt, genMetPhi,
 			genWeight;
 
 		int GetGenMatchedIndex(const float &recoPt, const float &recoPhi, const float &recoEta, const int &recoPDG, const float &deltaRCut, const float &deltaPtCut);
@@ -188,5 +190,4 @@ class DataReader {
 };
 
 #endif
-;
 

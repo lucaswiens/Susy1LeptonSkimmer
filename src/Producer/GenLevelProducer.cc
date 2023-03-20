@@ -2,15 +2,32 @@
 
 GenLevelProducer::GenLevelProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector) {
 	Name = "GenLevelProducer";
+
+	jetPtCut  = configTree.get<float>("Producer.Jet.Pt");
+	jetEtaCut = configTree.get<float>("Producer.Jet.Eta");
 }
 
 void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
+	product.genDeltaPhi = -999;
+	product.genLP = -999;
+	product.genMuonPt = -999;
+	product.genMuonEta = -999;
+	product.genMuonPhi = -999;
+	product.genMuonMass = -999;
+	product.genElectronPt = -999;
+	product.genElectronEta =-999;
+	product.genElectronPhi = -999;
+	product.genElectronMass = -999;
+
 	ROOT::Math::PtEtaPhiMVector leptonP4;
 	ROOT::Math::PtEtaPhiMVector neutrinoP4;
 	float maxLeptonPt;
 	int genPartCounter = 0, genLeptonCounter = 0, genTauCounter = 0, genLeptonFromTauCounter = 0, genWCounter = 0, genMatchedWCounter = 0, genNeutrinoCounter = 0, genTopCounter = 0;
 	std::vector<int> tauLeptonIndices;
+
 	dataReader.ReadGenEntry();
+	product.genMetPt = dataReader.genMetPt;
+	product.genMetPhi = dataReader.genMetPhi;
 	for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
 		dataReader.GetGenValues(iGen);
 		const float leptonPt = dataReader.genPt;
@@ -45,6 +62,17 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 				const float leptonEta  = dataReader.genEta;
 				const float leptonMass = dataReader.genMass;
 				const int leptonStatus = dataReader.genStatus;
+				if (std::abs(dataReader.genPdgId) == 13) {
+					product.genMuonPt   = leptonPt;
+					product.genMuonEta  = leptonEta;
+					product.genMuonPhi  = leptonPhi;
+					product.genMuonMass = leptonMass;
+				} else {
+					product.genElectronPt   = leptonPt;
+					product.genElectronEta  = leptonEta;
+					product.genElectronPhi  = leptonPhi;
+					product.genElectronMass = leptonMass;
+				}
 
 				const int motherIndex = dataReader.genMotherIndex;
 				dataReader.GetGenValues(motherIndex); // Read Mother Info
@@ -52,8 +80,8 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 				const float motherPhi  = dataReader.genPhi;
 				const float motherEta  = dataReader.genEta;
 				const float motherMass = dataReader.genMass;
-				const int motherStatus  = dataReader.genStatus;
-				const int motherPdgId   = dataReader.genPdgId;
+				const int motherStatus = dataReader.genStatus;
+				const int motherPdgId  = dataReader.genPdgId;
 				product.genLepMotherPdgId[genLeptonCounter] = motherPdgId;
 
 				const int grandMotherIndex = dataReader.genMotherIndex;
@@ -62,8 +90,8 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 				const float grandMotherPhi  = dataReader.genPhi;
 				const float grandMotherEta  = dataReader.genEta;
 				const float grandMotherMass = dataReader.genMass;
-				const int grandMotherStatus  = dataReader.genStatus;
-				const int grandMotherPdgId   = dataReader.genPdgId;
+				const int grandMotherStatus = dataReader.genStatus;
+				const int grandMotherPdgId  = dataReader.genPdgId;
 				product.genLepGrandMotherPdgId[genLeptonCounter] = grandMotherPdgId;
 
 				if (std::abs(motherPdgId) == 24 && leptonStatus == 23) { // genLep is outgoing and has W as mother
@@ -92,6 +120,11 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 							product.genWSumMass[genMatchedWCounter] = wBosonP4.M();
 							product.genDeltaPhiLepWDirect[genMatchedWCounter] = Utility::DeltaPhi(leptonP4.Phi(), motherP4.Phi());
 							product.genMTLepNu[genMatchedWCounter] = wBosonP4.Mt();
+
+							product.genLT = leptonPt + product.genMetPt;
+							product.genDeltaPhi = Utility::DeltaPhi(leptonP4.Phi(), wBosonP4.Phi());
+							product.genLP = leptonPt / wBosonP4.Pt() * std::cos(product.deltaPhi);
+							product.genWBosonMt = wBosonP4.Mt();
 
 							genMatchedWCounter++;
 						} // if (idxNeutrinoMother == dataReader.genMotherIndex && statusNeutrino == 23)
@@ -145,6 +178,14 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.nGenMatchedW = genMatchedWCounter;
 	product.nGenNeutrino = genNeutrinoCounter;
 	product.genWeight = dataReader.genWeight;
+
+	dataReader.ReadGenJetEntry();
+	product.genHT = 0;
+	for (int iGen = 0; iGen < dataReader.nGenJet; iGen++) {
+		dataReader.GetGenJetValues(iGen);
+		if (dataReader.genJetPt < jetPtCut || std::abs(dataReader.genJetEta) > jetEtaCut) { continue;}
+		product.genHT += dataReader.genJetPt;
+	}
 }
 
 void GenLevelProducer::EndJob(TFile &file) {}

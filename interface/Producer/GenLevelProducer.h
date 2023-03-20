@@ -8,6 +8,7 @@
 
 class GenLevelProducer : public BaseProducer {
 	private:
+		float jetPtCut, jetEtaCut;
 	public:
 		GenLevelProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);
 

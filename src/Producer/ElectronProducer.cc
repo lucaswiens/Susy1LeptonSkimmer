@@ -66,14 +66,10 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		product.electronCutBasedId[electronCounter] = dataReader.electronCutBasedId;
 		product.electronConvVeto[electronCounter] = dataReader.electronConvVeto;
 
-		product.electronTightMvaId[electronCounter] = dataReader.electronTightMvaId;
-		product.electronMediumMvaId[electronCounter] = dataReader.electronMediumMvaId;
-		product.electronLooseMvaId[electronCounter] = dataReader.electronLooseMvaId;
-
-		product.electronTightId[electronCounter] = dataReader.electronCutBasedId >= 4;
-		product.electronMediumId[electronCounter] = dataReader.electronCutBasedId >= 3;
-		product.electronLooseId[electronCounter] = dataReader.electronCutBasedId >= 2;
-		product.electronVetoId[electronCounter] = dataReader.electronCutBasedId >= 1;
+		product.electronTightId[electronCounter] = dataReader.electronIdMap.at('T');
+		product.electronMediumId[electronCounter] = dataReader.electronIdMap.at('M');
+		product.electronLooseId[electronCounter] = dataReader.electronIdMap.at('L');
+		product.electronVetoId[electronCounter] = dataReader.electronIdMap.at('V');
 
 		product.electronIsGood[electronCounter] = dataReader.electronPt > electronGoodPtCut &&
 								dataReader.electronMiniIso < electronGoodIsoCut &&
@@ -85,7 +81,7 @@ void ElectronProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 
 		product.electronIsAntiSelected[electronCounter] = dataReader.electronPt > electronGoodPtCut &&
 								dataReader.electronMiniIso < electronAntiIsoCut &&
-								dataReader.electronIdMap.at(electronAntiIsCutBasedIdCut);
+								dataReader.electronIdMap.at(electronAntiIsCutBasedIdCut) &&
 								!dataReader.electronIdMap.at(electronAntiIsNotCutBasedIdCut);
 
 		if (product.electronIsGood[electronCounter]) { goodElectronCounter++;}

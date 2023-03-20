@@ -131,7 +131,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	genEtaLeaf         = inputTree->GetLeaf("GenPart_eta");
 	genMassLeaf        = inputTree->GetLeaf("GenPart_mass");
 	genWeightLeaf      = inputTree->GetLeaf("genWeight");
-	genMetPtLeaf       = inputTree->GetLeaf("GenMET_pt");
+	genMetPtLeaf      = inputTree->GetLeaf("GenMET_pt");
 	genMetPhiLeaf      = inputTree->GetLeaf("GenMET_phi");
 
 	if (isFastSim) {
@@ -262,12 +262,6 @@ void DataReader::GetElectronValues(const int &index) {
 		{'L', electronCutBasedId >= 2},
 		{'V', electronCutBasedId >= 1}
 	};
-	//electronIdMap = {
-	//	{'T', electronMvaTightId},
-	//	{'M', electronMvaMediumId},
-	//	{'L', electronMvaLooseId},
-	//	{'V', electronMvaLooseId}
-	//};
 }
 
 void DataReader::ReadJetEntry() {
@@ -563,9 +557,9 @@ int DataReader::LastGenCopy(const int& index) {
 		if (partPDG == genPdgId) {
 			partIndex = motherIndex;
 			motherIndex = genMotherIndex;
+		} else {
+			break;
 		}
-
-		else break;
 	}
 
 	return partIndex;

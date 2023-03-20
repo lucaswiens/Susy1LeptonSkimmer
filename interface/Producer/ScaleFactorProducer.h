@@ -2,22 +2,23 @@
 #define SCALEFACTORPRODUCER_H
 
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/BaseProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Utility/Ak8TagCSVReader.h>
 
-#include <TH2D.h>
+#include <TH2F.h>
 
 #include <correction.h>
 
 class ScaleFactorProducer : public BaseProducer {
 	private:
 		//Era information
-		std::string era, electronEraAlias, muonEraAlias;
+		std::string deepAk8EraAlias, electronEraAlias, muonEraAlias;
 		std::string muonTriggName;
 		std::string run;
 
 		bool isData;
 
 		//Hist of MC btag efficiency
-		std::shared_ptr<TH2D> bTagEffBLooseDeepJet, bTagEffBMediumDeepJet, bTagEffBTightDeepJet,
+		std::shared_ptr<TH2F> bTagEffBLooseDeepJet, bTagEffBMediumDeepJet, bTagEffBTightDeepJet,
 			bTagEffCLooseDeepJet, bTagEffCMediumDeepJet, bTagEffCTightDeepJet,
 			bTagEffLightLooseDeepJet, bTagEffLightMediumDeepJet, bTagEffLightTightDeepJet,
 			bTagEffBLooseDeepCsv, bTagEffBMediumDeepCsv, bTagEffBTightDeepCsv,

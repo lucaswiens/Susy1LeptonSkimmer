@@ -261,7 +261,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetMass", jetMass.data(), "JetMass,[nJet]/F");
 		tree->Branch("JetMass_JERUp", jetMassJerUp.data(), "JetMass_JERUp[nJet]/F");
 		tree->Branch("JetMass_JERDown", jetMassJerDown.data(), "JetMass_JERDown[nJet]/F");
-		//tree->Branch("JetDeepJet", jetDeepJet.data(), "JetDeepJet,[nJet]/F");
 		tree->Branch("JetDeepJetLooseId", jetDeepJetLooseId.data(), "JetDeepJetLooseId;[nJet]/O");
 		tree->Branch("JetDeepJetMediumId", jetDeepJetMediumId.data(), "JetDeepJetMediumId[nJet]/O");
 		tree->Branch("JetDeepJetTightId", jetDeepJetTightId.data(), "JetDeepJetTightId[nJet]/O");
@@ -289,7 +288,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("FatJetPhi", fatJetPhi.data(), "FatJetPhi[nFatJet]/F");
 		tree->Branch("FatJetMass", fatJetMass.data(), "FatJetMass[nFatJet]/F");
 		tree->Branch("FatJetArea", fatJetArea.data(), "FatJetArea[nFatJet]/F");
-		//tree->Branch("FatJetRawFactor", fatJetRawFactor.data(), "FatJetRawFactor[nFatJet]/F");
 		tree->Branch("FatJetId", fatJetId.data(), "FatJetId[nFatJet]/F");
 		tree->Branch("FatJetDeepTagMDTvsQCD", fatJetDeepTagMDTvsQCD.data(), "FatJetDeepTagMDTvsQCD[nFatJet]/F");
 		tree->Branch("FatJetDeepTagMDWvsQCD", fatJetDeepTagMDWvsQCD.data(), "FatJetDeepTagMDWvsQCD[nFatJet]/F");
@@ -415,6 +413,21 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("nScaleWeight", &nScaleWeight);
 			tree->Branch("LHEScaleWeight", scaleWeight.data(), "scaleWeight[nScaleWeight]/F");
 			tree->Branch("GenWeight", &genWeight);
+
+			tree->Branch("GenElectronPt", &genElectronPt);
+			tree->Branch("GenElectronEta", &genElectronEta);
+			tree->Branch("GenElectronPhi", &genElectronPhi);
+			tree->Branch("GenMuonPt", &genMuonPt);
+			tree->Branch("GenMuonEta", &genMuonEta);
+			tree->Branch("GenMuonPhi", &genMuonPhi);
+			tree->Branch("GenMetPt", &genMetPt);
+			tree->Branch("GenMetPhi", &genMetPhi);
+			tree->Branch("GenHT", &genHT);
+			tree->Branch("GenLT", &genLT);
+			tree->Branch("GenLP", &genLP);
+			tree->Branch("GenDeltaPhi", &genDeltaPhi);
+			tree->Branch("GenAbsoluteDeltaPhi", &genAbsoluteDeltaPhi);
+			tree->Branch("GenWBosonMt", &genWBosonMt);
 
 			tree->Branch("nGenLepton", &nGenLepton);
 			tree->Branch("GrandMotherPdgId", grandMotherPdgId.data(), "GrandMotherPdgId[nGenLepton]/I");

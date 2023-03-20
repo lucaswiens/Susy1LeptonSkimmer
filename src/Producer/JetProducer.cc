@@ -68,8 +68,9 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 		resolutionAk8 = JME::JetResolution(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + era + "_JRV3_MC_PtResolution_" + ak8Algorithm + ".txt");
 		resolutionSfAk8 = JME::JetResolutionScaleFactor(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + era + "_JRV3_MC_SF_" + ak8Algorithm + ".txt");
 	} else {
-		resolutionAk8 = JME::JetResolution(era + "_" + jerVersion + "_PtResolution_" + ak8Algorithm);
-		resolutionSfAk8 = JME::JetResolutionScaleFactor(era + "_" + jerVersion + "_SF_" + ak8Algorithm);
+		std::cout << era + "_" + jerVersion + "_PtResolution_" + ak8Algorithm << std::endl;
+		resolutionAk8 = JME::JetResolution(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + era + "_" + jerVersion + "_PtResolution_" + ak8Algorithm + ".txt");
+		resolutionSfAk8 = JME::JetResolutionScaleFactor(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + era + "_" + jerVersion + "_SF_" + ak8Algorithm + ".txt");
 	}
 
 	/*################################################################################
@@ -157,6 +158,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		const float &jetPtCorrectedJerUp   = jetPtRaw * correctionFactor * smearFactor.at('U');
 		const float &jetPtCorrectedJerDown = jetPtRaw * correctionFactor * smearFactor.at('D');
 		const float &jetMassCorrected      = jetMassRaw * correctionFactor * smearFactor.at('N');
+
 		// If any variation of jetPt passes the cut, keep it
 		bool passesJetPtCut = jetPtCorrected >= jetPtCut || jetPtCorrectedJerUp >= jetPtCut || jetPtCorrectedJerDown >= jetPtCut;
 

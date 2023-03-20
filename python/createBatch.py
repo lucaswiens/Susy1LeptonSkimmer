@@ -26,26 +26,22 @@ def prepareArguments(sample):
 	runPeriod = "M"
 	if "RunIISummer20UL16" in str(sample) or "RunIISummer16" in str(sample)or "Run2016" in str(sample):
 		year = 2016
-		if "Fast" in str(sample): #FastSim
-			runPeriod = "S"
 	elif "RunIISummer20UL17" in str(sample) or "RunIIFall17" in str(sample) or "Run2017" in str(sample) or "T5qqqqVV_FS" in str(sample):
 		year = 2017
-		if "Fast" in str(sample) or "T5qqqqVV_FS" in str(sample): #FastSim
-			runPeriod = "S"
 	elif "RunIISummer20UL18" in str(sample) or "RunIIAutumn18" in str(sample) or "Run2018" in str(sample):
 		year = 2018
-		if "Fast" in str(sample): #FastSim
-			runPeriod = "S"
 	else:
 		print("Could not determine era of the sample:\n" + str(sample) + "\nCheck the prepareArguments function to configure it properly")
 		sys.exit(1)
 
 	if isData:
 		runPeriod = findall("Run201..", sample)[0][-1]
+
 	xSection = getXSection.GetXSection(sample)
 
 	if "SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample or "T5qqqqVV" in sample:
 		xSection = 1
+		runPeriod = "S"
 
 	return year, runPeriod, isFastSim, xSection, isPrivate
 
@@ -89,11 +85,11 @@ if __name__=="__main__":
 	submitFile.write(f"arguments  = $(inputFile) $(outputFile) $(year) $(runPeriod) $(xSection) $(iJob) $(cmsswBase) $(outputDir)\n")
 	submitFile.write(f"\n")
 	submitFile.write(f"universe       = vanilla\n")
-	submitFile.write(f"request_memory = 500 MB\n")
+	submitFile.write(f"request_memory = 1000 MB\n")
 	submitFile.write(f"\n")
-	submitFile.write(f"output = {args.output}/output/job$(Cluster)_$(Process).stdout\n")
-	submitFile.write(f"error  = {args.output}/error/job$(Cluster)_$(Process).stderr\n")
-	submitFile.write(f"log    = {args.output}/logs/job$(Cluster)_$(Process).log\n")
+	submitFile.write(f"output = {args.output}/output/job$(Cluster)_$(iJob).stdout\n")
+	submitFile.write(f"error  = {args.output}/error/job$(Cluster)_$(iJob).stderr\n")
+	submitFile.write(f"log    = {args.output}/logs/job$(Cluster)_$(iJob).log\n")
 	submitFile.write(f"\n")
 	submitFile.write(f"queue inputFile outputFile year runPeriod xSection iJob cmsswBase outputDir from arguments.md\n")
 	submitFile.close()

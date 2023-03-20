@@ -36,21 +36,21 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 
 	ptBins = {ptCut, 50, 70, 90, 200};
 
-	bTotal = std::make_shared<TH2D>("nTrueB", "TotalB", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	cTotal = std::make_shared<TH2D>("nTrueC", "TotalC", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	lightTotal = std::make_shared<TH2D>("nTrueLight", "TotalLight", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTotal = std::make_shared<TH2F>("nTrueB", "TotalB", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	cTotal = std::make_shared<TH2F>("nTrueC", "TotalC", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	lightTotal = std::make_shared<TH2F>("nTrueLight", "TotalLight", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 
-	bTagEffBLooseDeepJet = std::make_shared<TH2D>("nLooseBbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffBMediumDeepJet = std::make_shared<TH2D>("nMediumBbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffBTightDeepJet = std::make_shared<TH2D>("nTightBbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffBLooseDeepJet = std::make_shared<TH2F>("nLooseBbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffBMediumDeepJet = std::make_shared<TH2F>("nMediumBbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffBTightDeepJet = std::make_shared<TH2F>("nTightBbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 
-	bTagEffCLooseDeepJet = std::make_shared<TH2D>("nLooseCbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffCMediumDeepJet = std::make_shared<TH2D>("nMediumCbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffCTightDeepJet = std::make_shared<TH2D>("nTightCbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffCLooseDeepJet = std::make_shared<TH2F>("nLooseCbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffCMediumDeepJet = std::make_shared<TH2F>("nMediumCbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffCTightDeepJet = std::make_shared<TH2F>("nTightCbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 
-	bTagEffLightLooseDeepJet = std::make_shared<TH2D>("nLooseLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffLightMediumDeepJet = std::make_shared<TH2D>("nMediumLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
-	bTagEffLightTightDeepJet = std::make_shared<TH2D>("nTightLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffLightLooseDeepJet = std::make_shared<TH2F>("nLooseLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffLightMediumDeepJet = std::make_shared<TH2F>("nMediumLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
+	bTagEffLightTightDeepJet = std::make_shared<TH2F>("nTightLightbTagDeepJet", "", ptBins.size() - 1, ptBins.data(), etaBins.size() - 1, etaBins.data());
 }
 
 void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {

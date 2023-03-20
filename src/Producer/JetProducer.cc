@@ -91,6 +91,35 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 		{'T', configTree.get<float>("Producer.Jet.DeepJet." + product.GetEraSelector() + ".Tight")},
 	};
 
+	deepAk8TopTagMap = {
+		{'L', configTree.get<float>("Producer.Jet.DeepAK8.Top." + product.GetEraSelector() + ".Loose")},
+		{'M', configTree.get<float>("Producer.Jet.DeepAK8.Top." + product.GetEraSelector() + ".Medium")},
+		{'T', configTree.get<float>("Producer.Jet.DeepAK8.Top." + product.GetEraSelector() + ".Tight")},
+		{'t', configTree.get<float>("Producer.Jet.DeepAK8.Top." + product.GetEraSelector() + ".VeryTight")},
+	};
+
+	deepAk8TopMDTagMap = {
+		{'L', configTree.get<float>("Producer.Jet.DeepAK8.TopMassDecorrelated." + product.GetEraSelector() + ".Loose")},
+		{'M', configTree.get<float>("Producer.Jet.DeepAK8.TopMassDecorrelated." + product.GetEraSelector() + ".Medium")},
+		{'T', configTree.get<float>("Producer.Jet.DeepAK8.TopMassDecorrelated." + product.GetEraSelector() + ".Tight")},
+		{'t', configTree.get<float>("Producer.Jet.DeepAK8.TopMassDecorrelated." + product.GetEraSelector() + ".VeryTight")},
+	};
+
+	deepAk8WTagMap = {
+		{'l', configTree.get<float>("Producer.Jet.DeepAK8.W." + product.GetEraSelector() + ".VeryLoose")},
+		{'L', configTree.get<float>("Producer.Jet.DeepAK8.W." + product.GetEraSelector() + ".Loose")},
+		{'M', configTree.get<float>("Producer.Jet.DeepAK8.W." + product.GetEraSelector() + ".Medium")},
+		{'T', configTree.get<float>("Producer.Jet.DeepAK8.W." + product.GetEraSelector() + ".Tight")},
+	};
+
+	deepAk8WMDTagMap = {
+		{'l', configTree.get<float>("Producer.Jet.DeepAK8.WMassDecorrelated." + product.GetEraSelector() + ".VeryLoose")},
+		{'L', configTree.get<float>("Producer.Jet.DeepAK8.WMassDecorrelated." + product.GetEraSelector() + ".Loose")},
+		{'M', configTree.get<float>("Producer.Jet.DeepAK8.WMassDecorrelated." + product.GetEraSelector() + ".Medium")},
+		{'T', configTree.get<float>("Producer.Jet.DeepAK8.WMassDecorrelated." + product.GetEraSelector() + ".Tight")},
+	};
+
+
 	jetPtCut  = configTree.get<float>("Producer.Jet.Pt");
 	jetEtaCut = configTree.get<float>("Producer.Jet.Eta");
 	std::cout << std::endl <<
@@ -302,10 +331,31 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		product.fatJetMass[fatJetCounter]            = dataReader.fatJetMass * correctionFactor * smearFactor.at('N');
 		product.fatJetArea[fatJetCounter]            = dataReader.fatJetArea;
 		product.fatJetId[fatJetCounter]              = dataReader.fatJetId;
+
 		product.fatJetDeepTagMDTvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDTvsQCD;
 		product.fatJetDeepTagMDWvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDWvsQCD;
 		product.fatJetDeepTagTvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD;
 		product.fatJetDeepTagWvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagWvsQCD;
+
+		product.fatJetDeepAk8TopLooseId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('L');
+		product.fatJetDeepAk8TopMediumId[fatJetCounter]      = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('M');
+		product.fatJetDeepAk8TopTightId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('T');
+		product.fatJetDeepAk8TopVeryTightId[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('t');
+
+		product.fatJetDeepAk8TopMDLooseId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('L');
+		product.fatJetDeepAk8TopMDMediumId[fatJetCounter]    = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('M');
+		product.fatJetDeepAk8TopMDTightId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('T');
+		product.fatJetDeepAk8TopMDVeryTightId[fatJetCounter] = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('t');
+
+		product.fatJetDeepAk8WVeryLooseId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('l');
+		product.fatJetDeepAk8WLooseId[fatJetCounter]         = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('L');
+		product.fatJetDeepAk8WMediumId[fatJetCounter]        = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('M');
+		product.fatJetDeepAk8WTightId[fatJetCounter]         = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('T');
+
+		product.fatJetDeepAk8WMDVeryLooseId[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('l');
+		product.fatJetDeepAk8WMDLooseId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('L');
+		product.fatJetDeepAk8WMDMediumId[fatJetCounter]      = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('M');
+		product.fatJetDeepAk8WMDTightId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('T');
 
 		for (int iJec = 0; iJec < jecSystematics.size(); iJec++) {
 			product.fatJetPtJecUp.at(iJec)[fatJetCounter] = fatJetPtRaw * fatJetJecUp.at(iJec);

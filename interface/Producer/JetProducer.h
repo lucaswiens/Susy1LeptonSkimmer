@@ -43,6 +43,11 @@ class JetProducer : public BaseProducer {
 		// Btag Map
 		std::map<char, float> deepCsvBTagMap, deepJetBTagMap;
 
+		// DeepAk8 Top Tag Map
+		std::map<char, float> deepAk8TopTagMap, deepAk8TopMDTagMap;
+		// DeepAk8 W Tag Map
+		std::map<char, float> deepAk8WTagMap, deepAk8WMDTagMap;
+
 		float CorrectEnergy(DataReader &dataReader, const float &jetPtRaw, const bool &isAk4, const bool &isFastSim);
 		std::map<char, float> SmearEnergy(DataReader &dataReader, const float &jetPtCorrected, const bool &isAk4);
 		std::map<char, float> SmearFatEnergy(DataReader &dataReader, const float &jetPtCorrected);

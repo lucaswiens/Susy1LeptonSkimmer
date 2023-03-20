@@ -164,7 +164,8 @@
 			"2016PostVFP" : "/jsonpog-integration/POG/BTV/2016postVFP_UL/btagging.json",
 			"2017" : "/jsonpog-integration/POG/BTV/2017_UL/btagging.json",
 			"2018" : "/jsonpog-integration/POG/BTV/2018_UL/btagging.json"
-		}
+		},
+		"DeepAK8ScaleFactors" : "data/deepAk8/DeepAK8V2_Top_W_SFs.csv"
 	},
 	"Electron" : {
 		"2016PreVFP" : {

@@ -1,6 +1,6 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/ScaleFactorProducer.h>
 
-ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile) {
+ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, const std::string &eraSelector, const bool &isFastSim, TFile &outputFile) {
 	Name = "ScaleFactorProducer";
 	//TH1::AddDirectory(false);
 	std::string cmsswBase = std::getenv("CMSSW_BASE");
@@ -13,6 +13,14 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 	electronSf = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Electron." + eraSelector + ".JSON"));
 	muonSf = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.JSON"));
 	bTagSf = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.BTag." + eraSelector));
+
+	// heavy tag sf with DeepAk8
+	if (eraSelector.find("2016") != std::string::npos) {
+		deepAk8EraAlias = "2016"; // The DeepAk8 SF are not split into pre- and postVFP
+	} else {
+		deepAk8EraAlias = eraSelector;
+	}
+	ak8TagCSVReader = Ak8TagCSVReader(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/" + scaleFactorTree.get<std::string>("Jet.DeepAK8ScaleFactors"), isFastSim);
 
 	electronEraAlias = scaleFactorTree.get<std::string>("Electron." + eraSelector + ".EraAlias");
 	muonEraAlias = scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.EraAlias");
@@ -180,6 +188,68 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 				bTagEffLightLooseDeepJet->Fill(product.jetPt[iJet], product.jetEta[iJet]);
 			}
 		}
+	}
+
+	for (int iFatJet = 0; iFatJet < product.nFatJet; iFatJet++) {
+		product.fatJetDeepAk8TopVeryTightIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.0p1", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopTightIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.0p5", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMediumIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.1p0", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopLooseIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.2p5", 'n', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8TopMDVeryTightIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.0p1", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDTightIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.0p5", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDMediumIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.1p0", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDLooseIdSf[iFatJet] = ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.2p5", 'n', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8WTightIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.0p5", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMediumIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.1p0", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WLooseIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.2p5", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WVeryLooseIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.5p0", 'n', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8WMDTightIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.0p5", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDMediumIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.1p0", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDLooseIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.2p5", 'n', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDVeryLooseIdSf[iFatJet] = ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.5p0", 'n', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8TopVeryTightIdSfUp[iFatJet] = product.fatJetDeepAk8TopVeryTightIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.0p1", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopTightIdSfUp[iFatJet] = product.fatJetDeepAk8TopTightIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.0p5", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMediumIdSfUp[iFatJet] = product.fatJetDeepAk8TopMediumIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.1p0", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopLooseIdSfUp[iFatJet] = product.fatJetDeepAk8TopLooseIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.2p5", 'u', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8TopMDVeryTightIdSfUp[iFatJet] = product.fatJetDeepAk8TopMDVeryTightIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.0p1", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDTightIdSfUp[iFatJet] = product.fatJetDeepAk8TopMDTightIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.0p5", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDMediumIdSfUp[iFatJet] = product.fatJetDeepAk8TopMDMediumIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.1p0", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDLooseIdSfUp[iFatJet] = product.fatJetDeepAk8TopMDLooseIdSf[iFatJet] + ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.2p5", 'u', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8WTightIdSfUp[iFatJet] = product.fatJetDeepAk8WTightIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.0p5", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMediumIdSfUp[iFatJet] = product.fatJetDeepAk8WMediumIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.1p0", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WLooseIdSfUp[iFatJet] = product.fatJetDeepAk8WLooseIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.2p5", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WVeryLooseIdSfUp[iFatJet] = product.fatJetDeepAk8WVeryLooseIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.5p0", 'u', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8WMDTightIdSfUp[iFatJet] = product.fatJetDeepAk8WMDTightIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.0p5", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDMediumIdSfUp[iFatJet] = product.fatJetDeepAk8WMDMediumIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.1p0", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDLooseIdSfUp[iFatJet] = product.fatJetDeepAk8WMDLooseIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.2p5", 'u', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDVeryLooseIdSfUp[iFatJet] = product.fatJetDeepAk8WMDVeryLooseIdSf[iFatJet] + ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.5p0", 'u', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8TopVeryTightIdSfDown[iFatJet] = product.fatJetDeepAk8TopVeryTightIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.0p1", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopTightIdSfDown[iFatJet] = product.fatJetDeepAk8TopTightIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.0p5", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMediumIdSfDown[iFatJet] = product.fatJetDeepAk8TopMediumIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.1p0", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopLooseIdSfDown[iFatJet] = product.fatJetDeepAk8TopLooseIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".Nominal.2p5", 'd', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8TopMDVeryTightIdSfDown[iFatJet] = product.fatJetDeepAk8TopMDVeryTightIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.0p1", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDTightIdSfDown[iFatJet] = product.fatJetDeepAk8TopMDTightIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.0p5", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDMediumIdSfDown[iFatJet] = product.fatJetDeepAk8TopMDMediumIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.1p0", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8TopMDLooseIdSfDown[iFatJet] = product.fatJetDeepAk8TopMDLooseIdSf[iFatJet] - ak8TagCSVReader.GetSf("Top." + deepAk8EraAlias + ".MassDecorr.2p5", 'd', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8WTightIdSfDown[iFatJet] = product.fatJetDeepAk8WTightIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.0p5", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMediumIdSfDown[iFatJet] = product.fatJetDeepAk8WMediumIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.1p0", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WLooseIdSfDown[iFatJet] = product.fatJetDeepAk8WLooseIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.2p5", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WVeryLooseIdSfDown[iFatJet] = product.fatJetDeepAk8WVeryLooseIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".Nominal.5p0", 'd', product.fatJetPt[iFatJet]);
+
+		product.fatJetDeepAk8WMDTightIdSfDown[iFatJet] = product.fatJetDeepAk8WMDTightIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.0p5", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDMediumIdSfDown[iFatJet] = product.fatJetDeepAk8WMDMediumIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.1p0", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDLooseIdSfDown[iFatJet] = product.fatJetDeepAk8WMDLooseIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.2p5", 'd', product.fatJetPt[iFatJet]);
+		product.fatJetDeepAk8WMDVeryLooseIdSfDown[iFatJet] = product.fatJetDeepAk8WMDVeryLooseIdSf[iFatJet] - ak8TagCSVReader.GetSf("W." + deepAk8EraAlias + ".MassDecorr.5p0", 'd', product.fatJetPt[iFatJet]);
 	}
 }
 

@@ -110,6 +110,8 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.nIsoTrack = isoTrackCounter;
 
 	product.HT = 0;
+
+	// count the number of btags
 	for (int *nBtag : {&product.nDeepJetLooseBTag, &product.nDeepJetMediumBTag, &product.nDeepJetTightBTag}) {
 		*nBtag = 0;
 	}
@@ -120,6 +122,33 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		if (product.jetDeepJetLooseId[iJet])  { product.nDeepJetLooseBTag++;}
 		if (product.jetDeepJetMediumId[iJet]) { product.nDeepJetMediumBTag++;}
 		if (product.jetDeepJetTightId[iJet])  { product.nDeepJetTightBTag++;}
+	}
+
+	// count the number of t and W tags
+	for (int *nDeepAk8Tag : {&product.nDeepAk8TopLooseId, &product.nDeepAk8TopMediumId, &product.nDeepAk8TopTightId, &product.nDeepAk8TopVeryTightId, &product.nDeepAk8TopMDLooseId, &product.nDeepAk8TopMDMediumId, &product.nDeepAk8TopMDTightId, &product.nDeepAk8TopMDVeryTightId, &product.nDeepAk8WVeryLooseId, &product.nDeepAk8WLooseId, &product.nDeepAk8WMediumId, &product.nDeepAk8WTightId, &product.nDeepAk8WMDVeryLooseId, &product.nDeepAk8WMDLooseId, &product.nDeepAk8WMDMediumId, &product.nDeepAk8WMDTightId}) {
+		*nDeepAk8Tag = 0;
+	}
+
+	for (int iFatJet = 0; iFatJet < product.nFatJet; iFatJet++) {
+		if (product.fatJetDeepAk8TopLooseId[iFatJet]) {product.nDeepAk8TopLooseId++;}
+		if (product.fatJetDeepAk8TopMediumId[iFatJet]) {product.nDeepAk8TopMediumId++;}
+		if (product.fatJetDeepAk8TopTightId[iFatJet]) {product.nDeepAk8TopTightId++;}
+		if (product.fatJetDeepAk8TopVeryTightId[iFatJet]) {product.nDeepAk8TopVeryTightId++;}
+
+		if (product.fatJetDeepAk8TopMDLooseId[iFatJet]) {product.nDeepAk8TopMDLooseId++;}
+		if (product.fatJetDeepAk8TopMDMediumId[iFatJet]) {product.nDeepAk8TopMDMediumId++;}
+		if (product.fatJetDeepAk8TopMDTightId[iFatJet]) {product.nDeepAk8TopMDTightId++;}
+		if (product.fatJetDeepAk8TopMDVeryTightId[iFatJet]) {product.nDeepAk8TopMDVeryTightId++;}
+
+		if (product.fatJetDeepAk8WVeryLooseId[iFatJet]) {product.nDeepAk8WVeryLooseId++;}
+		if (product.fatJetDeepAk8WLooseId[iFatJet]) {product.nDeepAk8WLooseId++;}
+		if (product.fatJetDeepAk8WMediumId[iFatJet]) {product.nDeepAk8WMediumId++;}
+		if (product.fatJetDeepAk8WTightId[iFatJet]) {product.nDeepAk8WTightId++;}
+
+		if (product.fatJetDeepAk8WMDVeryLooseId[iFatJet]) {product.nDeepAk8WMDVeryLooseId++;}
+		if (product.fatJetDeepAk8WMDLooseId[iFatJet]) {product.nDeepAk8WMDLooseId++;}
+		if (product.fatJetDeepAk8WMDMediumId[iFatJet]) {product.nDeepAk8WMDMediumId++;}
+		if (product.fatJetDeepAk8WMDTightId[iFatJet]) {product.nDeepAk8WMDTightId++;}
 	}
 }
 

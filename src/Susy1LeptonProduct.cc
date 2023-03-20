@@ -296,6 +296,96 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("FatJetDeepTagTvsQCD", fatJetDeepTagTvsQCD.data(), "FatJetDeepTagTvsQCD[nFatJet]/F");
 		tree->Branch("FatJetDeepTagWvsQCD", fatJetDeepTagWvsQCD.data(), "FatJetDeepTagWvsQCD[nFatJet]/F");
 
+		tree->Branch("FatJetDeepAk8TopLooseId", fatJetDeepAk8TopLooseId.data(), "FatJetDeepAk8TopLooseId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8TopMediumId", fatJetDeepAk8TopMediumId.data(), "FatJetDeepAk8TopMediumId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8TopTightId", fatJetDeepAk8TopTightId.data(), "FatJetDeepAk8TopTightId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8TopVeryTightId", fatJetDeepAk8TopVeryTightId.data(), "FatJetDeepAk8TopVeryTightId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8TopMDLooseId", fatJetDeepAk8TopMDLooseId.data(), "FatJetDeepAk8TopMDLooseId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8TopMDMediumId", fatJetDeepAk8TopMDMediumId.data(), "FatJetDeepAk8TopMDMediumId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8TopMDTightId", fatJetDeepAk8TopMDTightId.data(), "FatJetDeepAk8TopMDTightId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8TopMDVeryTightId", fatJetDeepAk8TopMDVeryTightId.data(), "FatJetDeepAk8TopMDVeryTightId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WVeryLooseId", fatJetDeepAk8WVeryLooseId.data(), "FatJetDeepAk8WVeryLooseId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WLooseId", fatJetDeepAk8WLooseId.data(), "FatJetDeepAk8WLooseId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WMediumId", fatJetDeepAk8WMediumId.data(), "FatJetDeepAk8WMediumId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WTightId", fatJetDeepAk8WTightId.data(), "FatJetDeepAk8WTightId,[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WMDVeryLooseId", fatJetDeepAk8WMDVeryLooseId.data(), "FatJetDeepAk8WMDVeryLooseId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WMDLooseId", fatJetDeepAk8WMDLooseId.data(), "FatJetDeepAk8WMDLooseId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WMDMediumId", fatJetDeepAk8WMDMediumId.data(), "FatJetDeepAk8WMDMediumId[nFatJet]/O");
+		tree->Branch("FatJetDeepAk8WMDTightId;", fatJetDeepAk8WMDTightId.data(), "FatJetDeepAk8WMDTightId;[nFatJet]/O");
+
+		if (!isData) {
+			tree->Branch("FatJetDeepAk8TopLooseIdSf", fatJetDeepAk8TopLooseIdSf.data(), "FatJetDeepAk8TopLooseIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMediumIdSf", fatJetDeepAk8TopMediumIdSf.data(), "FatJetDeepAk8TopMediumIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopTightIdSf", fatJetDeepAk8TopTightIdSf.data(), "FatJetDeepAk8TopTightIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopVeryTightIdSf", fatJetDeepAk8TopVeryTightIdSf.data(), "FatJetDeepAk8TopVeryTightIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDLooseIdSf", fatJetDeepAk8TopMDLooseIdSf.data(), "FatJetDeepAk8TopMDLooseIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDMediumIdSf", fatJetDeepAk8TopMDMediumIdSf.data(), "FatJetDeepAk8TopMDMediumIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDTightIdSf", fatJetDeepAk8TopMDTightIdSf.data(), "FatJetDeepAk8TopMDTightIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDVeryTightIdSf", fatJetDeepAk8TopMDVeryTightIdSf.data(), "FatJetDeepAk8TopMDVeryTightIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WVeryLooseIdSf", fatJetDeepAk8WVeryLooseIdSf.data(), "FatJetDeepAk8WVeryLooseIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WLooseIdSf", fatJetDeepAk8WLooseIdSf.data(), "FatJetDeepAk8WLooseIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMediumIdSf", fatJetDeepAk8WMediumIdSf.data(), "FatJetDeepAk8WMediumIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WTightIdSf", fatJetDeepAk8WTightIdSf.data(), "FatJetDeepAk8WTightIdSf,[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDVeryLooseIdSf", fatJetDeepAk8WMDVeryLooseIdSf.data(), "FatJetDeepAk8WMDVeryLooseIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDLooseIdSf", fatJetDeepAk8WMDLooseIdSf.data(), "FatJetDeepAk8WMDLooseIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDMediumIdSf", fatJetDeepAk8WMDMediumIdSf.data(), "FatJetDeepAk8WMDMediumIdSf[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDTightIdSf;", fatJetDeepAk8WMDTightIdSf.data(), "FatJetDeepAk8WMDTightIdSf;[nFatJet]/F");
+
+			tree->Branch("FatJetDeepAk8TopLooseIdSfUp", fatJetDeepAk8TopLooseIdSfUp.data(), "FatJetDeepAk8TopLooseIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMediumIdSfUp", fatJetDeepAk8TopMediumIdSfUp.data(), "FatJetDeepAk8TopMediumIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopTightIdSfUp", fatJetDeepAk8TopTightIdSfUp.data(), "FatJetDeepAk8TopTightIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopVeryTightIdSfUp", fatJetDeepAk8TopVeryTightIdSfUp.data(), "FatJetDeepAk8TopVeryTightIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDLooseIdSfUp", fatJetDeepAk8TopMDLooseIdSfUp.data(), "FatJetDeepAk8TopMDLooseIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDMediumIdSfUp", fatJetDeepAk8TopMDMediumIdSfUp.data(), "FatJetDeepAk8TopMDMediumIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDTightIdSfUp", fatJetDeepAk8TopMDTightIdSfUp.data(), "FatJetDeepAk8TopMDTightIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDVeryTightIdSfUp", fatJetDeepAk8TopMDVeryTightIdSfUp.data(), "FatJetDeepAk8TopMDVeryTightIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WVeryLooseIdSfUp", fatJetDeepAk8WVeryLooseIdSfUp.data(), "FatJetDeepAk8WVeryLooseIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WLooseIdSfUp", fatJetDeepAk8WLooseIdSfUp.data(), "FatJetDeepAk8WLooseIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMediumIdSfUp", fatJetDeepAk8WMediumIdSfUp.data(), "FatJetDeepAk8WMediumIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WTightIdSfUp", fatJetDeepAk8WTightIdSfUp.data(), "FatJetDeepAk8WTightIdSfUp,[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDVeryLooseIdSfUp", fatJetDeepAk8WMDVeryLooseIdSfUp.data(), "FatJetDeepAk8WMDVeryLooseIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDLooseIdSfUp", fatJetDeepAk8WMDLooseIdSfUp.data(), "FatJetDeepAk8WMDLooseIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDMediumIdSfUp", fatJetDeepAk8WMDMediumIdSfUp.data(), "FatJetDeepAk8WMDMediumIdSfUp[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDTightIdSfUp;", fatJetDeepAk8WMDTightIdSfUp.data(), "FatJetDeepAk8WMDTightIdSfUp;[nFatJet]/F");
+
+			tree->Branch("FatJetDeepAk8TopLooseIdSfDown", fatJetDeepAk8TopLooseIdSfDown.data(), "FatJetDeepAk8TopLooseIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMediumIdSfDown", fatJetDeepAk8TopMediumIdSfDown.data(), "FatJetDeepAk8TopMediumIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopTightIdSfDown", fatJetDeepAk8TopTightIdSfDown.data(), "FatJetDeepAk8TopTightIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopVeryTightIdSfDown", fatJetDeepAk8TopVeryTightIdSfDown.data(), "FatJetDeepAk8TopVeryTightIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDLooseIdSfDown", fatJetDeepAk8TopMDLooseIdSfDown.data(), "FatJetDeepAk8TopMDLooseIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDMediumIdSfDown", fatJetDeepAk8TopMDMediumIdSfDown.data(), "FatJetDeepAk8TopMDMediumIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDTightIdSfDown", fatJetDeepAk8TopMDTightIdSfDown.data(), "FatJetDeepAk8TopMDTightIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8TopMDVeryTightIdSfDown", fatJetDeepAk8TopMDVeryTightIdSfDown.data(), "FatJetDeepAk8TopMDVeryTightIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WVeryLooseIdSfDown", fatJetDeepAk8WVeryLooseIdSfDown.data(), "FatJetDeepAk8WVeryLooseIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WLooseIdSfDown", fatJetDeepAk8WLooseIdSfDown.data(), "FatJetDeepAk8WLooseIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMediumIdSfDown", fatJetDeepAk8WMediumIdSfDown.data(), "FatJetDeepAk8WMediumIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WTightIdSfDown", fatJetDeepAk8WTightIdSfDown.data(), "FatJetDeepAk8WTightIdSfDown,[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDVeryLooseIdSfDown", fatJetDeepAk8WMDVeryLooseIdSfDown.data(), "FatJetDeepAk8WMDVeryLooseIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDLooseIdSfDown", fatJetDeepAk8WMDLooseIdSfDown.data(), "FatJetDeepAk8WMDLooseIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDMediumIdSfDown", fatJetDeepAk8WMDMediumIdSfDown.data(), "FatJetDeepAk8WMDMediumIdSfDown[nFatJet]/F");
+			tree->Branch("FatJetDeepAk8WMDTightIdSfDown;", fatJetDeepAk8WMDTightIdSfDown.data(), "FatJetDeepAk8WMDTightIdSfDown;[nFatJet]/F");
+		}
+
+
+
+		tree->Branch("nDeepAk8TopLooseId", &nDeepAk8TopLooseId);
+		tree->Branch("nDeepAk8TopMediumId", &nDeepAk8TopMediumId);
+		tree->Branch("nDeepAk8TopTightId", &nDeepAk8TopTightId);
+		tree->Branch("nDeepAk8TopVeryTightId", &nDeepAk8TopVeryTightId);
+		tree->Branch("nDeepAk8TopMDLooseId", &nDeepAk8TopMDLooseId);
+		tree->Branch("nDeepAk8TopMDMediumId", &nDeepAk8TopMDMediumId);
+		tree->Branch("nDeepAk8TopMDTightId", &nDeepAk8TopMDTightId);
+		tree->Branch("nDeepAk8TopMDVeryTightId", nDeepAk8TopMDVeryTightId);
+		tree->Branch("nDeepAk8WVeryLooseId", &nDeepAk8WVeryLooseId);
+		tree->Branch("nDeepAk8WLooseId", &nDeepAk8WLooseId);
+		tree->Branch("nDeepAk8WMediumId", &nDeepAk8WMediumId);
+		tree->Branch("nDeepAk8WTightId", &nDeepAk8WTightId);
+		tree->Branch("nDeepAk8WMDVeryLooseId", &nDeepAk8WMDVeryLooseId);
+		tree->Branch("nDeepAk8WMDLooseId", &nDeepAk8WMDLooseId);
+		tree->Branch("nDeepAk8WMDMediumId", &nDeepAk8WMDMediumId);
+		tree->Branch("nDeepAk8WMDTightId", &nDeepAk8WMDTightId);
+
+
 		tree->Branch("HT", &HT);
 		tree->Branch("LT", &LT);
 		tree->Branch("LP", &LP);

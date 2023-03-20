@@ -464,6 +464,112 @@
 					"Tight"  : 0.7100
 				}
 			},
+			"DeepAK8" : {
+				"Top" : {
+					"2016PreVFP": {
+						"Loose"     : 0.528,
+						"Medium"    : 0.834,
+						"Tight"     : 0.929,
+						"VeryTight" : 0.988
+					},
+					"2016PostVFP": {
+						"Loose"     : 0.528,
+						"Medium"    : 0.834,
+						"Tight"     : 0.929,
+						"VeryTight" : 0.988
+					},
+					"2017": {
+						"Loose"     : 0.333,
+						"Medium"    : 0.725,
+						"Tight"     : 0.884,
+						"VeryTight" : 0.983
+					},
+					"2018": {
+						"Loose"     : 0.436,
+						"Medium"    : 0.802,
+						"Tight"     : 0.922,
+						"VeryTight" : 0.989
+					}
+				},
+				"TopMassDecorrelated" : {
+					"2016PreVFP": {
+						"Loose"     : 0.177,
+						"Medium"    : 0.435,
+						"Tight"     : 0.632,
+						"VeryTight" : 0.889
+					},
+					"2016PostVFP": {
+						"Loose"     : 0.177,
+						"Medium"    : 0.435,
+						"Tight"     : 0.632,
+						"VeryTight" : 0.889
+					},
+					"2017": {
+						"Loose"     : 0.117,
+						"Medium"    : 0.344,
+						"Tight"     : 0.554,
+						"VeryTight" : 0.863
+					},
+					"2018": {
+						"Loose"     : 0.174,
+						"Medium"    : 0.470,
+						"Tight"     : 0.685,
+						"VeryTight" : 0.920
+					}
+				},
+				"W" : {
+					"2016PreVFP": {
+						"VeryLoose" : 0.475,
+						"Loose"     : 0.763,
+						"Medium"    : 0.918,
+						"Tight"     : 0.960
+					},
+					"2016PostVFP": {
+						"VeryLoose" : 0.475,
+						"Loose"     : 0.763,
+						"Medium"    : 0.918,
+						"Tight"     : 0.960
+					},
+					"2017": {
+						"VeryLoose" : 0.467,
+						"Loose"     : 0.772,
+						"Medium"    : 0.925,
+						"Tight"     : 0.964
+					},
+					"2018": {
+						"VeryLoose" : 0.458,
+						"Loose"     : 0.762,
+						"Medium"    : 0.918,
+						"Tight"     : 0.961
+					}
+				},
+				"WMassDecorrelated" : {
+					"2016PreVFP": {
+						"VeryLoose" : 0.274,
+						"Loose"     : 0.506,
+						"Medium"    : 0.731,
+						"Tight"     : 0.828
+					},
+					"2016PostVFP": {
+						"VeryLoose" : 0.274,
+						"Loose"     : 0.506,
+						"Medium"    : 0.731,
+						"Tight"     : 0.828
+					},
+					"2017": {
+						"VeryLoose" : 0.258,
+						"Loose"     : 0.506,
+						"Medium"    : 0.739,
+						"Tight"     : 0.838
+					},
+					"2018": {
+						"VeryLoose" : 0.245,
+						"Loose"     : 0.479,
+						"Medium"    : 0.704,
+						"Tight"     : 0.806
+					}
+				}
+			},
 			"BTagSystematic" : [
 				"uncorrelated",
 				"correlated",

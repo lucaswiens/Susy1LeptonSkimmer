@@ -115,14 +115,37 @@ class Susy1LeptonProduct {
 
 
 		// FatJet Inforamtion
-		int nFatJet;
+		int nFatJet,
+			nDeepAk8TopLooseId, nDeepAk8TopMediumId, nDeepAk8TopTightId, nDeepAk8TopVeryTightId,
+			nDeepAk8TopMDLooseId, nDeepAk8TopMDMediumId, nDeepAk8TopMDTightId, nDeepAk8TopMDVeryTightId,
+			nDeepAk8WVeryLooseId, nDeepAk8WLooseId, nDeepAk8WMediumId, nDeepAk8WTightId,
+			nDeepAk8WMDVeryLooseId, nDeepAk8WMDLooseId, nDeepAk8WMDMediumId, nDeepAk8WMDTightId;
 		std::array<int, nMax> fatJetId;
 		std::array<float, nMax> fatJetPt, fatJetPtJerUp, fatJetPtJerDown,
 			fatJetMass, fatJetMassJerUp, fatJetMassJerDown,
 			fatJetEta, fatJetPhi,
 			fatJetArea,
 			fatJetDeepTagMDTvsQCD, fatJetDeepTagMDWvsQCD,
-			fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD;
+			fatJetDeepTagTvsQCD, fatJetDeepTagWvsQCD,
+			fatJetDeepAk8TopLooseIdSf, fatJetDeepAk8TopMediumIdSf, fatJetDeepAk8TopTightIdSf, fatJetDeepAk8TopVeryTightIdSf,
+			fatJetDeepAk8TopMDLooseIdSf, fatJetDeepAk8TopMDMediumIdSf, fatJetDeepAk8TopMDTightIdSf, fatJetDeepAk8TopMDVeryTightIdSf,
+			fatJetDeepAk8WVeryLooseIdSf, fatJetDeepAk8WLooseIdSf, fatJetDeepAk8WMediumIdSf, fatJetDeepAk8WTightIdSf,
+			fatJetDeepAk8WMDVeryLooseIdSf, fatJetDeepAk8WMDLooseIdSf, fatJetDeepAk8WMDMediumIdSf, fatJetDeepAk8WMDTightIdSf,
+			fatJetDeepAk8TopLooseIdSfUp, fatJetDeepAk8TopMediumIdSfUp, fatJetDeepAk8TopTightIdSfUp, fatJetDeepAk8TopVeryTightIdSfUp,
+			fatJetDeepAk8TopMDLooseIdSfUp, fatJetDeepAk8TopMDMediumIdSfUp, fatJetDeepAk8TopMDTightIdSfUp, fatJetDeepAk8TopMDVeryTightIdSfUp,
+			fatJetDeepAk8WVeryLooseIdSfUp, fatJetDeepAk8WLooseIdSfUp, fatJetDeepAk8WMediumIdSfUp, fatJetDeepAk8WTightIdSfUp,
+			fatJetDeepAk8WMDVeryLooseIdSfUp, fatJetDeepAk8WMDLooseIdSfUp, fatJetDeepAk8WMDMediumIdSfUp, fatJetDeepAk8WMDTightIdSfUp,
+			fatJetDeepAk8TopLooseIdSfDown, fatJetDeepAk8TopMediumIdSfDown, fatJetDeepAk8TopTightIdSfDown, fatJetDeepAk8TopVeryTightIdSfDown,
+			fatJetDeepAk8TopMDLooseIdSfDown, fatJetDeepAk8TopMDMediumIdSfDown, fatJetDeepAk8TopMDTightIdSfDown, fatJetDeepAk8TopMDVeryTightIdSfDown,
+			fatJetDeepAk8WVeryLooseIdSfDown, fatJetDeepAk8WLooseIdSfDown, fatJetDeepAk8WMediumIdSfDown, fatJetDeepAk8WTightIdSfDown,
+			fatJetDeepAk8WMDVeryLooseIdSfDown, fatJetDeepAk8WMDLooseIdSfDown, fatJetDeepAk8WMDMediumIdSfDown, fatJetDeepAk8WMDTightIdSfDown;
+
+		std::array<bool, nMax> fatJetDeepAk8TopLooseId, fatJetDeepAk8TopMediumId, fatJetDeepAk8TopTightId, fatJetDeepAk8TopVeryTightId,
+			fatJetDeepAk8TopMDLooseId, fatJetDeepAk8TopMDMediumId, fatJetDeepAk8TopMDTightId, fatJetDeepAk8TopMDVeryTightId,
+			fatJetDeepAk8WVeryLooseId, fatJetDeepAk8WLooseId, fatJetDeepAk8WMediumId, fatJetDeepAk8WTightId,
+			fatJetDeepAk8WMDVeryLooseId, fatJetDeepAk8WMDLooseId, fatJetDeepAk8WMDMediumId, fatJetDeepAk8WMDTightId;
+
+
 		std::vector<std::array<float, nMax>> fatJetPtJecUp, fatJetPtJecDown, fatJetMassJecUp, fatJetMassJecDown;
 
 

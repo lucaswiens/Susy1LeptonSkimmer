@@ -28,8 +28,9 @@ class ScaleFactorProducer : public BaseProducer {
 		std::unique_ptr<correction::CorrectionSet> electronSf, muonSf, bTagSf;
 		std::vector<std::string> bTagSyst, bTagSystLight;
 
+		Ak8TagCSVReader ak8TagCSVReader;
 	public:
-		ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile);
+		ScaleFactorProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, const std::string &eraSelector, const bool &isFastSim, TFile &outputFile);
 
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);
 		void EndJob(TFile &file);

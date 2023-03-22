@@ -14,7 +14,7 @@ ScaleFactorProducer::ScaleFactorProducer(const pt::ptree &configTree, const pt::
 	muonSf = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Muon." + eraSelector + ".ScaleFactor.JSON"));
 	bTagSf = correction::CorrectionSet::from_file(cmsswBase + "/src/" + scaleFactorTree.get<std::string>("Jet.BTag." + eraSelector));
 
-	// heavy tag sf with DeepAk8
+	// heavy tag sf with deepak8
 	if (eraSelector.find("2016") != std::string::npos) {
 		deepAk8EraAlias = "2016"; // The DeepAk8 SF are not split into pre- and postVFP
 	} else {

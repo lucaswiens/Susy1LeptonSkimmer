@@ -250,8 +250,10 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		}
 
 		tree->Branch("MetPt", &metPt);
-		tree->Branch("CaloMET_pt", &caloMetPt);
 		tree->Branch("MetPhi", &metPhi);
+		tree->Branch("CorrectedMetPt", &correctedMetPt);
+		tree->Branch("CorrectedMetPhi", &correctedMetPhi);
+		tree->Branch("CaloMET_pt", &caloMetPt);
 		tree->Branch("nJet", &nJet);
 		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/F");
 		tree->Branch("JetPt_JERUp", jetPtJerUp.data(), "JetPt_JERUp[nJet]/F");

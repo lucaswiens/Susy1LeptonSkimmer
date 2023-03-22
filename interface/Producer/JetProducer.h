@@ -29,7 +29,7 @@ class JetProducer : public BaseProducer {
 		std::string era, dataType, runPeriod, jerVersion, ak4Algorithm, ak8Algorithm;
 
 		// JEC for FastSim
-		std::shared_ptr<FactorizedJetCorrector> fastJetCorrectorAk4, fastJetCorrectorAk8;
+		std::shared_ptr<FactorizedJetCorrector> fastJetCorrectorAk4, fastJetCorrectorAk4L1, fastJetCorrectorAk8;
 
 		//JEC systematics
 		std::vector<std::string> jecSystematics;
@@ -48,7 +48,7 @@ class JetProducer : public BaseProducer {
 		// DeepAk8 W Tag Map
 		std::map<char, float> deepAk8WTagMap, deepAk8WMDTagMap;
 
-		float CorrectEnergy(DataReader &dataReader, const float &jetPtRaw, const bool &isAk4, const bool &isFastSim);
+		std::pair<float, float> CorrectEnergy(DataReader &dataReader, const float &jetPtRaw, const bool &isAk4, const bool &isFastSim);
 		std::map<char, float> SmearEnergy(DataReader &dataReader, const float &jetPtCorrected, const bool &isAk4);
 		std::map<char, float> SmearFatEnergy(DataReader &dataReader, const float &jetPtCorrected);
 

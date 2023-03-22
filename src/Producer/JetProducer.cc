@@ -29,13 +29,16 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 	*   So just use the old JEC classes                           *
 	**************************************************************/
 	if (product.GetIsFastSim()) {
-		std::vector<JetCorrectorParameters> ak4Vec, ak8Vec;
-		for (std::string fileName: Utility::GetVector<std::string>(scaleFactorTree, "Jet.JERC." + product.GetEraSelector() + ".FastSim")) {
+		std::vector<JetCorrectorParameters> ak4Vec, ak4VecL1, ak8Vec;
+		for (std::string fileName : Utility::GetVector<std::string>(scaleFactorTree, "Jet.JERC." + product.GetEraSelector() + ".FastSim")) {
 			ak4Vec.push_back(JetCorrectorParameters(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + fileName + ak4Algorithm + ".txt"));
 			ak8Vec.push_back(JetCorrectorParameters(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + fileName + ak8Algorithm + ".txt"));
 		}
 		fastJetCorrectorAk4 = std::make_shared<FactorizedJetCorrector>(ak4Vec);
 		fastJetCorrectorAk8 = std::make_shared<FactorizedJetCorrector>(ak8Vec);
+
+		ak4VecL1.push_back(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/JERC/" + product.GetEraSelector() + "/" + scaleFactorTree.get<std::string>("Jet.JERC." + product.GetEraSelector() + ".FastSim.L1FastJet") + ak4Algorithm + ".txt");
+		fastJetCorrectorAk4L1 = std::make_shared<FactorizedJetCorrector>(ak4VecL1);
 	}
 
 
@@ -136,8 +139,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	assert(dataReader.nJet <= product.nMax);
 	int jetCounter = 0;
 
-	float metPx = dataReader.metPt * std::cos(dataReader.metPhi),
-		metPy = dataReader.metPt * std::sin(dataReader.metPhi);
+	float correctedMetPx = dataReader.rawMetPt * std::cos(dataReader.rawMetPhi),
+		correctedMetPy = dataReader.rawMetPt * std::sin(dataReader.rawMetPhi);
 
 	for (int iJet = 0; iJet < dataReader.nJet; iJet++) {
 		dataReader.GetJetValues(iJet);
@@ -146,7 +149,9 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		const float &jetMassRaw = dataReader.jetMass * (1 - dataReader.jetRawFactor);
 
 		// Jet Energy Correction (JEC)
-		const float &correctionFactor = CorrectEnergy(dataReader, jetPtRaw, true, product.GetIsFastSim());
+		const std::pair<float, float> &correctionFactors = CorrectEnergy(dataReader, jetPtRaw, true, product.GetIsFastSim());
+		const float &correctionFactorL1 = correctionFactors.first;
+		const float &correctionFactor   = correctionFactors.second;
 		// Jet Eergry Resolution (JER)
 		std::map<char, float> smearFactor = {{'N', 1.0}, {'U', 1.0}, {'D', 1.0}};
 		if (!product.GetIsData()) {
@@ -154,6 +159,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		}
 
 		// Get Raw JetPt
+		const float &jetPtL1Corrected      = jetPtRaw * correctionFactorL1 * smearFactor.at('N');
 		const float &jetPtCorrected        = jetPtRaw * correctionFactor * smearFactor.at('N');
 		const float &jetPtCorrectedJerUp   = jetPtRaw * correctionFactor * smearFactor.at('U');
 		const float &jetPtCorrectedJerDown = jetPtRaw * correctionFactor * smearFactor.at('D');
@@ -189,8 +195,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 		if (!passesJetPtCut || std::abs(dataReader.jetEta) > jetEtaCut) { continue;}
 
-		metPx += dataReader.jetPt * std::cos(dataReader.jetPhi) - jetPtCorrected * std::cos(dataReader.jetPhi);
-		metPy += dataReader.jetPt * std::sin(dataReader.jetPhi) - jetPtCorrected * std::sin(dataReader.jetPhi);
+		correctedMetPx += (jetPtL1Corrected - jetPtCorrected)* std::cos(dataReader.jetPhi);
+		correctedMetPy += (jetPtL1Corrected - jetPtCorrected)* std::sin(dataReader.jetPhi);
 
 		product.jetPt[jetCounter]   = jetPtCorrected;
 		product.jetEta[jetCounter]  = dataReader.jetEta;
@@ -291,8 +297,11 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 	product.nJet = jetCounter;
 
-	product.metPt  = std::sqrt(std::pow(metPx, 2) + std::pow(metPy, 2));
-	product.metPhi = std::atan2(metPy, metPx);
+	product.correctedMetPt  = std::sqrt(std::pow(correctedMetPx, 2) + std::pow(correctedMetPy, 2));
+	product.correctedMetPhi = std::atan2(correctedMetPy, correctedMetPx);
+
+	product.metPt  = dataReader.metPt;
+	product.metPhi = dataReader.metPhi;
 	product.caloMetPt = dataReader.caloMetPt;
 
 	int fatJetCounter = 0;
@@ -303,7 +312,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		const float &fatJetPtRaw = dataReader.fatJetPt * (1 - dataReader.fatJetRawFactor);
 		const float &fatJetMassRaw = dataReader.fatJetMass * (1 - dataReader.fatJetRawFactor);
 
-		float correctionFactor = CorrectEnergy(dataReader, fatJetPtRaw, false, product.GetIsFastSim());
+		const std::pair<float, float> &correctionFactors = CorrectEnergy(dataReader, fatJetPtRaw, false, product.GetIsFastSim());
+		const float &correctionFactor   = correctionFactors.second;
 		std::map<char, float> smearFactor = {{'N', 1.0}, {'U', 1.0}, {'D', 1.0}};
 		if (!product.GetIsData()) {
 			smearFactor = JetProducer::SmearFatEnergy(dataReader, correctionFactor * fatJetPtRaw);
@@ -371,24 +381,42 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.nFatJet = fatJetCounter;
 }
 
-float JetProducer::CorrectEnergy(DataReader &dataReader, const float &jetPtRaw, const bool &isAk4, const bool &isFastSim) {
+//float JetProducer::CorrectEnergy(DataReader &dataReader, const float &jetPtRaw, const bool &isAk4, const bool &isFastSim) {
+std::pair<float, float> JetProducer::CorrectEnergy(DataReader &dataReader, const float &jetPtRaw, const bool &isAk4, const bool &isFastSim) {
 	const float &jetEta = isAk4 ? dataReader.jetEta : dataReader.fatJetEta;
+	const float &jetPhi = isAk4 ? dataReader.jetPhi : dataReader.fatJetPhi;
 	const float &jetArea = isAk4 ? dataReader.jetArea : dataReader.fatJetArea;
 	const std::string &jetAlgorithm = isAk4 ? ak4Algorithm : ak8Algorithm;
 	if (isFastSim) {
-		std::shared_ptr<FactorizedJetCorrector>& corr = isAk4 ? fastJetCorrectorAk4 : fastJetCorrectorAk8;
-		corr->setJetPt(jetPtRaw);
-		corr->setJetEta(jetEta);
-		corr->setJetPhi(isAk4 ? dataReader.jetPhi : dataReader.fatJetPhi);
-		corr->setRho(dataReader.rho);
-		corr->setJetA(jetArea);
-		return corr->getCorrection();
+		if (isAk4) {
+			fastJetCorrectorAk4->setJetPt(jetPtRaw);
+			fastJetCorrectorAk4->setJetEta(jetEta);
+			fastJetCorrectorAk4->setJetPhi(jetPhi);
+			fastJetCorrectorAk4->setRho(dataReader.rho);
+			fastJetCorrectorAk4->setJetA(jetArea);
+
+			fastJetCorrectorAk4L1->setJetPt(jetPtRaw);
+			fastJetCorrectorAk4L1->setJetEta(jetEta);
+			fastJetCorrectorAk4L1->setJetPhi(jetPhi);
+			fastJetCorrectorAk4L1->setRho(dataReader.rho);
+			fastJetCorrectorAk4L1->setJetA(jetArea);
+			return {fastJetCorrectorAk4L1->getCorrection(), fastJetCorrectorAk4->getCorrection()};
+		} else {
+			fastJetCorrectorAk8->setJetPt(jetPtRaw);
+			fastJetCorrectorAk8->setJetEta(jetEta);
+			fastJetCorrectorAk8->setJetPhi(jetPhi);
+			fastJetCorrectorAk8->setRho(dataReader.rho);
+			fastJetCorrectorAk8->setJetA(jetArea);
+			return {1.0, fastJetCorrectorAk8->getCorrection()};
+		}
 	} else {
 		const std::unique_ptr<correction::CorrectionSet> &jetCorrectionSet = isAk4 ? ak4CorrectionSet : ak8CorrectionSet;
-		return jetCorrectionSet->at(era + "_" + dataType + "_L1FastJet_" + jetAlgorithm)->evaluate({dataReader.jetArea, dataReader.jetEta, jetPtRaw, dataReader.rho}) *
-			jetCorrectionSet->at(era + "_" + dataType + "_L2Relative_"   + jetAlgorithm)->evaluate({dataReader.jetEta, jetPtRaw}) *
-			jetCorrectionSet->at(era + "_" + dataType + "_L3Absolute_"   + jetAlgorithm)->evaluate({dataReader.jetEta, jetPtRaw}) *
-			jetCorrectionSet->at(era + "_" + dataType + "_L2L3Residual_" + jetAlgorithm)->evaluate({dataReader.jetEta, jetPtRaw});
+		return {jetCorrectionSet->at(era + "_" + dataType + "_L1FastJet_" + jetAlgorithm)->evaluate({jetArea, jetEta, jetPtRaw, dataReader.rho}),
+			jetCorrectionSet->at(era + "_" + dataType + "_L1FastJet_" + jetAlgorithm)->evaluate({jetArea, jetEta, jetPtRaw, dataReader.rho}) *
+			jetCorrectionSet->at(era + "_" + dataType + "_L2Relative_"   + jetAlgorithm)->evaluate({jetEta, jetPtRaw}) *
+			jetCorrectionSet->at(era + "_" + dataType + "_L3Absolute_"   + jetAlgorithm)->evaluate({jetEta, jetPtRaw}) *
+			jetCorrectionSet->at(era + "_" + dataType + "_L2L3Residual_" + jetAlgorithm)->evaluate({jetEta, jetPtRaw})
+		};
 	}
 }
 
@@ -567,7 +595,6 @@ std::map<char, float> JetProducer::SmearFatEnergy(DataReader &dataReader, const 
 	*   U : Up        *
 	*   D : Down      *
 	******************/
-	//std::cout << "{{'N', " << smearFactor << "}, {'U', " << smearFactorUp << "}, {'D', " << smearFactorDown << "}}" << std::endl;
 	return {{'N', smearFactor}, {'U', smearFactorUp}, {'D', smearFactorDown}};
 
 }

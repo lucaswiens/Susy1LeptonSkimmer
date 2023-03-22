@@ -106,6 +106,8 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	// MET
 	metPtLeaf  = inputTree->GetLeaf("MET_pt");
 	metPhiLeaf = inputTree->GetLeaf("MET_phi");
+	rawMetPtLeaf  = inputTree->GetLeaf("RawMET_pt");
+	rawMetPhiLeaf = inputTree->GetLeaf("RawMET_phi");
 	caloMetPtLeaf = inputTree->GetLeaf("CaloMET_pt");
 
 	// PileUp
@@ -278,6 +280,12 @@ void DataReader::ReadJetEntry() {
 
 	metPhiLeaf->GetBranch()->GetEntry(entry);
 	metPhi = metPhiLeaf->GetValue();
+
+	rawMetPtLeaf->GetBranch()->GetEntry(entry);
+	rawMetPt  = rawMetPtLeaf->GetValue();
+
+	rawMetPhiLeaf->GetBranch()->GetEntry(entry);
+	rawMetPhi = rawMetPhiLeaf->GetValue();
 
 	caloMetPtLeaf->GetBranch()->GetEntry(entry);
 	caloMetPt = caloMetPtLeaf->GetValue();

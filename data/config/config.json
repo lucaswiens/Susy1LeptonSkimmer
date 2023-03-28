@@ -590,6 +590,8 @@
 			]
 		},
 		"IsoTrack": {
+			"DeltaR" : 0.1,
+			"Pt" : 10,
 			"Mt2" : {
 				"Hadronic": 60,
 				"Leptonic": 80

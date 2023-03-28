@@ -86,20 +86,21 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	fatJetDeepTagWvsQCDLeaf   = inputTree->GetLeaf("FatJet_deepTag_WvsQCD");
 
 	// Isolated Tracks
-	nIsoTrackLeaf     = inputTree->GetLeaf("nIsoTrack");
-	isoTrackPdgIdLeaf = inputTree->GetLeaf("IsoTrack_pdgId");
-	isoTrackPtLeaf    = inputTree->GetLeaf("IsoTrack_pt");
-	isoTrackEtaLeaf   = inputTree->GetLeaf("IsoTrack_eta");
-	isoTrackPhiLeaf   = inputTree->GetLeaf("IsoTrack_phi");
+	nIsoTrackLeaf      = inputTree->GetLeaf("nIsoTrack");
+	isoTrackPdgIdLeaf  = inputTree->GetLeaf("IsoTrack_pdgId");
+	isoTrackChargeLeaf = inputTree->GetLeaf("IsoTrack_charge");
+	isoTrackPtLeaf     = inputTree->GetLeaf("IsoTrack_pt");
+	isoTrackEtaLeaf    = inputTree->GetLeaf("IsoTrack_eta");
+	isoTrackPhiLeaf    = inputTree->GetLeaf("IsoTrack_phi");
 
 	// Gen Jet for Smearing
-	nGenJetLeaf = inputTree->GetLeaf("nGenJet");
-	genJetPtLeaf = inputTree->GetLeaf("GenJet_pt");
+	nGenJetLeaf   = inputTree->GetLeaf("nGenJet");
+	genJetPtLeaf  = inputTree->GetLeaf("GenJet_pt");
 	genJetEtaLeaf = inputTree->GetLeaf("GenJet_eta");
 	genJetPhiLeaf = inputTree->GetLeaf("GenJet_phi");
 
-	nGenFatJetLeaf = inputTree->GetLeaf("nGenJetAK8");
-	genFatJetPtLeaf = inputTree->GetLeaf("GenJetAK8_pt");
+	nGenFatJetLeaf   = inputTree->GetLeaf("nGenJetAK8");
+	genFatJetPtLeaf  = inputTree->GetLeaf("GenJetAK8_pt");
 	genFatJetEtaLeaf = inputTree->GetLeaf("GenJetAK8_eta");
 	genFatJetPhiLeaf = inputTree->GetLeaf("GenJetAK8_phi");
 
@@ -133,7 +134,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	genEtaLeaf         = inputTree->GetLeaf("GenPart_eta");
 	genMassLeaf        = inputTree->GetLeaf("GenPart_mass");
 	genWeightLeaf      = inputTree->GetLeaf("genWeight");
-	genMetPtLeaf      = inputTree->GetLeaf("GenMET_pt");
+	genMetPtLeaf       = inputTree->GetLeaf("GenMET_pt");
 	genMetPhiLeaf      = inputTree->GetLeaf("GenMET_phi");
 
 	if (isFastSim) {
@@ -357,6 +358,7 @@ void DataReader::ReadIsoTrackEntry() {
 	nIsoTrack = nIsoTrackLeaf->GetValue();
 
 	isoTrackPdgIdLeaf->GetBranch()->GetEntry(entry);
+	isoTrackChargeLeaf->GetBranch()->GetEntry(entry);
 	isoTrackPtLeaf->GetBranch()->GetEntry(entry);
 	isoTrackEtaLeaf->GetBranch()->GetEntry(entry);
 	isoTrackPhiLeaf->GetBranch()->GetEntry(entry);
@@ -364,6 +366,7 @@ void DataReader::ReadIsoTrackEntry() {
 
 void DataReader::GetIsoTrackValues(const int &index) {
 	isoTrackPdgId = isoTrackPdgIdLeaf->GetValue(index);
+	isoTrackCharge = isoTrackChargeLeaf->GetValue(index);
 	isoTrackPt = isoTrackPtLeaf->GetValue(index);
 	isoTrackEta = isoTrackEtaLeaf->GetValue(index);
 	isoTrackPhi = isoTrackPhiLeaf->GetValue(index);

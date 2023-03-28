@@ -58,7 +58,7 @@ class DataReader {
 
 		// IsoTrack Leafs
 		TLeaf *nIsoTrackLeaf,
-			*isoTrackPdgIdLeaf,
+			*isoTrackPdgIdLeaf, *isoTrackChargeLeaf,
 			*isoTrackPtLeaf, *isoTrackEtaLeaf, *isoTrackPhiLeaf;
 
 		// GenJet for smearing
@@ -141,6 +141,7 @@ class DataReader {
 		void ReadIsoTrackEntry();
 		void GetIsoTrackValues(const int &index);
 		int nIsoTrack,
+			isoTrackCharge,
 			isoTrackPdgId;
 		float isoTrackPt, isoTrackEta, isoTrackPhi;
 

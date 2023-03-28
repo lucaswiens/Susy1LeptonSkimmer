@@ -11,7 +11,7 @@
 
 class DeltaPhiProducer : public BaseProducer {
 	private:
-		float hadronicMt2Cut, leptonicMt2Cut;
+		float deltaRCut, isoTrackPtCut, isoMt2Cut, hadronicMt2Cut, leptonicMt2Cut;
 	public:
 		DeltaPhiProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree);
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);

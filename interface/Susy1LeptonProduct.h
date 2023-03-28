@@ -158,7 +158,7 @@ class Susy1LeptonProduct {
 		bool isoTrackVeto;
 		std::array<float, nMax> isoTrackMt2, isoTrackPt;
 		std::array<bool, nMax> isoTrackIsHadronicDecay;
-		std::array<int, nMax> isoTrackPdgId;
+		std::array<int, nMax> isoTrackPdgId, isoTrackCharge;
 
 		// PileUp Weights
 		int nPdfWeight, nScaleWeight;

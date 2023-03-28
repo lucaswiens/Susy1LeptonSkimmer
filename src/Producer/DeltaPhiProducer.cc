@@ -2,6 +2,8 @@
 
 DeltaPhiProducer::DeltaPhiProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree) {
 	Name = "DeltaPhiProducer";
+	deltaRCut = configTree.get<float>("Producer.IsoTrack.DeltaR");
+	isoTrackPtCut = configTree.get<float>("Producer.IsoTrack.Pt");
 	hadronicMt2Cut = configTree.get<float>("Producer.IsoTrack.Mt2.Hadronic");
 	leptonicMt2Cut = configTree.get<float>("Producer.IsoTrack.Mt2.Leptonic");
 }
@@ -51,7 +53,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.deltaPhi = -999;
 	product.LP = -999;
 	product.wBosonMt = -999;
-	if (product.nMuon > 0 || product.nElectron > 0) {
+	if (product.nLepton > 0) {
 		float leptonPt   = isGoodMuon ? product.muonPt[goodMuonIndex]     : product.electronPt[goodElectronIndex];
 		float leptonEta  = isGoodMuon ? product.muonEta[goodMuonIndex]    : product.electronEta[goodElectronIndex];
 		float leptonPhi  = isGoodMuon ? product.muonPhi[goodMuonIndex]    : product.electronPhi[goodElectronIndex];
@@ -70,17 +72,13 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		assert(dataReader.nIsoTrack < product.nMax);
 		heppy::Davismt2 mt2obj;
 		product.isoTrackVeto = false;
-		float deltaRMin = 0.1, isoMt2Cut = -999;
+		isoMt2Cut = -999;
 		for (int iTrack = 0; iTrack < dataReader.nIsoTrack; iTrack++) {
 			dataReader.GetIsoTrackValues(iTrack);
-
-			const int &isotrackcharge = (0 < dataReader.isoTrackPdgId) - (dataReader.isoTrackPdgId < 0); // This is only true if the particle is a lepton, but it is also only used to compare it to leptonCharge
-
-			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14 && (isotrackcharge == leptonCharge)) continue;
+			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14 && (dataReader.isoTrackCharge == leptonCharge)) continue;
 
 			float deltaR = Utility::DeltaR(leptonEta, leptonPhi, dataReader.isoTrackEta, dataReader.isoTrackPhi);
-
-			if (deltaR < deltaRMin) continue;
+			if (deltaR < deltaRCut && dataReader.isoTrackPt > isoTrackPtCut) continue;
 
 			ROOT::Math::PtEtaPhiMVector isotrackP4 = ROOT::Math::PtEtaPhiMVector(dataReader.isoTrackPt, dataReader.isoTrackEta, dataReader.isoTrackPhi, 0);
 
@@ -94,6 +92,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 			product.isoTrackMt2[isoTrackCounter] = mt2obj.get_mt2();
 			product.isoTrackPt[isoTrackCounter] = dataReader.isoTrackPt;
 			product.isoTrackPdgId[isoTrackCounter] = dataReader.isoTrackPdgId;
+			product.isoTrackCharge[isoTrackCounter] = dataReader.isoTrackCharge;
 
 			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14) { // https://twiki.cern.ch/twiki/bin/view/Main/PdgId
 				product.isoTrackIsHadronicDecay[isoTrackCounter] = false; //leptonic track

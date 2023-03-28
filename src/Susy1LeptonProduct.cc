@@ -395,6 +395,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("nIsoTrack", &nIsoTrack);
 		tree->Branch("IsoTrackVeto", &isoTrackVeto);
 		tree->Branch("IsoTrackPdgId", isoTrackPdgId.data(), "IsoTrackPdgId[nIsoTrack]/I");
+		tree->Branch("IsoTrackCharge", isoTrackCharge.data(), "IsoTrackCharge[nIsoTrack]/I");
 		tree->Branch("IsoTrackPt", isoTrackPt.data(), "IsoTrackPt[nIsoTrack]/F");
 		tree->Branch("IsoTrackMt2", isoTrackMt2.data(), "IsoTrackMt2[nIsoTrack]/F");
 		tree->Branch("IsoTrackIsHadronicDecay", isoTrackIsHadronicDecay.data(), "IsoTrackIsHadronicDecay[nIsoTrack]/O");

@@ -101,11 +101,11 @@ void Susy1LeptonProduct::RegisterMetFilter (const std::vector<std::string> &metF
 	##################################################################################################*/
 	metFilterValues = std::vector<short>(metFilterNames.size(), true);
 
-	//for (const std::shared_ptr<TTree>& tree: outputTrees) {
-	//	for (int iFilter = 0; iFilter < metFilterNames.size(); iFilter++) {
-	//		tree->Branch(metFilterNames[iFilter].c_str (), &metFilterValues[iFilter], (metFilterNames[iFilter] + "/O").c_str ());
-	//	}
-	//}
+	for (const std::shared_ptr<TTree>& tree: outputTrees) {
+		for (int iFilter = 0; iFilter < metFilterNames.size(); iFilter++) {
+			tree->Branch(metFilterNames[iFilter].c_str (), &metFilterValues[iFilter], (metFilterNames[iFilter] + "/O").c_str ());
+		}
+	}
 }
 
 void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outputTrees, const pt::ptree &configTree) {

@@ -120,14 +120,17 @@ int main(int argc, char *argv[]) {
 
 	// Register Trigger output
 	for (int iChannel = 0; iChannel < channels.size(); iChannel++) {
-		std::vector<int> triggerIndex;
+		cutflows[iChannel].AddMetFilter(product);
+
+		std::vector<int> triggerIndices;
 		for(int iTrigger = 0; iTrigger < dataReader.triggerNames.size(); iTrigger++) {
 			for(const std::string& triggerName : Utility::GetVector<std::string>(configTree, "Channel." + channels.at(iChannel) + ".Trigger." + product.GetEraSelector())) {
-				if(triggerName == dataReader.triggerNames[iTrigger]) triggerIndex.push_back(iTrigger);
+				if(triggerName == dataReader.triggerNames[iTrigger]) {
+					triggerIndices.push_back(iTrigger);
+				}
 			}
 		}
-
-		cutflows[iChannel].AddTriggerOr(triggerIndex, product, channels.at(iChannel));
+		cutflows[iChannel].AddTriggerOr(triggerIndices, product, channels.at(iChannel));
 	}
 
 	// Register branches that will be stored in the output

@@ -17,7 +17,8 @@ class CutFlow{
 		std::vector<std::function<bool()>> cuts;
 		std::vector<std::string> cutNames;
 
-		std::function<bool()> ConstructCut(int &value, const std::string &op, const int &threshold);
+		std::function<bool()> ConstructCut(const int &value, const std::string &op, const int &threshold);
+		std::function<bool()> ConstructCut(const float &value, const std::string &op, const float &threshold);
 
 	public:
 		CutFlow() {}

@@ -8,13 +8,33 @@ CutFlow::CutFlow(TFile &outputFile, const std::string &channel) {
 	hist->SetDirectory(outputFile.GetDirectory(channel.c_str()));
 }
 
-std::function<bool()> CutFlow::ConstructCut(int &value, const std::string &op, const int &threshold) {
+std::function<bool()> CutFlow::ConstructCut(const int &value, const std::string &op, const int &threshold) {
 	if(op == "==") {
 		return [&value, threshold]() {return value == threshold;};
 	} else if(op == ">=") {
 		return [&value, threshold]() {return value >= threshold;};
+	} else if(op == ">") {
+		return [&value, threshold]() {return value > threshold;};
 	} else if(op == "<=") {
 		return [&value, threshold]() {return value <= threshold;};
+	} else if(op == "<") {
+		return [&value, threshold]() {return value < threshold;};
+	} else {
+		throw std::runtime_error(("Unknow cut operator: '" + op + "'").c_str());
+	}
+}
+
+std::function<bool()> CutFlow::ConstructCut(const float &value, const std::string &op, const float &threshold) {
+	if(op == "==") {
+		return [&value, threshold]() {return value == threshold;};
+	} else if(op == ">=") {
+		return [&value, threshold]() {return value >= threshold;};
+	} else if(op == ">") {
+		return [&value, threshold]() {return value > threshold;};
+	} else if(op == "<=") {
+		return [&value, threshold]() {return value <= threshold;};
+	} else if(op == "<") {
+		return [&value, threshold]() {return value < threshold;};
 	} else {
 		throw std::runtime_error(("Unknow cut operator: '" + op + "'").c_str());
 	}

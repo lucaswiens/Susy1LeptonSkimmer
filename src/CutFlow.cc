@@ -73,7 +73,19 @@ void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const
 		//cutNames.push_back("N_{j} " + op + std::to_string(threshold) + " (Not clean)");
 		cutNames.push_back("N_{j} " + op + std::to_string(threshold) + " (Cleaned)");
 	} else {
-		throw std::runtime_error(("Unknow part: '" + op + "'").c_str());
+		throw std::runtime_error(("Unknow part: '" + part + "'").c_str());
+	}
+}
+
+void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const std::string &op, const float &threshold) {
+	if(part == "HT") {
+		cuts.push_back(ConstructCut(product.HT, op, threshold));
+		cutNames.push_back("H_{T} " + op + std::to_string(threshold) + " (No ID.)");
+	} else if(part == "LT") {
+		cuts.push_back(ConstructCut(product.LT, op, threshold));
+		cutNames.push_back("L_{T} " + op + std::to_string(threshold));
+	} else {
+		throw std::runtime_error(("Unknow quantity: '" + part + "'").c_str());
 	}
 }
 

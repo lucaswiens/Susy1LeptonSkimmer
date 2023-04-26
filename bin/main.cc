@@ -112,8 +112,13 @@ int main(int argc, char *argv[]) {
 		cutflows.push_back(CutFlow(outputFile, channel));
 		std::string path = "Channel." + channel + ".Selection";
 		for (const std::string part : Utility::GetKeys(configTree, path)) {
-			std::cout << path << ": "<< part << configTree.get<std::string>(path + "." + part + ".Operator")<<configTree.get<std::string>(path + "." + part + ".Threshold") << std::endl;
-			cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<short>(path + "." + part + ".Threshold"));
+			std::string cutString = configTree.get<std::string>(path + "." + part + ".Threshold");
+			std::cout << path << ": "<< part << configTree.get<std::string>(path + "." + part + ".Operator") << cutString << std::endl;
+			if (cutString.find(".") != std::string::npos) {
+				cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<float>(path + "." + part + ".Threshold"));
+			} else {
+				cutflows.back().AddCut(part, product, configTree.get<std::string>(path + "." + part + ".Operator"), configTree.get<int>(path + "." + part + ".Threshold"));
+			}
 		}
 		std::cout << std::endl;
 	}

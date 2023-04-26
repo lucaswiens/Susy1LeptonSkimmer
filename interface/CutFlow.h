@@ -24,6 +24,7 @@ class CutFlow{
 		CutFlow() {}
 		CutFlow(TFile &outputFile, const std::string &channel);
 		void AddCut(const std::string &part, Susy1LeptonProduct& product, const std::string &op, const int &threshold);
+		void AddCut(const std::string &part, Susy1LeptonProduct& product, const std::string &op, const float &threshold);
 
 		// The Lambda function checks if any of the triggers are true and only returns false if all triggers fail
 		void AddTrigger(const std::vector<int>& triggerIndices, Susy1LeptonProduct &product) {

@@ -40,6 +40,18 @@ std::function<bool()> CutFlow::ConstructCut(const float &value, const std::strin
 	}
 }
 
+// std::function<bool()> CutFlow::ConstructFloatCut(float &value, const std::string &op, const int &threshold) {
+	// if(op == "==") {
+		// return [&value, threshold]() {return value == threshold;};
+	// } else if(op == ">=") {
+		// return [&value, threshold]() {return value >= threshold;};
+	// } else if(op == "<=") {
+		// return [&value, threshold]() {return value <= threshold;};
+	// } else {
+		// throw std::runtime_error(("Unknow cut operator: '" + op + "'").c_str());
+	// }
+// }
+
 void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const std::string &op, const int &threshold) {
 	if(part == "Electron") {
 		cuts.push_back(ConstructCut(product.nElectron, op, threshold));
@@ -80,14 +92,13 @@ void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const
 void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const std::string &op, const float &threshold) {
 	if(part == "HT") {
 		cuts.push_back(ConstructCut(product.HT, op, threshold));
-		cutNames.push_back("H_{T} " + op + std::to_string(threshold) + " (No ID.)");
+		cutNames.push_back("H_{T} " + op + std::to_string(threshold));
 	} else if(part == "LT") {
 		cuts.push_back(ConstructCut(product.LT, op, threshold));
 		cutNames.push_back("L_{T} " + op + std::to_string(threshold));
 	} else {
 		throw std::runtime_error(("Unknow quantity: '" + part + "'").c_str());
-	}
-}
+	}}
 
 bool CutFlow::Passed() {
 	for(int i = 0; i < cuts.size(); i++) {

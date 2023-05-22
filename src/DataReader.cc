@@ -71,6 +71,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	}
 	jetRawFactorLeaf   = inputTree->GetLeaf("Jet_rawFactor");
 	jetIdLeaf       = inputTree->GetLeaf("Jet_jetId");
+	jetCleanMaskLeaf = inputTree->GetLeaf("Jet_cleanmask");
 	//jetPUIDLeaf     = inputTree->GetLeaf("Jet_puId");
 	rhoLeaf         = inputTree->GetLeaf("fixedGridRhoFastjetAll");
 
@@ -309,6 +310,7 @@ void DataReader::ReadJetEntry() {
 	}
 	jetRawFactorLeaf->GetBranch()->GetEntry(entry);
 	jetIdLeaf->GetBranch()->GetEntry(entry);
+	jetCleanMaskLeaf->GetBranch()->GetEntry(entry);
 	//jetPUIDLeaf->GetBranch()->GetEntry(entry);
 }
 

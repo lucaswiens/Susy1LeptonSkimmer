@@ -14,9 +14,9 @@ MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFa
 	muonGoodCutBasedIdCut = configTree.get<char>("Producer.Muon.CutBasedId.Good");
 	muonVetoCutBasedIdCut = configTree.get<char>("Producer.Muon.CutBasedId.Veto");
 	muonAntiCutBasedIdCut = configTree.get<char>("Producer.Muon.CutBasedId.Anti");
-	//muonDxyCut          = configTree.get<float>("Producer.Muon.Dxy");
-	//muonDzCut           = configTree.get<float>("Producer.Muon.Dz");
-	//muonSip3dCut        = configTree.get<float>("Producer.Muon.Sip3DCut");
+	muonDxyCut          = configTree.get<float>("Producer.Muon.Dxy");
+	muonDzCut           = configTree.get<float>("Producer.Muon.Dz");
+	muonSip3dCut        = configTree.get<float>("Producer.Muon.Sip3DCut");
 
 	std::cout << std::endl <<
 		"The following cuts are applied to Muons:"   << std::endl <<
@@ -67,7 +67,9 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 
 		const bool &isVetoMuon = muonPt > muonVetoPtCut &&
 							dataReader.muonMiniIso < muonVetoIsoCut &&
-							dataReader.muonIdMap.at(muonVetoCutBasedIdCut);
+							dataReader.muonIdMap.at(muonVetoCutBasedIdCut)&&
+							dataReader.muonDxy < muonDxyCut &&
+							dataReader.muonDz < muonDzCut;
 
 		if (!isVetoMuon || std::abs(dataReader.muonEta) >= muonEtaCut || !dataReader.muonIsPfCand) { continue;}
 
@@ -88,7 +90,8 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 		product.muonIsGood[muonCounter] = muonPt > muonGoodPtCut &&
 							dataReader.muonMiniIso < muonGoodIsoCut &&
 							dataReader.muonIdMap.at(muonGoodCutBasedIdCut) &&
-							dataReader.muonMediumId;
+							dataReader.muonMediumId &&
+							dataReader.muonSip3d < muonSip3dCut;
 
 		product.muonIsVeto[muonCounter] = isVetoMuon &&
 							dataReader.muonMediumId;

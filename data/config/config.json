@@ -445,9 +445,9 @@
 				"Veto": "L",
 				"Anti": "M"
 			},
-			"Dxy" : 0.5,
-			"Dz" : 0.5,
-			"Sip3DCut" : 1
+			"Dxy" : 0.05,
+			"Dz" : 0.1,
+			"Sip3DCut" : 4
 		},
 		"Electron": {
 			"Pt" : {

@@ -224,6 +224,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 		product.jetDeepJetId[jetCounter] = product.jetDeepJetLooseId[jetCounter] + product.jetDeepJetMediumId[jetCounter] + product.jetDeepJetTightId[jetCounter];
 
+		product.jetCleanMask[jetCounter] = dataReader.jetCleanMask;
+
 		jetCounter++;
 	}
 
@@ -246,7 +248,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	std::vector<int> muonIndices, electronIndices, jetRemovalIndices;
 	int nearestMuonIndex = -999, nearestElectronIndex = -999;
 	for (int iMuon = 0; iMuon < product.nMuon; iMuon++) {
-		if (!product.muonIsGood[iMuon]) { continue;}
+		// clean veto leptons as well if (!product.muonIsGood[iMuon]) { continue;}
 		int nearestJetIndex = -999;
 		for (int iJet = 0; iJet < jetCounter; iJet++) {
 			if (std::find(jetRemovalIndices.begin(), jetRemovalIndices.end(),iJet)!=jetRemovalIndices.end()) { continue;} // don't match if a jet is already marked for removal
@@ -265,7 +267,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	}
 
 	for (int iElectron = 0; iElectron < product.nElectron; iElectron++) {
-		if (!product.electronIsGood[iElectron]) { continue;}
+		// clean veto leptons as well if (!product.electronIsGood[iElectron]) { continue;}
 		int nearestJetIndex = -999;
 		for (int iJet = 0; iJet < jetCounter; iJet++) {
 			if (std::find(jetRemovalIndices.begin(), jetRemovalIndices.end(),iJet)!=jetRemovalIndices.end()) { continue;}

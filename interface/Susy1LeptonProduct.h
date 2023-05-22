@@ -104,7 +104,7 @@ class Susy1LeptonProduct {
 			jetDeepJet;
 		std::vector<std::array<float, nMax>> jetPtJecUp, jetPtJecDown,
 			jetMassJecUp, jetMassJecDown;
-		std::array<bool, nMax> jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId;
+		std::array<bool, nMax> jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId, jetCleanMask;
 		std::vector<std::array<float, nMax>>
 			jetDeepJetLooseSfUp, jetDeepJetLooseSfDown,
 			jetDeepJetMediumSfUp, jetDeepJetMediumSfDown,

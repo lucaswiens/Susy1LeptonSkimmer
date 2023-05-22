@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 
 	std::vector<CutFlow> cutflows;
 	std::vector<std::shared_ptr<TTree>> outputTrees;
-	std::vector<std::string> channels = {"Muon", "Electron", "LeptonIncl", "Synchro"};
+	std::vector<std::string> channels = {"Muon", "Electron", "Synchro", "LeptonIncl"}; // Test_SingleElectron.root
 	DataReader dataReader(inputFileName, "Events", isData, isFastSim);
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
 	Susy1LeptonProduct product(era, isData, isSignal, isFastSim, outputFileName, runPeriod, xSection, configTree, outputFile);
@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
 
 	// Register Trigger output
 	for (int iChannel = 0; iChannel < channels.size(); iChannel++) {
-		cutflows[iChannel].AddMetFilter(product);
+		//cutflows[iChannel].AddMetFilter(product);
 
 		std::vector<int> triggerIndices;
 		for(int iTrigger = 0; iTrigger < dataReader.triggerNames.size(); iTrigger++) {
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		}
-		// FIXME cutflows[iChannel].AddTriggerOr(triggerIndices, product, channels.at(iChannel));
+		//cutflows[iChannel].AddTriggerOr(triggerIndices, product, channels.at(iChannel));
 	}
 
 	// Register branches that will be stored in the output

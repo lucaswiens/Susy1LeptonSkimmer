@@ -19,6 +19,7 @@ class DataReader {
 
 		// MetaData Leafs
 		TLeaf *processNameLeaf;
+		TLeaf *eventLeaf;
 		// Muon Leafs
 		TLeaf *nMuonLeaf,
 			*muonPtLeaf, *muonEtaLeaf, *muonPhiLeaf, *muonMassLeaf, *muonIsoLeaf, *muonDxyLeaf, *muonDzLeaf, *muonSip3dLeaf, *muonMiniIsoLeaf,
@@ -92,6 +93,9 @@ class DataReader {
 		// Event entry information
 		int GetEntries(){return inputTree->GetEntries();}
 		void SetEntry(const int &entry){this->entry = entry;}
+
+		// event
+		int event;
 
 		// Muon
 		void ReadMuonEntry();

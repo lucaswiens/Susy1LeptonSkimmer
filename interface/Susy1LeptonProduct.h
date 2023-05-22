@@ -11,7 +11,7 @@ namespace pt = boost::property_tree;
 
 class Susy1LeptonProduct {
 	private:
-		int era;
+		int era, Event;
 		bool preVFP, isData, isSignal, isFastSim;
 		std::string eraSelector, sampleName;//, datasetDecider;
 		char runPeriod;

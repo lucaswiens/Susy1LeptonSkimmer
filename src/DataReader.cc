@@ -7,6 +7,9 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	std::cout << "File Opened!" << std::endl;
 	inputTree.reset(static_cast<TTree*>(inputFile->Get(treeName.c_str())));
 
+	// event
+	eventLeaf = inputTree->GetLeaf("event");
+
 	// Muons
 	nMuonLeaf               = inputTree->GetLeaf("nMuon");
 	muonPtLeaf              = inputTree->GetLeaf("Muon_pt");
@@ -271,6 +274,10 @@ void DataReader::ReadJetEntry() {
 	if (nJetLeaf->GetBranch()->GetReadEntry() == entry) { return;}
 	nJetLeaf->GetBranch()->GetEntry(entry);
 	nJet = nJetLeaf->GetValue();
+
+	// Event
+	eventLeaf->GetBranch()->GetEntry(entry);
+	event = eventLeaf->GetValue();
 
 	// Rho
 	rhoLeaf->GetBranch()->GetEntry(entry);

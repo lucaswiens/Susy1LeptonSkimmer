@@ -35,7 +35,6 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 				this->primaryDataset = "isMet";
 			}
 
-
 		for (const std::pair<std::string, boost::property_tree::ptree> jecSyst : configTree.get_child("Producer.Jet.JECSystematic")) {
 			jetPtJecUp.push_back(std::array<float, nMax>());
 			jetPtJecDown.push_back(std::array<float, nMax>());
@@ -115,6 +114,9 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 	#   https://root.cern.ch/doc/master/classTBranch.html#ac0412c423e6c8388b42247e0410cf822   #
 	#########################################################################################*/
 	for (const std::shared_ptr<TTree> &tree : outputTrees) {
+		// event number
+		tree->Branch("Event", &Event);
+
 		tree->Branch("nMuon", &nMuon);
 		tree->Branch("nGoodMuon", &nGoodMuon);
 		tree->Branch("nVetoMuon", &nVetoMuon);

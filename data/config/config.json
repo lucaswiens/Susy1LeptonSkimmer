@@ -178,7 +178,7 @@
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele27_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT350",
-					"HLT_Ele15_IsoVVVL_PFHT400"
+					"HLT_Ele15_IsosVVVL_PFHT400"
 				],
 				"2016PostVFP": [
 					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
@@ -215,11 +215,11 @@
 		"Synchro": {
             "Selection": {
                 "HT" : {
-                    "Threshold": 350.0,
+                    "Threshold": 0.0,
                     "Operator": ">="
                 },
                 "LT" : {
-                    "Threshold": 250.0,
+                    "Threshold": 0.0,
                     "Operator": ">="
                 }
             },
@@ -255,6 +255,7 @@
                     "HLT_Ele35_WPTight_Gsf",
                     "HLT_Ele15_IsoVVVL_PFHT450"
                 ],
+
                 "2018": [
                     "HLT_Mu50",
                     "HLT_IsoMu24",

@@ -39,6 +39,7 @@ class Susy1LeptonProduct {
 
 		// Lepton Information
 		int nLepton, nGoodLepton, nVetoLepton;
+		int event;
 
 		// Muons Inforamtion
 		int nMuon, nGoodMuon, nVetoMuon, nAntiSelectedMuon;
@@ -104,7 +105,7 @@ class Susy1LeptonProduct {
 			jetDeepJet;
 		std::vector<std::array<float, nMax>> jetPtJecUp, jetPtJecDown,
 			jetMassJecUp, jetMassJecDown;
-		std::array<bool, nMax> jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId, jetCleanMask;
+		std::array<bool, nMax> jetDeepJetLooseId, jetDeepJetMediumId, jetDeepJetTightId, jetCleanMask, jetIsClean;
 		std::vector<std::array<float, nMax>>
 			jetDeepJetLooseSfUp, jetDeepJetLooseSfDown,
 			jetDeepJetMediumSfUp, jetDeepJetMediumSfDown,

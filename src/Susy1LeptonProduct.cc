@@ -115,7 +115,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 	#########################################################################################*/
 	for (const std::shared_ptr<TTree> &tree : outputTrees) {
 		// event number
-		tree->Branch("Event", &Event);
+		tree->Branch("Event", &event);
 
 		tree->Branch("nMuon", &nMuon);
 		tree->Branch("nGoodMuon", &nGoodMuon);
@@ -272,7 +272,9 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("nDeepJetMediumBTag", &nDeepJetMediumBTag);
 		tree->Branch("nDeepJetTightBTag", &nDeepJetTightBTag);
 		tree->Branch("JetId", &jetId);
-		tree->Branch("JetCleanMask", &jetCleanMask);
+		//tree->Branch("JetCleanMask", &jetCleanMask);
+		tree->Branch("JetCleanMask", jetCleanMask.data(), "JetCleanMask;[nJet]/O");
+		tree->Branch("JetIsClean", jetIsClean.data(), "JetIsClean;[nJet]/O");
 
 		if (!isData) {
 			tree->Branch("JetDeepJetLooseSf", jetDeepJetLooseSf.data(), "JetDeepJetLooseSf[nJet]/F");

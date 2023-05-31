@@ -247,6 +247,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	float deltaRMin = std::numeric_limits<float>::max();
 	std::vector<int> muonIndices, electronIndices, jetRemovalIndices;
 	int nearestMuonIndex = -999, nearestElectronIndex = -999;
+	// set to false for jets that will get cleaned
+    product.jetIsClean.fill(true);//product.jetIsClean = std::vector<bool>(true, jetCounter);
 	for (int iMuon = 0; iMuon < product.nMuon; iMuon++) {
 		// clean veto leptons as well if (!product.muonIsGood[iMuon]) { continue;}
 		int nearestJetIndex = -999;
@@ -263,6 +265,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		if (nearestJetIndex > 0) {
 			muonIndices.push_back(iMuon);
 			jetRemovalIndices.push_back(nearestJetIndex);
+			product.jetIsClean.at(nearestJetIndex) = false;
 		}
 	}
 
@@ -282,19 +285,29 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		if (nearestJetIndex > 0) {
 			jetRemovalIndices.push_back(nearestJetIndex);
 			electronIndices.push_back(iElectron);
+			product.jetIsClean.at(nearestJetIndex) = false;
 		}
 	}
 
 	int removeCounter = 0; // Remove the element corresponding to the index
-	for (int iRemove : jetRemovalIndices) {
+	/*for (int iRemove : jetRemovalIndices) {
 		for (std::array<float, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
 			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
 		}
 		for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
 			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
 		}
+
 		removeCounter++; // Keep Tack of already deleted jets
 	}
+	// my try to implement the cleaning for (int iJet = 0; iJet < jetCounter; iJet++){
+		int val = SOME_VALUE; // this is the value you are searching for
+		bool exists = std::any_of(std::begin(jetRemovalIndices), std::end(jetRemovalIndices), [&](int i)
+		{
+		    return i == val;
+		});
+		jetCleaned.push_back
+	}*/
 	jetCounter -= removeCounter;
 
 	product.nJet = jetCounter;
@@ -305,6 +318,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.metPt  = dataReader.metPt;
 	product.metPhi = dataReader.metPhi;
 	product.caloMetPt = dataReader.caloMetPt;
+	product.event = dataReader.event;
 
 	int fatJetCounter = 0;
 	dataReader.ReadFatJetEntry();

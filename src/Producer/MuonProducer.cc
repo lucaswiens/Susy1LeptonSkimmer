@@ -43,7 +43,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 		// Rochester Correction
 		int muonMatchedGenIndex = -999;
 		float dataScaleFactor = 1., mcScaleFactor = 1., scaleFactorUnc = 0.;
-		if (!product.GetIsData()) {
+		/*if (!product.GetIsData()) {
 			muonMatchedGenIndex = dataReader.GetGenMatchedIndex(dataReader.muonPt, dataReader.muonPhi, dataReader.muonEta, 13, 0.4, 0.4);
 			if(muonMatchedGenIndex > 0){
 				dataReader.alreadyMatchedIndex.push_back(muonMatchedGenIndex);
@@ -58,7 +58,7 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 			}
 		} else {
 			dataScaleFactor = rc.kScaleDT(dataReader.muonCharge, dataReader.muonPt, dataReader.muonEta, dataReader.muonPhi, 0, 0);
-		}
+		}*/
 
 		float muonPt      = dataReader.muonPt * (product.GetIsData() ? dataScaleFactor : mcScaleFactor),
 			muonPtUp   = dataReader.muonPt * (product.GetIsData() ? (dataScaleFactor + scaleFactorUnc) : (mcScaleFactor + scaleFactorUnc)),

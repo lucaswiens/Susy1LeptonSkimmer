@@ -326,6 +326,7 @@ void DataReader::GetJetValues(const int &index) {
 	}
 	jetRawFactor = jetRawFactorLeaf->GetValue(index);
 	jetId = jetIdLeaf->GetValue(index);
+	jetCleanMask = jetCleanMaskLeaf->GetValue(index);
 	//jetPUID = jetPUIDLeaf->GetValue(index);
 }
 

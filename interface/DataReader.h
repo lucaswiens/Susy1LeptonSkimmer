@@ -45,7 +45,7 @@ class DataReader {
 			*jetIdLeaf,
 			*jetMassLeaf, *jetPtLeaf, *jetEtaLeaf, *jetPhiLeaf,
 			*jetAreaLeaf, *jetRawFactorLeaf,
-			*jetDeepJetLeaf, *jetCleanMaskLeaf,
+			*jetDeepJetLeaf, *jetCleanMaskLeaf, *jetIsCleanLeaf,
 			*rhoLeaf,
 			*metPhiLeaf, *metPtLeaf, *rawMetPhiLeaf, *rawMetPtLeaf, *caloMetPtLeaf;
 
@@ -94,9 +94,6 @@ class DataReader {
 		int GetEntries(){return inputTree->GetEntries();}
 		void SetEntry(const int &entry){this->entry = entry;}
 
-		// event
-		int event;
-
 		// Muon
 		void ReadMuonEntry();
 		void GetMuonValues(const int &index);
@@ -125,13 +122,13 @@ class DataReader {
 		void GetJetValues(const int &index);
 		int nJet,
 			jetId,
-			jetPartFlav;
+			jetPartFlav, event;
 		float jetMass, jetPt, jetEta, jetPhi,
 			jetArea, jetRawFactor,
 			jetDeepJet,
 			rho,
 			metPhi, metPt, rawMetPhi, rawMetPt, caloMetPt;
-		bool jetCleanMask;
+		bool jetCleanMask, jetIsClean;
 
 		void ReadFatJetEntry();
 		void GetFatJetValues(const int &index);

@@ -219,7 +219,7 @@
                     "Operator": ">="
                 },
                 "LT" : {
-                    "Threshold": 0.0,
+                    "Threshold": -1000.0,
                     "Operator": ">="
                 }
             },

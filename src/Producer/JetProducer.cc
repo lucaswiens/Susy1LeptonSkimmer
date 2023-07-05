@@ -261,21 +261,13 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 				deltaRMin = deltaR;
 				nearestMuonIndex = iMuon;
 				nearestJetIndex = iJet;
-				// std::cout << std::endl << "\nAssigning jet index " << nearestJetIndex << " to Muon " << iMuon << std::endl;
 			}
-			// std::cout << std::endl << "\nJetEta Phi MuonEta Phi " << product.jetEta[iJet] << " " << product.jetPhi[iJet] << " " <<  product.muonEta[iMuon] << " " <<  product.muonPhi[iMuon] << std::endl;
-			// std::cout << std::endl << "deltaR " << Utility::DeltaR(product.jetEta[iJet], product.jetPhi[iJet], product.muonEta[iMuon], product.muonPhi[iMuon]) << std::endl;
-			// std::cout << std::endl << "PT " << product.jetPt[iJet] << " " <<  product.muonPt[iMuon] << std::endl;
 		}
 
 		if (nearestJetIndex >= 0) {
 			muonIndices.push_back(iMuon);
 			jetRemovalIndices.push_back(nearestJetIndex);
 			product.jetIsClean.at(nearestJetIndex) = false;
-			// std::cout << std::endl << "\nin if clause " << std::endl;
-			// std::cout << std::endl << "JetEta Phi MuonEta Phi " << product.jetEta[nearestJetIndex] << " " << product.jetPhi[nearestJetIndex] << " " <<  product.muonEta[iMuon] << " " <<  product.muonPhi[iMuon] << std::endl;
-			// std::cout << std::endl << "deltaR " << Utility::DeltaR(product.jetEta[nearestJetIndex], product.jetPhi[nearestJetIndex], product.muonEta[iMuon], product.muonPhi[iMuon]) << std::endl;
-			// std::cout << std::endl << "PT " << product.jetPt[nearestJetIndex] << " " <<  product.muonPt[iMuon] << std::endl;
 		}
 	}
 
@@ -302,12 +294,12 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 	int removeCounter = 0; // Remove the element corresponding to the index
 	for (int iRemove : jetRemovalIndices) {
-		// for (std::array<float, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
-			// Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
-		// }
-		// for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
-			// Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
-		// }
+		for (std::array<float, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
+			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
+		}
+		for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
+			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
+		}
 
 		removeCounter++; // Keep Tack of already deleted jets
 	}

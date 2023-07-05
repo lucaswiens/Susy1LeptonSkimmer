@@ -125,7 +125,7 @@ int main(int argc, char *argv[]) {
 
 	// Register Trigger output
 	for (int iChannel = 0; iChannel < channels.size(); iChannel++) {
-		//cutflows[iChannel].AddMetFilter(product);
+		cutflows[iChannel].AddMetFilter(product);
 
 		std::vector<int> triggerIndices;
 		for(int iTrigger = 0; iTrigger < dataReader.triggerNames.size(); iTrigger++) {
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		}
-		//cutflows[iChannel].AddTriggerOr(triggerIndices, product, channels.at(iChannel));
+		cutflows[iChannel].AddTriggerOr(triggerIndices, product, channels.at(iChannel));
 	}
 
 	// Register branches that will be stored in the output

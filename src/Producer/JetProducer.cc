@@ -244,12 +244,14 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	#   Jet Cleaning                                             #
 	#   Remove jets from collection that match to good Leptons   #
 	############################################################*/
-	float deltaRMin = std::numeric_limits<float>::max();
+	//float deltaRMin = std::numeric_limits<float>::max();
 	std::vector<int> muonIndices, electronIndices, jetRemovalIndices;
 	int nearestMuonIndex = -999, nearestElectronIndex = -999;
 	// set to false for jets that will get cleaned
     product.jetIsClean.fill(true);//product.jetIsClean = std::vector<bool>(true, jetCounter);
 	for (int iMuon = 0; iMuon < product.nMuon; iMuon++) {
+		// define inside loop so different comparison for each lepton
+		float deltaRMin = std::numeric_limits<float>::max();
 		// clean veto leptons as well if (!product.muonIsGood[iMuon]) { continue;}
 		int nearestJetIndex = -999;
 		for (int iJet = 0; iJet < jetCounter; iJet++) {
@@ -259,17 +261,26 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 				deltaRMin = deltaR;
 				nearestMuonIndex = iMuon;
 				nearestJetIndex = iJet;
+				// std::cout << std::endl << "\nAssigning jet index " << nearestJetIndex << " to Muon " << iMuon << std::endl;
 			}
+			// std::cout << std::endl << "\nJetEta Phi MuonEta Phi " << product.jetEta[iJet] << " " << product.jetPhi[iJet] << " " <<  product.muonEta[iMuon] << " " <<  product.muonPhi[iMuon] << std::endl;
+			// std::cout << std::endl << "deltaR " << Utility::DeltaR(product.jetEta[iJet], product.jetPhi[iJet], product.muonEta[iMuon], product.muonPhi[iMuon]) << std::endl;
+			// std::cout << std::endl << "PT " << product.jetPt[iJet] << " " <<  product.muonPt[iMuon] << std::endl;
 		}
 
-		if (nearestJetIndex > 0) {
+		if (nearestJetIndex >= 0) {
 			muonIndices.push_back(iMuon);
 			jetRemovalIndices.push_back(nearestJetIndex);
 			product.jetIsClean.at(nearestJetIndex) = false;
+			// std::cout << std::endl << "\nin if clause " << std::endl;
+			// std::cout << std::endl << "JetEta Phi MuonEta Phi " << product.jetEta[nearestJetIndex] << " " << product.jetPhi[nearestJetIndex] << " " <<  product.muonEta[iMuon] << " " <<  product.muonPhi[iMuon] << std::endl;
+			// std::cout << std::endl << "deltaR " << Utility::DeltaR(product.jetEta[nearestJetIndex], product.jetPhi[nearestJetIndex], product.muonEta[iMuon], product.muonPhi[iMuon]) << std::endl;
+			// std::cout << std::endl << "PT " << product.jetPt[nearestJetIndex] << " " <<  product.muonPt[iMuon] << std::endl;
 		}
 	}
 
 	for (int iElectron = 0; iElectron < product.nElectron; iElectron++) {
+		float deltaRMin = std::numeric_limits<float>::max();
 		// clean veto leptons as well if (!product.electronIsGood[iElectron]) { continue;}
 		int nearestJetIndex = -999;
 		for (int iJet = 0; iJet < jetCounter; iJet++) {
@@ -282,7 +293,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 			}
 		}
 
-		if (nearestJetIndex > 0) {
+		if (nearestJetIndex >= 0) {
 			jetRemovalIndices.push_back(nearestJetIndex);
 			electronIndices.push_back(iElectron);
 			product.jetIsClean.at(nearestJetIndex) = false;
@@ -290,24 +301,16 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	}
 
 	int removeCounter = 0; // Remove the element corresponding to the index
-	/*for (int iRemove : jetRemovalIndices) {
-		for (std::array<float, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
-			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
-		}
-		for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
-			Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
-		}
+	for (int iRemove : jetRemovalIndices) {
+		// for (std::array<float, product.nMax> *jetVariable : {&product.jetPt, &product.jetEta, &product.jetPhi, &product.jetMass}) {
+			// Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
+		// }
+		// for (std::array<bool, product.nMax> *jetVariable : {&product.jetDeepJetLooseId, &product.jetDeepJetMediumId, &product.jetDeepJetTightId}) {
+			// Utility::RemoveByIndex(jetVariable, iRemove - removeCounter, jetCounter);
+		// }
 
 		removeCounter++; // Keep Tack of already deleted jets
 	}
-	// my try to implement the cleaning for (int iJet = 0; iJet < jetCounter; iJet++){
-		int val = SOME_VALUE; // this is the value you are searching for
-		bool exists = std::any_of(std::begin(jetRemovalIndices), std::end(jetRemovalIndices), [&](int i)
-		{
-		    return i == val;
-		});
-		jetCleaned.push_back
-	}*/
 	jetCounter -= removeCounter;
 
 	product.nJet = jetCounter;

@@ -27,6 +27,7 @@ MuonProducer::MuonProducer(const pt::ptree &configTree, const pt::ptree &scaleFa
 		"VetoPt         > " << muonVetoPtCut         << std::endl <<
 		"VetoIso        < " << muonVetoIsoCut        << std::endl <<
 		"VetoCutBasedId = " << muonVetoCutBasedIdCut << std::endl <<
+		"muonSip3dCut   < " << muonSip3dCut          << std::endl <<
 		"AntiIso       >= " << muonAntiIsoCut        << std::endl <<
 		"AntiCutBasedId = " << muonAntiCutBasedIdCut << std::endl << std::endl;
 }
@@ -90,7 +91,8 @@ void MuonProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) 
 		product.muonIsGood[muonCounter] = muonPt > muonGoodPtCut &&
 							dataReader.muonMiniIso < muonGoodIsoCut &&
 							dataReader.muonIdMap.at(muonGoodCutBasedIdCut) &&
-							dataReader.muonMediumId &&
+							//dataReader.muonMediumId &&
+							dataReader.muonTightId &&
 							dataReader.muonSip3d < muonSip3dCut;
 
 		product.muonIsVeto[muonCounter] = isVetoMuon &&

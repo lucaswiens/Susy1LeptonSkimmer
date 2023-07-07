@@ -9,6 +9,8 @@
 class GenLevelProducer : public BaseProducer {
 	private:
 		float jetPtCut, jetEtaCut;
+
+		std::vector<float> isrWeight, isrUncertainty;
 	public:
 		GenLevelProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector);
 

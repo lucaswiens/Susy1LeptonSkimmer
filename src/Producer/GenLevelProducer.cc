@@ -5,6 +5,10 @@ GenLevelProducer::GenLevelProducer(const pt::ptree &configTree, const pt::ptree 
 
 	jetPtCut  = configTree.get<float>("Producer.Jet.Pt");
 	jetEtaCut = configTree.get<float>("Producer.Jet.Eta");
+
+	// ISR Weights
+	isrWeight      = Utility::GetVector<float>(scaleFactorTree, "Jet.ISR." + eraSelector + ".Weight.");
+	isrUncertainty = Utility::GetVector<float>(scaleFactorTree, "Jet.ISR." + eraSelector + ".Uncertainty");
 }
 
 void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -134,6 +138,51 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 				genLeptonCounter++;
 			} // if (dataReader.genStatus != 2), i.e. is not a tau decay product
 		} // if is a muon or electron
+	}
+
+	product.nIsrJet = 0;
+	for (int iJet = 0; iJet < product.nJet; iJet++) {
+		bool daughterIsMatched = false;
+		dataReader.GetJetValues(iJet);
+		for (int iGen = 0; iGen < dataReader.nGenPart; iGen++) {
+			if (daughterIsMatched) { break;}
+
+			dataReader.GetGenValues(iGen);
+			if (dataReader.genStatus != 23 || abs(dataReader.genPdgId) > 5) { continue;}
+
+			const int motherIndex = dataReader.genMotherIndex;
+			dataReader.GetGenValues(motherIndex); // Read Mother Info
+			const int motherPdgId  = dataReader.genPdgId;
+			if (!(motherPdgId == 6 || motherPdgId == 23 || motherPdgId == 24 || motherPdgId == 25 || motherPdgId > 1e6)) { continue;}
+			//if (motherPdgId != 6 && motherPdgId != 23 && motherPdgId != 24 && motherPdgId != 25 && motherPdgId < 1e6)) { continue;}
+
+			for (int iDaughter = 0; iDaughter < dataReader.nGenPart; iDaughter++) {
+				dataReader.GetGenValues(iDaughter);
+				const float daughterEta = dataReader.genEta;
+				const float daughterPhi = dataReader.genPhi;
+
+				bool isDaughter = false;
+				while (!isDaughter && dataReader.genMotherIndex >= 0) {
+					isDaughter = iGen == dataReader.genMotherIndex;
+					dataReader.GetGenValues(dataReader.genMotherIndex);
+				}
+
+				if (isDaughter && Utility::DeltaR(dataReader.jetEta, dataReader.jetPhi, daughterEta, daughterPhi) < 0.3) { // If any of the daughters are within 0.3 of the jet, it is not an ISR jet
+					daughterIsMatched = true;
+					break;
+				}
+			}
+		}
+
+		if (!daughterIsMatched) { product.nIsrJet++;}
+	}
+
+	if (product.nIsrJet > 6) {
+		product.nIsrWeight            = isrWeight.at(6);
+		product.nIsrWeightUncertainty = isrUncertainty.at(6);
+	} else {
+		product.nIsrWeight            = isrWeight.at(product.nIsrJet);
+		product.nIsrWeightUncertainty = isrUncertainty.at(product.nIsrJet);
 	}
 
 	// TODO figure out if this is used at all

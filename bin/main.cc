@@ -205,6 +205,10 @@ int main(int argc, char *argv[]) {
 		outputTrees.at(iTree)->Write(0, TObject::kOverwrite);
 	}
 
+	for (std::shared_ptr<BaseProducer> producer : producers) {
+		producer->EndJob(outputFile);
+	}
+
 	product.WriteMetaData(outputFile);
 	outputFile.Write(0, TObject::kOverwrite);
 	outputFile.Close();

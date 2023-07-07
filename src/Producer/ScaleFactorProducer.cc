@@ -254,19 +254,19 @@ void ScaleFactorProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &pr
 }
 
 void ScaleFactorProducer::EndJob(TFile &file) {
-	bTotal->Write();
-	cTotal->Write();
-	lightTotal->Write();
+	bTotal->Write(0, TObject::kOverwrite);
+	cTotal->Write(0, TObject::kOverwrite);
+	lightTotal->Write(0, TObject::kOverwrite);
 
-	bTagEffBLooseDeepJet->Write();
-	bTagEffBMediumDeepJet->Write();
-	bTagEffBTightDeepJet->Write();
+	bTagEffBLooseDeepJet->Write(0, TObject::kOverwrite);
+	bTagEffBMediumDeepJet->Write(0, TObject::kOverwrite);
+	bTagEffBTightDeepJet->Write(0, TObject::kOverwrite);
 
-	bTagEffCLooseDeepJet->Write();
-	bTagEffCMediumDeepJet->Write();
-	bTagEffCTightDeepJet->Write();
+	bTagEffCLooseDeepJet->Write(0, TObject::kOverwrite);
+	bTagEffCMediumDeepJet->Write(0, TObject::kOverwrite);
+	bTagEffCTightDeepJet->Write(0, TObject::kOverwrite);
 
-	bTagEffLightLooseDeepJet->Write();
-	bTagEffLightMediumDeepJet->Write();
-	bTagEffLightTightDeepJet->Write();
+	bTagEffLightLooseDeepJet->Write(0, TObject::kOverwrite);
+	bTagEffLightMediumDeepJet->Write(0, TObject::kOverwrite);
+	bTagEffLightTightDeepJet->Write(0, TObject::kOverwrite);
 }

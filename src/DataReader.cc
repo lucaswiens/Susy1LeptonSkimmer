@@ -368,7 +368,9 @@ void DataReader::ReadIsoTrackEntry() {
 	nIsoTrack = nIsoTrackLeaf->GetValue();
 
 	isoTrackPdgIdLeaf->GetBranch()->GetEntry(entry);
-	isoTrackChargeLeaf->GetBranch()->GetEntry(entry);
+	if (!isFastSim) {
+		isoTrackChargeLeaf->GetBranch()->GetEntry(entry);
+	}
 	isoTrackPtLeaf->GetBranch()->GetEntry(entry);
 	isoTrackEtaLeaf->GetBranch()->GetEntry(entry);
 	isoTrackPhiLeaf->GetBranch()->GetEntry(entry);
@@ -376,7 +378,11 @@ void DataReader::ReadIsoTrackEntry() {
 
 void DataReader::GetIsoTrackValues(const int &index) {
 	isoTrackPdgId = isoTrackPdgIdLeaf->GetValue(index);
-	isoTrackCharge = isoTrackChargeLeaf->GetValue(index);
+	if (isFastSim) {
+		isoTrackCharge = (isoTrackPdgId > 0 - isoTrackPdgId < 0); // not correct but who cares for now
+	} else {
+		isoTrackCharge = isoTrackChargeLeaf->GetValue(index);
+	}
 	isoTrackPt = isoTrackPtLeaf->GetValue(index);
 	isoTrackEta = isoTrackEtaLeaf->GetValue(index);
 	isoTrackPhi = isoTrackPhiLeaf->GetValue(index);
@@ -570,12 +576,12 @@ int DataReader::LastGenCopy(const int& index) {
 	GetGenValues(index);
 
 	int partIndex = index, motherIndex = genMotherIndex;
-	int partPDG = genPdgId;
+	int partPdgId = genPdgId;
 
 	while(true) {
 		GetGenValues(motherIndex);
 
-		if (partPDG == genPdgId) {
+		if (partPdgId == genPdgId) {
 			partIndex = motherIndex;
 			motherIndex = genMotherIndex;
 		} else {
@@ -586,7 +592,7 @@ int DataReader::LastGenCopy(const int& index) {
 	return partIndex;
 }
 
-int DataReader::GetGenMatchedIndex(const float &recoPt, const float &recoPhi, const float &recoEta, const int& recoPDG, const float &deltaRCut, const float &deltaPtCut) {
+int DataReader::GetGenMatchedIndex(const float &recoPt, const float &recoPhi, const float &recoEta, const int& recoPdgId, const float &deltaRCut, const float &deltaPtCut) {
 	int genIndex = -999;
 	float deltaR,
 		deltaPt,
@@ -602,7 +608,7 @@ int DataReader::GetGenMatchedIndex(const float &recoPt, const float &recoPhi, co
 
 		if (deltaR > deltaRCut || deltaPt > deltaPtCut) continue;
 
-		if (deltaR < deltaRMin && deltaPt < deltaPtMin && recoPDG == std::abs(genPdgId)) {
+		if (deltaR < deltaRMin && deltaPt < deltaPtMin && recoPdgId == std::abs(genPdgId)) {
 			int index = LastGenCopy(iGen);
 			if (std::find(alreadyMatchedIndex.begin(), alreadyMatchedIndex.end(), index) != alreadyMatchedIndex.end()) continue;
 

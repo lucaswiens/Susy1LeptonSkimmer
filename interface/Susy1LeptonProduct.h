@@ -83,10 +83,10 @@ class Susy1LeptonProduct {
 			electronConvVeto;
 
 		// Jet Inforamtion
-		int nJet,
+		int nJet, nIsrJet,
 			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
 			jetId;
-		float rho, metPt, metPtJerUp, metPtJerDown, metPhi, correctedMetPt, correctedMetPhi, caloMetPt;
+		float rho, metPt, metPtJerUp, metPtJerDown, metPhi, correctedMetPt, correctedMetPhi, caloMetPt, nIsrWeight, nIsrWeightUncertainty;
 		std::vector<float> metPtJecUp, metPtJecDown;
 		std::array<int, nMax> jetPartFlav,
 			jetDeepJetId;

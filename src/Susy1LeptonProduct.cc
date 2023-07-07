@@ -275,6 +275,10 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetCleanMask", jetCleanMask.data(), "JetCleanMask;[nJet]/O");
 		tree->Branch("JetIsClean", jetIsClean.data(), "JetIsClean;[nJet]/O");
 
+		tree->Branch("nIsrJet", & nIsrJet);
+		tree->Branch("nIsrWeight", & nIsrWeight);
+		tree->Branch("nIsrWeightUncertainty", & nIsrWeightUncertainty);
+
 		if (!isData) {
 			tree->Branch("JetDeepJetLooseSf", jetDeepJetLooseSf.data(), "JetDeepJetLooseSf[nJet]/F");
 			tree->Branch("JetDeepJetMediumSf", jetDeepJetMediumSf.data(), "JetDeepJetMediumSf[nJet]/F");

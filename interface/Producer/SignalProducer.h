@@ -16,6 +16,7 @@ class SignalProducer : public BaseProducer {
 
 		// Cross Section Json File
 		pt::ptree xSectionTree;
+		std::shared_ptr<TH2F> numberOfGenEvents, numberOfGenEventsIsrWeighted;
 	public:
 		SignalProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile);
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);

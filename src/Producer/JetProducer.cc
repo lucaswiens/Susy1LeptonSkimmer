@@ -139,7 +139,9 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	assert(dataReader.nJet <= product.nMax);
 	int jetCounter = 0;
 
-	float correctedMetPx = dataReader.rawMetPt * std::cos(dataReader.rawMetPhi),
+	float metPx = dataReader.metPt * std::cos(dataReader.metPhi),
+		metPy = dataReader.metPt * std::sin(dataReader.metPhi),
+		correctedMetPx = dataReader.rawMetPt * std::cos(dataReader.rawMetPhi),
 		correctedMetPy = dataReader.rawMetPt * std::sin(dataReader.rawMetPhi);
 
 	for (int iJet = 0; iJet < dataReader.nJet; iJet++) {
@@ -195,6 +197,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 		if (!passesJetPtCut || std::abs(dataReader.jetEta) > jetEtaCut) { continue;}
 
+		metPx += dataReader.jetPt * std::cos(dataReader.jetPhi) - jetPtCorrected * std::cos(dataReader.jetPhi);
+		metPy += dataReader.jetPt * std::sin(dataReader.jetPhi) - jetPtCorrected * std::sin(dataReader.jetPhi);
 		correctedMetPx += (jetPtL1Corrected - jetPtCorrected)* std::cos(dataReader.jetPhi);
 		correctedMetPy += (jetPtL1Corrected - jetPtCorrected)* std::sin(dataReader.jetPhi);
 
@@ -310,8 +314,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.correctedMetPt  = std::sqrt(std::pow(correctedMetPx, 2) + std::pow(correctedMetPy, 2));
 	product.correctedMetPhi = std::atan2(correctedMetPy, correctedMetPx);
 
-	product.metPt  = dataReader.metPt;
-	product.metPhi = dataReader.metPhi;
+	product.metPt  = std::sqrt(std::pow(correctedMetPx, 2) + std::pow(correctedMetPy, 2));
+	product.metPhi = std::atan2(correctedMetPy, correctedMetPx);
 	product.caloMetPt = dataReader.caloMetPt;
 	product.event = dataReader.event;
 

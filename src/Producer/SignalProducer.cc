@@ -11,6 +11,12 @@ SignalProducer::SignalProducer(const pt::ptree &configTree, const pt::ptree &sca
 
 	// Open json file with cross section
 	pt::read_json(std::string(cmsswBase + "/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/fastsim/" + configTree.get<std::string>("Producer.Signal.CrossSection")).c_str(), xSectionTree);
+
+	// Number of Generated events per mass points (bin size is 25 GeV, bin edges are shifted by 12.5 GeV to center the mass values)
+	numberOfGenEvents = std::make_shared<TH2F>("numberOfGenEvents", "numberOfGenEvents", 120, -12.5, 3000-12.5, 120, -12.5, 3000-12.5);
+	numberOfGenEventsIsrWeighted = std::make_shared<TH2F>("numberOfGenEventsIsrWeighted", "numberOfGenEventsIsrWeighted", 120, -12.5, 3000-12.5, 120, -12.5, 3000-12.5);
+	//isrWeightNormalizationFactor = std::make_shared<TH2F>("isrWeightNormalizationFactor", "isrWeightNormalizationFactor", 120, 0, 3000, 120, 0, 3000);
+
 }
 
 void SignalProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -69,6 +75,12 @@ void SignalProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product
 
 	product.susyXSectionNLODown  = product.susyXSectionNLO  - susyXSectionNLOUncertainty;
 	product.susyXSectionNLLODown = product.susyXSectionNLLO - susyXSectionNLLOUncertainty;
+
+	numberOfGenEvents->Fill(product.gluinoMass, product.neutralinoMass);
+	numberOfGenEventsIsrWeighted->Fill(product.gluinoMass, product.neutralinoMass, product.nIsrWeight);
 }
 
-void SignalProducer::EndJob(TFile &file) {}
+void SignalProducer::EndJob(TFile &file) {
+	numberOfGenEvents->Write(0, TObject::kOverwrite);
+	numberOfGenEventsIsrWeighted->Write(0, TObject::kOverwrite);
+}

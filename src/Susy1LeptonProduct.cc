@@ -119,6 +119,12 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("Run", &runNumber);
 		tree->Branch("isInLumiBlockRange", &isInLumiBlockRange);
 
+		tree->Branch("leptonPt_1", &leptonPt);
+		tree->Branch("leptonEta_1", &leptonEta);
+		tree->Branch("leptonPhi_1", &leptonPhi);
+		tree->Branch("leptonMass_1", &leptonMass);
+		tree->Branch("leptonPdgId_1", &leptonPdgId);
+
 		tree->Branch("nMuon", &nMuon);
 		tree->Branch("nGoodMuon", &nGoodMuon);
 		tree->Branch("nVetoMuon", &nVetoMuon);
@@ -258,10 +264,32 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("CorrectedMetPt", &correctedMetPt);
 		tree->Branch("CorrectedMetPhi", &correctedMetPhi);
 		tree->Branch("CaloMET_pt", &caloMetPt);
+
+		tree->Branch("JetPt_1", &jetPt1);
+		tree->Branch("JetPt_JERUp_1", jetPtJerUp1);
+		tree->Branch("JetPt_JERDown_1", &jetPtJerDown1);
+		tree->Branch("JetPt_1", &jetPt1);
+		tree->Branch("JetEta_1", &jetEta1);
+		tree->Branch("JetPhi_1", &jetPhi1);
+		tree->Branch("JetMass_1", &jetMass1);
+		tree->Branch("JetMass_JERUp_1", &jetMassJerUp1);
+		tree->Branch("JetMass_JERDown_1", &jetMassJerDown1);
+
+		tree->Branch("JetPt_2", &jetPt2);
+		tree->Branch("JetPt_JERUp_2", jetPtJerUp2);
+		tree->Branch("JetPt_JERDown_2", &jetPtJerDown2);
+		tree->Branch("JetPt_2", &jetPt2);
+		tree->Branch("JetEta_2", &jetEta2);
+		tree->Branch("JetPhi_2", &jetPhi2);
+		tree->Branch("JetMass_2", &jetMass2);
+		tree->Branch("JetMass_JERUp_2", &jetMassJerUp2);
+		tree->Branch("JetMass_JERDown_2", &jetMassJerDown2);
+
 		tree->Branch("nJet", &nJet);
 		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/F");
 		tree->Branch("JetPt_JERUp", jetPtJerUp.data(), "JetPt_JERUp[nJet]/F");
 		tree->Branch("JetPt_JERDown", jetPtJerDown.data(), "JetPt_JERDown[nJet]/F");
+		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/F");
 		tree->Branch("JetEta", jetEta.data(), "JetEta[nJet]/F");
 		tree->Branch("JetPhi", jetPhi.data(), "JetPhi[nJet]/F");
 		tree->Branch("JetMass", jetMass.data(), "JetMass,[nJet]/F");

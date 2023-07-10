@@ -311,6 +311,23 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	jetCounter -= removeCounter;
 	product.nJet = jetCounter;
 
+	product.jetPt1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetPtJerUp1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetPtJerDown1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetMass1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetMassJerUp1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetMassJerDown1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetEta1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetPhi1 = product.nJet > 0 ? product.jetPt.at(0) : -999;
+	product.jetPt2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+	product.jetPtJerUp2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+	product.jetPtJerDown2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+	product.jetMass2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+	product.jetMassJerUp2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+	product.jetMassJerDown2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+	product.jetEta2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+	product.jetPhi2 = product.nJet > 1 ? product.jetPt.at(1) : -999;
+
 	product.correctedMetPt  = std::sqrt(std::pow(correctedMetPx, 2) + std::pow(correctedMetPy, 2));
 	product.correctedMetPhi = std::atan2(correctedMetPy, correctedMetPx);
 

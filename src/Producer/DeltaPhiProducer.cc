@@ -53,19 +53,27 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.deltaPhi = -999;
 	product.LP = -999;
 	product.wBosonMt = -999;
+
+	product.leptonPt    = -999;
+	product.leptonEta   = -999;
+	product.leptonPhi   = -999;
+	product.leptonMass  = -999;
+	product.leptonPdgId = -999;
 	if (product.nLepton > 0) {
-		float leptonPt   = isGoodMuon ? product.muonPt[goodMuonIndex]     : product.electronPt[goodElectronIndex];
-		float leptonEta  = isGoodMuon ? product.muonEta[goodMuonIndex]    : product.electronEta[goodElectronIndex];
-		float leptonPhi  = isGoodMuon ? product.muonPhi[goodMuonIndex]    : product.electronPhi[goodElectronIndex];
-		float leptonMass = isGoodMuon ? product.muonMass[goodMuonIndex]   : product.electronMass[goodElectronIndex];
+		product.leptonPt    = isGoodMuon ? product.muonPt[goodMuonIndex]    : product.electronPt[goodElectronIndex];
+		product.leptonEta   = isGoodMuon ? product.muonEta[goodMuonIndex]   : product.electronEta[goodElectronIndex];
+		product.leptonPhi   = isGoodMuon ? product.muonPhi[goodMuonIndex]   : product.electronPhi[goodElectronIndex];
+		product.leptonMass  = isGoodMuon ? product.muonMass[goodMuonIndex]  : product.electronMass[goodElectronIndex];
+		product.leptonPdgId = isGoodMuon ? product.muonPdgId[goodMuonIndex] : product.electronPdgId[goodElectronIndex];
+
 		int leptonCharge  = isGoodMuon ? product.muonCharge[goodMuonIndex] : product.electronCharge[goodElectronIndex];
-		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(leptonPt, leptonEta, leptonPhi, leptonMass);
+		ROOT::Math::PtEtaPhiMVector leptonP4 = ROOT::Math::PtEtaPhiMVector(product.leptonPt, product.leptonEta, product.leptonPhi, product.leptonMass);
 		ROOT::Math::PtEtaPhiMVector metP4 = ROOT::Math::PtEtaPhiMVector(product.metPt, 0, product.metPhi, 0);
 		ROOT::Math::PtEtaPhiMVector wBosonP4 = leptonP4 + metP4;
 
-		product.LT = leptonPt + product.metPt;
+		product.LT = product.leptonPt + product.metPt;
 		product.deltaPhi = Utility::DeltaPhi(leptonP4.Phi(), wBosonP4.Phi());
-		product.LP = leptonPt / wBosonP4.Pt() * std::cos(product.deltaPhi);
+		product.LP = product.leptonPt / wBosonP4.Pt() * std::cos(product.deltaPhi);
 		product.wBosonMt = wBosonP4.Mt();
 
 		dataReader.ReadIsoTrackEntry();
@@ -77,7 +85,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 			dataReader.GetIsoTrackValues(iTrack);
 			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14 && (dataReader.isoTrackCharge == leptonCharge)) continue;
 
-			float deltaR = Utility::DeltaR(leptonEta, leptonPhi, dataReader.isoTrackEta, dataReader.isoTrackPhi);
+			float deltaR = Utility::DeltaR(product.leptonEta, product.leptonPhi, dataReader.isoTrackEta, dataReader.isoTrackPhi);
 			if (deltaR < deltaRCut && dataReader.isoTrackPt > isoTrackPtCut) continue;
 
 			ROOT::Math::PtEtaPhiMVector isotrackP4 = ROOT::Math::PtEtaPhiMVector(dataReader.isoTrackPt, dataReader.isoTrackEta, dataReader.isoTrackPhi, 0);
@@ -108,13 +116,12 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	}
 	product.nIsoTrack = isoTrackCounter;
 
-	product.HT = 0;
-
 	// count the number of btags
 	for (int *nBtag : {&product.nDeepJetLooseBTag, &product.nDeepJetMediumBTag, &product.nDeepJetTightBTag}) {
 		*nBtag = 0;
 	}
 
+	product.HT = 0;
 	for (int iJet = 0; iJet < product.nJet; iJet++) {
 		product.HT += product.jetPt.at(iJet);
 

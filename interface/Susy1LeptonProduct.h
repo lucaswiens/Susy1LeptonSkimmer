@@ -37,6 +37,8 @@ class Susy1LeptonProduct {
 		static const int nMax = 200; //FIXME 50
 
 		// Lepton Information
+		float leptonPt, leptonPhi, leptonEta, leptonMass;
+		int leptonPdgId;
 		int nLepton, nGoodLepton, nVetoLepton;
 		int eventNumber, runNumber;
 		bool isInLumiBlockRange;
@@ -86,7 +88,13 @@ class Susy1LeptonProduct {
 		int nJet, nIsrJet,
 			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
 			jetId;
-		float rho, metPt, metPtJerUp, metPtJerDown, metPhi, correctedMetPt, correctedMetPhi, caloMetPt, nIsrWeight, nIsrWeightUncertainty;
+		float jetPt1, jetPtJerUp1, jetPtJerDown1,
+			jetMass1, jetMassJerUp1, jetMassJerDown1,
+			jetEta1, jetPhi1,
+			jetPt2, jetPtJerUp2, jetPtJerDown2,
+			jetMass2, jetMassJerUp2, jetMassJerDown2,
+			jetEta2, jetPhi2,
+			rho, metPt, metPtJerUp, metPtJerDown, metPhi, correctedMetPt, correctedMetPhi, caloMetPt, nIsrWeight, nIsrWeightUncertainty;
 		std::vector<float> metPtJecUp, metPtJecDown;
 		std::array<int, nMax> jetPartFlav,
 			jetDeepJetId;

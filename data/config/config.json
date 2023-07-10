@@ -1,14 +1,14 @@
 {
-	"Channel": {
-		"LeptonIncl": {
-			"Selection": {
-				"Lepton": {
-					"Threshold": 1,
-					"Operator": ">="
+	"Channel" : {
+		"LeptonIncl" : {
+			"Selection" : {
+				"Lepton" : {
+					"Threshold" : 1,
+					"Operator" : ">="
 				}
 			},
-			"Trigger": {
-				"2016PreVFP": [
+			"Trigger" : {
+				"2016PreVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24",
@@ -19,7 +19,7 @@
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
 
-				"2016PostVFP": [
+				"2016PostVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24",
@@ -30,7 +30,7 @@
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
 
-				"2017": [
+				"2017" : [
 					"HLT_Mu50",
 					"HLT_IsoMu27",
 					"HLT_Mu15_IsoVVVL_PFHT450",
@@ -39,7 +39,7 @@
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				],
-				"2018": [
+				"2018" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_Mu15_IsoVVVL_PFHT450",
@@ -49,7 +49,7 @@
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				]
 			},
-			"METTrigger": [
+			"METTrigger" : [
 				"HLT_PFMET100_PFMHT100_IDTight",
 				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
 				"HLT_PFMET110_PFMHT110_IDTight",
@@ -58,24 +58,24 @@
 				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 			]
 		},
-		"Lepton": {
-			"Selection": {
-				"GoodLepton": {
-					"Threshold": 1,
-					"Operator": "=="
+		"Lepton" : {
+			"Selection" : {
+				"GoodLepton" : {
+					"Threshold" : 1,
+					"Operator" : "=="
 				},
-				"VetoLepton": {
-					"Threshold": 1,
-					"Operator": "=="
+				"VetoLepton" : {
+					"Threshold" : 1,
+					"Operator" : "=="
 				},
-				"Jet": {
-					"Threshold": 3,
-					"Operator": ">="
+				"Jet" : {
+					"Threshold" : 3,
+					"Operator" : ">="
 				}
 			},
 
-			"Trigger": {
-				"2016PreVFP": [
+			"Trigger" : {
+				"2016PreVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24",
@@ -86,7 +86,7 @@
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
 
-				"2016PostVFP": [
+				"2016PostVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24",
@@ -97,7 +97,7 @@
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
 
-				"2017": [
+				"2017" : [
 					"HLT_Mu50",
 					"HLT_IsoMu27",
 					"HLT_Mu15_IsoVVVL_PFHT450",
@@ -106,7 +106,7 @@
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				],
-				"2018": [
+				"2018" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_Mu15_IsoVVVL_PFHT450",
@@ -116,7 +116,7 @@
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				]
 			},
-			"METTrigger": [
+			"METTrigger" : [
 				"HLT_PFMET100_PFMHT100_IDTight",
 				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
 				"HLT_PFMET110_PFMHT110_IDTight",
@@ -125,38 +125,38 @@
 				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 			]
 		},
-		"MuonIncl": {
-			"Selection": {
-				"Muon": {
-					"Threshold": 1,
-					"Operator": ">="
+		"MuonIncl" : {
+			"Selection" : {
+				"Muon" : {
+					"Threshold" : 1,
+					"Operator" : ">="
 				}
 			},
-			"Trigger": {
-				"2016PreVFP": [
+			"Trigger" : {
+				"2016PreVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24"
 				],
 
-				"2016PostVFP": [
+				"2016PostVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24"
 				],
 
-				"2017": [
+				"2017" : [
 					"HLT_Mu50",
 					"HLT_IsoMu27",
 					"HLT_Mu15_IsoVVVL_PFHT450"
 				],
-				"2018": [
+				"2018" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_Mu15_IsoVVVL_PFHT450"
 				]
 			},
-			"METTrigger": [
+			"METTrigger" : [
 				"HLT_PFMET100_PFMHT100_IDTight",
 				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
 				"HLT_PFMET110_PFMHT110_IDTight",
@@ -165,22 +165,22 @@
 				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 			]
 		},
-		"ElectronIncl": {
-			"Selection": {
-				"Electron": {
-					"Threshold": 1,
-					"Operator": ">="
+		"ElectronIncl" : {
+			"Selection" : {
+				"Electron" : {
+					"Threshold" : 1,
+					"Operator" : ">="
 				}
 			},
-			"Trigger": {
-				"2016PreVFP": [
+			"Trigger" : {
+				"2016PreVFP" : [
 					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele27_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsosVVVL_PFHT400"
 				],
-				"2016PostVFP": [
+				"2016PostVFP" : [
 					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele27_WPTight_Gsf",
@@ -188,21 +188,21 @@
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
 
-				"2017": [
+				"2017" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				],
 
-				"2018": [
+				"2018" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				]
 			},
-			"METTrigger": [
+			"METTrigger" : [
 				"HLT_PFMET100_PFMHT100_IDTight",
 				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
 				"HLT_PFMET110_PFMHT110_IDTight",
@@ -212,19 +212,19 @@
 			]
 		},
 
-		"Synchro": {
-            "Selection": {
+		"Synchro" : {
+            "Selection" : {
                 "HT" : {
-                    "Threshold": 0.0,
-                    "Operator": ">="
+                    "Threshold" : 0.0,
+                    "Operator" : ">="
                 },
                 "LT" : {
-                    "Threshold": -1000.0,
-                    "Operator": ">="
+                    "Threshold" : -1000.0,
+                    "Operator" : ">="
                 }
             },
-            "Trigger": {
-                "2016PreVFP": [
+            "Trigger" : {
+                "2016PreVFP" : [
                     "HLT_Mu50",
                     "HLT_IsoMu24",
                     "HLT_IsoTkMu24",
@@ -235,7 +235,7 @@
                     "HLT_Ele15_IsoVVVL_PFHT400"
                 ],
 
-                "2016PostVFP": [
+                "2016PostVFP" : [
                     "HLT_Mu50",
                     "HLT_IsoMu24",
                     "HLT_IsoTkMu24",
@@ -246,7 +246,7 @@
                     "HLT_Ele15_IsoVVVL_PFHT400"
                 ],
 
-                "2017": [
+                "2017" : [
                     "HLT_Mu50",
                     "HLT_IsoMu27",
                     "HLT_Mu15_IsoVVVL_PFHT450",
@@ -256,7 +256,7 @@
                     "HLT_Ele15_IsoVVVL_PFHT450"
                 ],
 
-                "2018": [
+                "2018" : [
                     "HLT_Mu50",
                     "HLT_IsoMu24",
                     "HLT_Mu15_IsoVVVL_PFHT450",
@@ -266,7 +266,7 @@
                     "HLT_Ele15_IsoVVVL_PFHT450"
                 ]
             },
-            "METTrigger": [
+            "METTrigger" : [
                 "HLT_PFMET100_PFMHT100_IDTight",
                 "HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
                 "HLT_PFMET110_PFMHT110_IDTight",
@@ -277,47 +277,47 @@
         },
 
 
-		"Muon": {
-			"Selection": {
-				"GoodMuon": {
-					"Threshold": 1,
-					"Operator": "=="
+		"Muon" : {
+			"Selection" : {
+				"GoodMuon" : {
+					"Threshold" : 1,
+					"Operator" : "=="
 				},
-				"VetoLepton": {
-					"Threshold": 1,
-					"Operator": "=="
+				"VetoLepton" : {
+					"Threshold" : 1,
+					"Operator" : "=="
 				},
-				"Jet": {
-					"Threshold": 3,
-					"Operator": ">="
+				"Jet" : {
+					"Threshold" : 3,
+					"Operator" : ">="
 				}
 			},
 
-			"Trigger": {
-				"2016PreVFP": [
+			"Trigger" : {
+				"2016PreVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24"
 				],
 
-				"2016PostVFP": [
+				"2016PostVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24"
 				],
 
-				"2017": [
+				"2017" : [
 					"HLT_Mu50",
 					"HLT_IsoMu27",
 					"HLT_Mu15_IsoVVVL_PFHT450"
 				],
-				"2018": [
+				"2018" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_Mu15_IsoVVVL_PFHT450"
 				]
 			},
-			"METTrigger": [
+			"METTrigger" : [
 				"HLT_PFMET100_PFMHT100_IDTight",
 				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
 				"HLT_PFMET110_PFMHT110_IDTight",
@@ -326,30 +326,30 @@
 				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 			]
 		},
-		"Electron": {
-			"Selection": {
-				"GoodElectron": {
-					"Threshold": 1,
-					"Operator": "=="
+		"Electron" : {
+			"Selection" : {
+				"GoodElectron" : {
+					"Threshold" : 1,
+					"Operator" : "=="
 				},
-				"VetoLepton": {
-					"Threshold": 1,
-					"Operator": "=="
+				"VetoLepton" : {
+					"Threshold" : 1,
+					"Operator" : "=="
 				},
-				"Jet": {
-					"Threshold": 3,
-					"Operator": ">="
+				"Jet" : {
+					"Threshold" : 3,
+					"Operator" : ">="
 				}
 			},
-			"Trigger": {
-				"2016PreVFP": [
+			"Trigger" : {
+				"2016PreVFP" : [
 					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele27_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-				"2016PostVFP": [
+				"2016PostVFP" : [
 					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele27_WPTight_Gsf",
@@ -357,21 +357,21 @@
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
 
-				"2017": [
+				"2017" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				],
 
-				"2018": [
+				"2018" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				]
 			},
-			"METTrigger": [
+			"METTrigger" : [
 				"HLT_PFMET100_PFMHT100_IDTight",
 				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
 				"HLT_PFMET110_PFMHT110_IDTight",
@@ -382,8 +382,8 @@
 		}
 
 	},
-	"METFilter": {
-		"2016PreVFP": [
+	"METFilter" : {
+		"2016PreVFP" : [
 			"Flag_goodVertices",
 			"Flag_globalSuperTightHalo2016Filter",
 			"Flag_HBHENoiseFilter",
@@ -393,7 +393,7 @@
 			"Flag_BadPFMuonDzFilter",
 			"Flag_eeBadScFilter"
 		],
-		"2016PostVFP": [
+		"2016PostVFP" : [
 			"Flag_goodVertices",
 			"Flag_globalSuperTightHalo2016Filter",
 			"Flag_HBHENoiseFilter",
@@ -403,7 +403,7 @@
 			"Flag_BadPFMuonDzFilter",
 			"Flag_eeBadScFilter"
 		],
-		"2017": [
+		"2017" : [
 			"Flag_goodVertices",
 			"Flag_globalSuperTightHalo2016Filter",
 			"Flag_HBHENoiseFilter",
@@ -415,7 +415,7 @@
 			"Flag_eeBadScFilter",
 			"Flag_ecalBadCalibFilter"
 		],
-		"2018": [
+		"2018" : [
 			"Flag_goodVertices",
 			"Flag_globalSuperTightHalo2016Filter",
 			"Flag_HBHENoiseFilter",
@@ -428,42 +428,48 @@
 			"Flag_ecalBadCalibFilter"
 		]
 	},
+	"GoldenJSON" : {
+		"2016PreVFP" : "data/samples/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
+		"2016PostVFP" : "data/samples/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
+		"2017" : "data/samples/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
+		"2018" : "data/samples/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt"
+	},
 	"Producer" : {
-		"Muon": {
+		"Muon" : {
 			"Pt" : {
-				"Good": 25,
-				"Veto": 10
+				"Good" : 25,
+				"Veto" : 10
 			},
 			"Eta" : 2.4,
 			"Iso" : {
-				"Good": 0.2,
-				"Veto": 0.4,
-				"Anti": 0.2
+				"Good" : 0.2,
+				"Veto" : 0.4,
+				"Anti" : 0.2
 			},
 			"CutBasedId" : {
-				"Good": "M",
-				"Veto": "L",
-				"Anti": "M"
+				"Good" : "M",
+				"Veto" : "L",
+				"Anti" : "M"
 			},
 			"Dxy" : 0.05,
 			"Dz" : 0.1,
 			"Sip3DCut" : 4
 		},
-		"Electron": {
+		"Electron" : {
 			"Pt" : {
-				"Good": 25,
-				"Veto": 10
+				"Good" : 25,
+				"Veto" : 10
 			},
 			"Eta" : 2.4,
 			"Iso" : {
-				"Good": 0.1,
-				"Veto": 0.4,
-				"Anti": 0.4
+				"Good" : 0.1,
+				"Veto" : 0.4,
+				"Anti" : 0.4
 			},
 			"CutBasedId" : {
-				"Good": "T",
-				"Veto": "V",
-				"Anti": {
+				"Good" : "T",
+				"Veto" : "V",
+				"Anti" : {
 					"Is"  : "V",
 					"Not" : "M"
 				}
@@ -474,7 +480,7 @@
 			"Dxy" : 0.5,
 			"Dz" : 0.5
 		},
-		"Jet": {
+		"Jet" : {
 			"Pt" : 30,
 			"Eta" : 2.4,
 			"JECSystematic" : [
@@ -487,44 +493,44 @@
 				"TimePtEta"
 			],
 			"DeepCSV" : {
-				"2016PreVFP": {
+				"2016PreVFP" : {
 					"Loose"  : 0.2027,
 					"Medium" : 0.6001,
 					"Tight"  : 0.8819
 				},
-				"2016PostVFP": {
+				"2016PostVFP" : {
 					"Loose"  : 0.1918,
 					"Medium" : 0.5847,
 					"Tight"  : 0.8767
 				},
-				"2017": {
+				"2017" : {
 					"Loose"  : 0.1355,
 					"Medium" : 0.4506,
 					"Tight"  : 0.7738
 				},
-				"2018": {
+				"2018" : {
 					"Loose"  : 0.1208,
 					"Medium" : 0.4168,
 					"Tight"  : 0.7665
 				}
 			},
 			"DeepJet" : {
-				"2016PreVFP": {
+				"2016PreVFP" : {
 					"Loose"  : 0.0508,
 					"Medium" : 0.2598,
 					"Tight"  : 0.6502
 				},
-				"2016PostVFP": {
+				"2016PostVFP" : {
 					"Loose"  : 0.0480,
 					"Medium" : 0.2489,
 					"Tight"  : 0.6377
 				},
-				"2017": {
+				"2017" : {
 					"Loose"  : 0.0532,
 					"Medium" : 0.3040,
 					"Tight"  : 0.7476
 				},
-				"2018": {
+				"2018" : {
 					"Loose"  : 0.0490,
 					"Medium" : 0.2783,
 					"Tight"  : 0.7100
@@ -532,25 +538,25 @@
 			},
 			"DeepAK8" : {
 				"Top" : {
-					"2016PreVFP": {
+					"2016PreVFP" : {
 						"Loose"     : 0.528,
 						"Medium"    : 0.834,
 						"Tight"     : 0.929,
 						"VeryTight" : 0.988
 					},
-					"2016PostVFP": {
+					"2016PostVFP" : {
 						"Loose"     : 0.528,
 						"Medium"    : 0.834,
 						"Tight"     : 0.929,
 						"VeryTight" : 0.988
 					},
-					"2017": {
+					"2017" : {
 						"Loose"     : 0.333,
 						"Medium"    : 0.725,
 						"Tight"     : 0.884,
 						"VeryTight" : 0.983
 					},
-					"2018": {
+					"2018" : {
 						"Loose"     : 0.436,
 						"Medium"    : 0.802,
 						"Tight"     : 0.922,
@@ -558,25 +564,25 @@
 					}
 				},
 				"TopMassDecorrelated" : {
-					"2016PreVFP": {
+					"2016PreVFP" : {
 						"Loose"     : 0.177,
 						"Medium"    : 0.435,
 						"Tight"     : 0.632,
 						"VeryTight" : 0.889
 					},
-					"2016PostVFP": {
+					"2016PostVFP" : {
 						"Loose"     : 0.177,
 						"Medium"    : 0.435,
 						"Tight"     : 0.632,
 						"VeryTight" : 0.889
 					},
-					"2017": {
+					"2017" : {
 						"Loose"     : 0.117,
 						"Medium"    : 0.344,
 						"Tight"     : 0.554,
 						"VeryTight" : 0.863
 					},
-					"2018": {
+					"2018" : {
 						"Loose"     : 0.174,
 						"Medium"    : 0.470,
 						"Tight"     : 0.685,
@@ -584,25 +590,25 @@
 					}
 				},
 				"W" : {
-					"2016PreVFP": {
+					"2016PreVFP" : {
 						"VeryLoose" : 0.475,
 						"Loose"     : 0.763,
 						"Medium"    : 0.918,
 						"Tight"     : 0.960
 					},
-					"2016PostVFP": {
+					"2016PostVFP" : {
 						"VeryLoose" : 0.475,
 						"Loose"     : 0.763,
 						"Medium"    : 0.918,
 						"Tight"     : 0.960
 					},
-					"2017": {
+					"2017" : {
 						"VeryLoose" : 0.467,
 						"Loose"     : 0.772,
 						"Medium"    : 0.925,
 						"Tight"     : 0.964
 					},
-					"2018": {
+					"2018" : {
 						"VeryLoose" : 0.458,
 						"Loose"     : 0.762,
 						"Medium"    : 0.918,
@@ -610,25 +616,25 @@
 					}
 				},
 				"WMassDecorrelated" : {
-					"2016PreVFP": {
+					"2016PreVFP" : {
 						"VeryLoose" : 0.274,
 						"Loose"     : 0.506,
 						"Medium"    : 0.731,
 						"Tight"     : 0.828
 					},
-					"2016PostVFP": {
+					"2016PostVFP" : {
 						"VeryLoose" : 0.274,
 						"Loose"     : 0.506,
 						"Medium"    : 0.731,
 						"Tight"     : 0.828
 					},
-					"2017": {
+					"2017" : {
 						"VeryLoose" : 0.258,
 						"Loose"     : 0.506,
 						"Medium"    : 0.739,
 						"Tight"     : 0.838
 					},
-					"2018": {
+					"2018" : {
 						"VeryLoose" : 0.245,
 						"Loose"     : 0.479,
 						"Medium"    : 0.704,
@@ -650,20 +656,20 @@
 				"topmass",
 				"type3"
 			],
-			"LightTagSystematic": [
+			"LightTagSystematic" : [
 				"uncorrelated",
 				"correlated"
 			]
 		},
-		"IsoTrack": {
+		"IsoTrack" : {
 			"DeltaR" : 0.1,
 			"Pt" : 10,
 			"Mt2" : {
-				"Hadronic": 60,
-				"Leptonic": 80
+				"Hadronic" : 60,
+				"Leptonic" : 80
 			}
 		},
-		"Signal": {
+		"Signal" : {
 			"CrossSection" : "SUSYCrossSections13TeVgluglu.json",
 			"StopPdgId" : 1000006,
 			"GluinoPdgId" : 1000021,

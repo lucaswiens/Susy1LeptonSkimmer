@@ -7,8 +7,10 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	std::cout << "File Opened!" << std::endl;
 	inputTree.reset(static_cast<TTree*>(inputFile->Get(treeName.c_str())));
 
-	// event
-	eventLeaf = inputTree->GetLeaf("event");
+	// Event
+	eventNumberLeaf     = inputTree->GetLeaf("event");
+	runNumberLeaf       = inputTree->GetLeaf("run");
+	luminosityBlockLeaf = inputTree->GetLeaf("luminosityBlock");
 
 	// Muons
 	nMuonLeaf               = inputTree->GetLeaf("nMuon");
@@ -276,10 +278,6 @@ void DataReader::ReadJetEntry() {
 	nJetLeaf->GetBranch()->GetEntry(entry);
 	nJet = nJetLeaf->GetValue();
 
-	// Event
-	eventLeaf->GetBranch()->GetEntry(entry);
-	event = eventLeaf->GetValue();
-
 	// Rho
 	rhoLeaf->GetBranch()->GetEntry(entry);
 	rho = rhoLeaf->GetValue();
@@ -457,6 +455,17 @@ void DataReader::RegisterTrigger() {
 		std::cout << "Removing " << triggerNames.at(removeIndex) << " at index = " << removeIndex << std::endl;
 		triggerNames.erase(triggerNames.begin() + removeIndex);
 	}
+}
+
+void DataReader::ReadEventInfo() {
+	eventNumberLeaf->GetBranch()->GetEntry(entry);
+	eventNumber = eventNumberLeaf->GetValue();
+
+	runNumberLeaf->GetBranch()->GetEntry(entry);
+	runNumber = runNumberLeaf->GetValue();
+
+	luminosityBlockLeaf->GetBranch()->GetEntry(entry);
+	luminosityBlock = luminosityBlockLeaf->GetValue();
 }
 
 void DataReader::ReadTrigger() {

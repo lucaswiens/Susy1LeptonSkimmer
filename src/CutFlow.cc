@@ -40,18 +40,6 @@ std::function<bool()> CutFlow::ConstructCut(const float &value, const std::strin
 	}
 }
 
-// std::function<bool()> CutFlow::ConstructFloatCut(float &value, const std::string &op, const int &threshold) {
-	// if(op == "==") {
-		// return [&value, threshold]() {return value == threshold;};
-	// } else if(op == ">=") {
-		// return [&value, threshold]() {return value >= threshold;};
-	// } else if(op == "<=") {
-		// return [&value, threshold]() {return value <= threshold;};
-	// } else {
-		// throw std::runtime_error(("Unknow cut operator: '" + op + "'").c_str());
-	// }
-// }
-
 void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const std::string &op, const int &threshold) {
 	if(part == "Electron") {
 		cuts.push_back(ConstructCut(product.nElectron, op, threshold));
@@ -98,7 +86,17 @@ void CutFlow::AddCut(const std::string &part, Susy1LeptonProduct &product, const
 		cutNames.push_back("L_{T} " + op + std::to_string(threshold));
 	} else {
 		throw std::runtime_error(("Unknow quantity: '" + part + "'").c_str());
-	}}
+	}
+}
+
+void CutFlow::AddCut(const std::string &cutName, Susy1LeptonProduct &product) {
+	if(cutName == "GoldenJSON") {
+		cuts.insert(cuts.begin(), [&product]() { return product.isInLumiBlockRange;});
+		cutNames.insert(cutNames.begin(), "Luminosity Block is in GoldenJSON");
+	} else {
+		throw std::runtime_error(("Unknow cut: '" + cutName + "'").c_str());
+	}
+}
 
 bool CutFlow::Passed() {
 	for(int i = 0; i < cuts.size(); i++) {

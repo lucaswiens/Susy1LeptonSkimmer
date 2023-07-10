@@ -307,8 +307,8 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 		removeCounter++; // Keep Tack of already deleted jets
 	}
-	jetCounter -= removeCounter;
 
+	jetCounter -= removeCounter;
 	product.nJet = jetCounter;
 
 	product.correctedMetPt  = std::sqrt(std::pow(correctedMetPx, 2) + std::pow(correctedMetPy, 2));
@@ -317,7 +317,6 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	product.metPt  = std::sqrt(std::pow(correctedMetPx, 2) + std::pow(correctedMetPy, 2));
 	product.metPhi = std::atan2(correctedMetPy, correctedMetPx);
 	product.caloMetPt = dataReader.caloMetPt;
-	product.event = dataReader.event;
 
 	int fatJetCounter = 0;
 	dataReader.ReadFatJetEntry();

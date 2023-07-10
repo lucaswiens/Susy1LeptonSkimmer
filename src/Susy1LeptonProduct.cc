@@ -115,7 +115,9 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 	#########################################################################################*/
 	for (const std::shared_ptr<TTree> &tree : outputTrees) {
 		// event number
-		tree->Branch("Event", &event);
+		tree->Branch("Event", &eventNumber);
+		tree->Branch("Run", &runNumber);
+		tree->Branch("isInLumiBlockRange", &isInLumiBlockRange);
 
 		tree->Branch("nMuon", &nMuon);
 		tree->Branch("nGoodMuon", &nGoodMuon);

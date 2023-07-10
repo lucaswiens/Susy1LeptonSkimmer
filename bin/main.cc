@@ -20,6 +20,7 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/SignalProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/DeltaPhiProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/PileUpWeightProducer.h>
+#include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/EventInformationProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/METFilterProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/TriggerProducer.h>
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/GenLevelProducer.h>
@@ -78,7 +79,7 @@ int main(int argc, char *argv[]) {
 
 	std::vector<CutFlow> cutflows;
 	std::vector<std::shared_ptr<TTree>> outputTrees;
-	std::vector<std::string> channels = {"Muon", "Electron", "Synchro", "LeptonIncl"}; // Test_SingleElectron.root
+	std::vector<std::string> channels = {"Muon", "Electron"};
 	DataReader dataReader(inputFileName, "Events", isData, isFastSim);
 	TFile outputFile(outputFileName.c_str(), "RECREATE");
 	Susy1LeptonProduct product(era, isData, isSignal, isFastSim, outputFileName, runPeriod, xSection, configTree, outputFile);
@@ -123,8 +124,12 @@ int main(int argc, char *argv[]) {
 		std::cout << std::endl;
 	}
 
-	// Register Trigger output
+	// Register GoldenJSON, Trigger and METFilteroutput
 	for (int iChannel = 0; iChannel < channels.size(); iChannel++) {
+		if (isData) {
+			cutflows[iChannel].AddCut("GoldenJSON", product);
+		}
+
 		cutflows[iChannel].AddMetFilter(product);
 
 		std::vector<int> triggerIndices;
@@ -152,14 +157,19 @@ int main(int argc, char *argv[]) {
 		std::shared_ptr<JetProducer>(new JetProducer(configTree, scaleFactorTree, product)),
 		std::shared_ptr<DeltaPhiProducer>(new DeltaPhiProducer(configTree, scaleFactorTree)),
 	};
-	if (!isData) {
+
+	if (isData) {
+		producers.push_back(std::shared_ptr<EventInformationProducer>(new EventInformationProducer(configTree, scaleFactorTree, product.GetEraSelector())));
+	} else {
 		producers.push_back(std::shared_ptr<PileUpWeightProducer>(new PileUpWeightProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 		producers.push_back(std::shared_ptr<GenLevelProducer>(new GenLevelProducer(configTree, scaleFactorTree, product.GetEraSelector())));
 		producers.push_back(std::shared_ptr<ScaleFactorProducer>(new ScaleFactorProducer(configTree, scaleFactorTree, product.GetEraSelector(), product.GetIsFastSim(), outputFile)));
 	}
+
 	if (isSignal) {
 		producers.push_back(std::shared_ptr<SignalProducer>(new SignalProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
 	}
+
 	if (isFastSim) {
 		producers.push_back(std::shared_ptr<FastSimProducer>(new FastSimProducer(configTree, scaleFactorTree, product.GetEraSelector(), outputFile)));
 	}
@@ -194,6 +204,8 @@ int main(int argc, char *argv[]) {
 
 	std::cout  << "Processed Events at a rate of " + std::to_string(nEvents / std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count()) + " Hz." << std::endl;
 
+
+	std::cout << std::setprecision(2) << std::fixed;
 	for (std::shared_ptr<TTree> tree : outputTrees) {
 		int finalNumberOfEvents = tree->GetEntries();
 		std::cout << std::setw(20) << tree->GetDirectory()->GetName() << std::setw(10) << tree->GetName() << " analysis: Selected " << finalNumberOfEvents << " events of " << nEvents << " (" << 100*(float)finalNumberOfEvents/nEvents << "%)" << std::endl;

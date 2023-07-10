@@ -32,14 +32,14 @@ class Susy1LeptonProduct {
 		char GetRunPeriod() {return runPeriod;}
 
 		std::string primaryDataset;
-		//std::string GetDatasetDecider() { return datasetDecider;}
 
 		// Max value for static arrays, should use assert to enforce nObject < nMax, so you know when to increase nMax
 		static const int nMax = 200; //FIXME 50
 
 		// Lepton Information
 		int nLepton, nGoodLepton, nVetoLepton;
-		int event;
+		int eventNumber, runNumber;
+		bool isInLumiBlockRange;
 
 		// Muons Inforamtion
 		int nMuon, nGoodMuon, nVetoMuon, nAntiSelectedMuon;
@@ -170,7 +170,6 @@ class Susy1LeptonProduct {
 		std::array<float, 9> scaleWeight; // size is fixed
 
 		// Trigger Informaion
-		//std::vector<bool> triggerValues, metTriggerValues, metFilterValues;
 		std::vector<short> triggerValues, metTriggerValues, metFilterValues;
 		bool hltEleOr, hltMuOr, hltMetOr;
 

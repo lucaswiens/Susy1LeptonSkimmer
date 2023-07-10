@@ -23,6 +23,7 @@ class CutFlow{
 	public:
 		CutFlow() {}
 		CutFlow(TFile &outputFile, const std::string &channel);
+		void AddCut(const std::string &cutName, Susy1LeptonProduct& product);
 		void AddCut(const std::string &part, Susy1LeptonProduct& product, const std::string &op, const int &threshold);
 		void AddCut(const std::string &part, Susy1LeptonProduct& product, const std::string &op, const float &threshold);
 

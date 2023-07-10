@@ -18,8 +18,8 @@ class DataReader {
 		bool isData, isFastSim;
 
 		// MetaData Leafs
-		TLeaf *processNameLeaf;
-		TLeaf *eventLeaf;
+		TLeaf *eventNumberLeaf,*runNumberLeaf, *luminosityBlockLeaf, *processNameLeaf;
+
 		// Muon Leafs
 		TLeaf *nMuonLeaf,
 			*muonPtLeaf, *muonEtaLeaf, *muonPhiLeaf, *muonMassLeaf, *muonIsoLeaf, *muonDxyLeaf, *muonDzLeaf, *muonSip3dLeaf, *muonMiniIsoLeaf,
@@ -93,6 +93,8 @@ class DataReader {
 		// Event entry information
 		int GetEntries(){return inputTree->GetEntries();}
 		void SetEntry(const int &entry){this->entry = entry;}
+		void ReadEventInfo();
+		int eventNumber, runNumber, luminosityBlock;
 
 		// Muon
 		void ReadMuonEntry();
@@ -122,7 +124,7 @@ class DataReader {
 		void GetJetValues(const int &index);
 		int nJet,
 			jetId,
-			jetPartFlav, event;
+			jetPartFlav;
 		float jetMass, jetPt, jetEta, jetPhi,
 			jetArea, jetRawFactor,
 			jetDeepJet,

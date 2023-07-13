@@ -119,11 +119,11 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("Run", &runNumber);
 		tree->Branch("isInLumiBlockRange", &isInLumiBlockRange);
 
-		tree->Branch("leptonPt_1", &leptonPt);
-		tree->Branch("leptonEta_1", &leptonEta);
-		tree->Branch("leptonPhi_1", &leptonPhi);
-		tree->Branch("leptonMass_1", &leptonMass);
-		tree->Branch("leptonPdgId_1", &leptonPdgId);
+		tree->Branch("LeptonPt_1", &leptonPt);
+		tree->Branch("LeptonEta_1", &leptonEta);
+		tree->Branch("LeptonPhi_1", &leptonPhi);
+		tree->Branch("LeptonMass_1", &leptonMass);
+		tree->Branch("LeptonPdgId_1", &leptonPdgId);
 
 		tree->Branch("nMuon", &nMuon);
 		tree->Branch("nGoodMuon", &nGoodMuon);
@@ -268,7 +268,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetPt_1", &jetPt1);
 		tree->Branch("JetPt_JERUp_1", jetPtJerUp1);
 		tree->Branch("JetPt_JERDown_1", &jetPtJerDown1);
-		tree->Branch("JetPt_1", &jetPt1);
 		tree->Branch("JetEta_1", &jetEta1);
 		tree->Branch("JetPhi_1", &jetPhi1);
 		tree->Branch("JetMass_1", &jetMass1);
@@ -278,7 +277,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetPt_2", &jetPt2);
 		tree->Branch("JetPt_JERUp_2", jetPtJerUp2);
 		tree->Branch("JetPt_JERDown_2", &jetPtJerDown2);
-		tree->Branch("JetPt_2", &jetPt2);
 		tree->Branch("JetEta_2", &jetEta2);
 		tree->Branch("JetPhi_2", &jetPhi2);
 		tree->Branch("JetMass_2", &jetMass2);
@@ -289,7 +287,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/F");
 		tree->Branch("JetPt_JERUp", jetPtJerUp.data(), "JetPt_JERUp[nJet]/F");
 		tree->Branch("JetPt_JERDown", jetPtJerDown.data(), "JetPt_JERDown[nJet]/F");
-		tree->Branch("JetPt", jetPt.data(), "JetPt[nJet]/F");
 		tree->Branch("JetEta", jetEta.data(), "JetEta[nJet]/F");
 		tree->Branch("JetPhi", jetPhi.data(), "JetPhi[nJet]/F");
 		tree->Branch("JetMass", jetMass.data(), "JetMass,[nJet]/F");

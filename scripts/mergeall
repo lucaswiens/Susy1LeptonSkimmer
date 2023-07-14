@@ -1,0 +1,8 @@
+#!/bin/bash
+export CURRENTDIR=${PWD}
+for MERGEDIR in *;
+do
+	cd ${CURRENTDIR}/${MERGEDIR}
+	mergeit
+	cd ${CURRENTDIR}
+done

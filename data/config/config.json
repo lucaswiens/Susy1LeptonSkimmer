@@ -661,6 +661,9 @@
 				"correlated"
 			]
 		},
+		"FatJet" : {
+			"Pt" : 400
+		},
 		"IsoTrack" : {
 			"DeltaR" : 0.1,
 			"Pt" : 10,

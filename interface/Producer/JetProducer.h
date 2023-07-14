@@ -22,7 +22,8 @@ class JetProducer : public BaseProducer {
 
 	private:
 		// Configuration Variables
-		float jetPtCut, jetEtaCut;
+		float jetPtCut, jetEtaCut,
+		      fatJetPtCut;
 
 		// JEC and JER from json library
 		std::unique_ptr<correction::CorrectionSet> ak4CorrectionSet, ak8CorrectionSet, jmeCorrectionSet;

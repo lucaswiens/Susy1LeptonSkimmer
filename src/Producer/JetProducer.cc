@@ -126,10 +126,12 @@ JetProducer::JetProducer(const pt::ptree &configTree, const pt::ptree &scaleFact
 
 	jetPtCut  = configTree.get<float>("Producer.Jet.Pt");
 	jetEtaCut = configTree.get<float>("Producer.Jet.Eta");
+	fatJetPtCut  = configTree.get<float>("Producer.FatJet.Pt");
 	std::cout << std::endl <<
 		"The following cuts are applied to Jets:"   << std::endl <<
-		"|Eta| < " << jetEtaCut << std::endl <<
-		"|Pt|  > " << jetPtCut << std::endl;
+		"|Eta|     < " << jetEtaCut << std::endl <<
+		"|Pt_AK4|  > " << jetPtCut << std::endl <<
+		"|Pt_Ak8|  > " << fatJetPtCut << std::endl;
 }
 
 void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -344,11 +346,18 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		const float &fatJetMassRaw = dataReader.fatJetMass * (1 - dataReader.fatJetRawFactor);
 
 		const std::pair<float, float> &correctionFactors = CorrectEnergy(dataReader, fatJetPtRaw, false, product.GetIsFastSim());
-		const float &correctionFactor   = correctionFactors.second;
+		const float &correctionFactor = correctionFactors.second;
 		std::map<char, float> smearFactor = {{'N', 1.0}, {'U', 1.0}, {'D', 1.0}};
 		if (!product.GetIsData()) {
 			smearFactor = JetProducer::SmearFatEnergy(dataReader, correctionFactor * fatJetPtRaw);
 		}
+
+
+		const float &fatJetPtCorrected    = fatJetPtRaw * correctionFactor * smearFactor.at('N'),
+			&fatJetPtCorrectedJerUp   = fatJetPtRaw * correctionFactor * smearFactor.at('U'),
+			&fatJetPtCorrectedJerDown = fatJetPtRaw * correctionFactor * smearFactor.at('D');
+
+		bool passesFatJetPtCut = fatJetPtCorrected >= fatJetPtCut || fatJetPtCorrectedJerUp >= fatJetPtCut || fatJetPtCorrectedJerDown >= fatJetPtCut;
 
 		std::vector<float> fatJetJecUp, fatJetJecDown;
 		for (int iJec = 0; iJec < jecSystematics.size(); iJec++) { // Store the correction factors
@@ -366,19 +375,30 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 			const float &correctionFactorDown = correctionFactor * (1 - ak8CorrectionUncertainty.at(systematic)->getUncertainty(false));
 			const float &smearFactorJecDown = product.GetIsData() ? 1.0 : JetProducer::SmearFatEnergy(dataReader, fatJetPtRaw * correctionFactorDown).at('N');
 			fatJetJecDown.push_back(correctionFactorDown * smearFactorJecDown);
+
+			if (fatJetPtRaw * fatJetJecUp.at(iJec) >= fatJetPtCut || fatJetPtRaw * fatJetJecDown.at(iJec) >= fatJetPtCut) {
+				passesFatJetPtCut = true;
+			}
 		}
 
-		product.fatJetPt[fatJetCounter]              = fatJetPtRaw * correctionFactor * smearFactor.at('N');
-		product.fatJetEta[fatJetCounter]             = dataReader.fatJetEta;
-		product.fatJetPhi[fatJetCounter]             = dataReader.fatJetPhi;
-		product.fatJetMass[fatJetCounter]            = dataReader.fatJetMass * correctionFactor * smearFactor.at('N');
-		product.fatJetArea[fatJetCounter]            = dataReader.fatJetArea;
-		product.fatJetId[fatJetCounter]              = dataReader.fatJetId;
+		if (!passesFatJetPtCut || std::abs(dataReader.fatJetEta) > jetEtaCut) { continue;}
 
-		product.fatJetDeepTagMDTvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDTvsQCD;
-		product.fatJetDeepTagMDWvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDWvsQCD;
-		product.fatJetDeepTagTvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD;
-		product.fatJetDeepTagWvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagWvsQCD;
+		product.fatJetPt[fatJetCounter]                      = fatJetPtCorrected;
+		product.fatJetEta[fatJetCounter]                     = dataReader.fatJetEta;
+		product.fatJetPhi[fatJetCounter]                     = dataReader.fatJetPhi;
+		product.fatJetMass[fatJetCounter]                    = dataReader.fatJetMass * correctionFactor * smearFactor.at('N');
+		product.fatJetArea[fatJetCounter]                    = dataReader.fatJetArea;
+		product.fatJetId[fatJetCounter]                      = dataReader.fatJetId;
+
+		product.fatJetPtJerUp[fatJetCounter]                      = fatJetPtCorrectedJerUp;
+		product.fatJetMassJerUp[fatJetCounter]                    = dataReader.fatJetMass * correctionFactor * smearFactor.at('U');
+		product.fatJetPtJerDown[fatJetCounter]                      = fatJetPtCorrectedJerDown;
+		product.fatJetMassJerDown[fatJetCounter]                    = dataReader.fatJetMass * correctionFactor * smearFactor.at('D');
+
+		product.fatJetDeepTagMDTvsQCD[fatJetCounter]         = dataReader.fatJetDeepTagMDTvsQCD;
+		product.fatJetDeepTagMDWvsQCD[fatJetCounter]         = dataReader.fatJetDeepTagMDWvsQCD;
+		product.fatJetDeepTagTvsQCD[fatJetCounter]           = dataReader.fatJetDeepTagTvsQCD;
+		product.fatJetDeepTagWvsQCD[fatJetCounter]           = dataReader.fatJetDeepTagWvsQCD;
 
 		product.fatJetDeepAk8TopLooseId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('L');
 		product.fatJetDeepAk8TopMediumId[fatJetCounter]      = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('M');

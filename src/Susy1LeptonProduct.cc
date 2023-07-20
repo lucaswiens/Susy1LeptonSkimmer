@@ -304,7 +304,8 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 
 		tree->Branch("nIsrJet", & nIsrJet);
 		tree->Branch("nIsrWeight", & nIsrWeight);
-		tree->Branch("nIsrWeightUncertainty", & nIsrWeightUncertainty);
+		tree->Branch("nIsrWeightUp", & nIsrWeightUp);
+		tree->Branch("nIsrWeightDown", & nIsrWeightDown);
 
 		if (!isData) {
 			tree->Branch("JetDeepJetLooseSf", jetDeepJetLooseSf.data(), "JetDeepJetLooseSf[nJet]/F");

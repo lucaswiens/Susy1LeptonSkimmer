@@ -3,6 +3,7 @@
 GenLevelProducer::GenLevelProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector) {
 	Name = "GenLevelProducer";
 
+	deltaRCut  = configTree.get<float>("Producer.IsrJet.DeltaR");
 	jetPtCut  = configTree.get<float>("Producer.Jet.Pt");
 	jetEtaCut = configTree.get<float>("Producer.Jet.Eta");
 
@@ -167,7 +168,7 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 					dataReader.GetGenValues(dataReader.genMotherIndex);
 				}
 
-				if (isDaughter && Utility::DeltaR(dataReader.jetEta, dataReader.jetPhi, daughterEta, daughterPhi) < 0.3) { // If any of the daughters are within 0.3 of the jet, it is not an ISR jet
+				if (isDaughter && Utility::DeltaR(dataReader.jetEta, dataReader.jetPhi, daughterEta, daughterPhi) < deltaRCut) { // If any of the daughters are within 0.3 of the jet, it is not an ISR jet
 					daughterIsMatched = true;
 					break;
 				}
@@ -178,11 +179,13 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	}
 
 	if (product.nIsrJet > 6) {
-		product.nIsrWeight            = isrWeight.at(6);
-		product.nIsrWeightUncertainty = isrUncertainty.at(6);
+		product.nIsrWeight     = isrWeight.at(6);
+		product.nIsrWeightUp   = isrWeight.at(6) + isrUncertainty.at(6);;
+		product.nIsrWeightDown = isrWeight.at(6) - isrUncertainty.at(6);
 	} else {
-		product.nIsrWeight            = isrWeight.at(product.nIsrJet);
-		product.nIsrWeightUncertainty = isrUncertainty.at(product.nIsrJet);
+		product.nIsrWeight     = isrWeight.at(product.nIsrJet);
+		product.nIsrWeightUp   = isrWeight.at(product.nIsrJet) + isrUncertainty.at(product.nIsrJet);;
+		product.nIsrWeightDown = isrWeight.at(product.nIsrJet) - isrUncertainty.at(product.nIsrJet);;
 	}
 
 	// TODO figure out if this is used at all

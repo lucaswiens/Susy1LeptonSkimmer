@@ -94,7 +94,7 @@ class Susy1LeptonProduct {
 			jetPt2, jetPtJerUp2, jetPtJerDown2,
 			jetMass2, jetMassJerUp2, jetMassJerDown2,
 			jetEta2, jetPhi2,
-			rho, metPt, metPtJerUp, metPtJerDown, metPhi, correctedMetPt, correctedMetPhi, caloMetPt, nIsrWeight, nIsrWeightUncertainty;
+			rho, metPt, metPtJerUp, metPtJerDown, metPhi, correctedMetPt, correctedMetPhi, caloMetPt, nIsrWeight, nIsrWeightUp, nIsrWeightDown;
 		std::vector<float> metPtJecUp, metPtJecDown;
 		std::array<int, nMax> jetPartFlav,
 			jetDeepJetId;

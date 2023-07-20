@@ -646,6 +646,9 @@
 		"FatJet" : {
 			"Pt" : 400
 		},
+		"IsrJet" : {
+			"DeltaR" : 0.3
+		},
 		"IsoTrack" : {
 			"DeltaR" : 0.1,
 			"Pt" : 10,

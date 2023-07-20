@@ -15,17 +15,10 @@ SignalProducer::SignalProducer(const pt::ptree &configTree, const pt::ptree &sca
 	// Number of Generated events per mass points (bin size is 25 GeV, bin edges are shifted by 12.5 GeV to center the mass values)
 	numberOfGenEvents = std::make_shared<TH2F>("numberOfGenEvents", "numberOfGenEvents", 120, -12.5, 3000-12.5, 120, -12.5, 3000-12.5);
 	numberOfGenEventsIsrWeighted = std::make_shared<TH2F>("numberOfGenEventsIsrWeighted", "numberOfGenEventsIsrWeighted", 120, -12.5, 3000-12.5, 120, -12.5, 3000-12.5);
-	//isrWeightNormalizationFactor = std::make_shared<TH2F>("isrWeightNormalizationFactor", "isrWeightNormalizationFactor", 120, 0, 3000, 120, 0, 3000);
-
 }
 
 void SignalProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 	dataReader.ReadGenEntry();
-	product.stopMass       = 0;
-	product.gluinoMass     = 0;
-	product.neutralinoMass = 0;
-	product.charginoMass   = 0;
-
 	product.susyXSectionNLO      = -999;
 	product.susyXSectionNLLO     = -999;
 	product.susyXSectionNLOUp    = -999;

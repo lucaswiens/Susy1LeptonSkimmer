@@ -8,7 +8,7 @@
 
 class GenLevelProducer : public BaseProducer {
 	private:
-		float jetPtCut, jetEtaCut;
+		float deltaRCut, jetPtCut, jetEtaCut;
 
 		std::vector<float> isrWeight, isrUncertainty;
 	public:

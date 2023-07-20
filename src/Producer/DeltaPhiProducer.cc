@@ -123,8 +123,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 
 	product.HT = 0;
 	for (int iJet = 0; iJet < product.nJet; iJet++) {
-		product.HT += product.jetPt.at(iJet);
-
+		if (product.jetPt.at(iJet) >= 30) { product.HT += product.jetPt.at(iJet);}
 		if (product.jetDeepJetLooseId[iJet])  { product.nDeepJetLooseBTag++;}
 		if (product.jetDeepJetMediumId[iJet]) { product.nDeepJetMediumBTag++;}
 		if (product.jetDeepJetTightId[iJet])  { product.nDeepJetTightBTag++;}

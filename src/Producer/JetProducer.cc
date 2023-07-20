@@ -199,10 +199,12 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 		if (!passesJetPtCut || std::abs(dataReader.jetEta) > jetEtaCut) { continue;}
 
-		metPx += dataReader.jetPt * std::cos(dataReader.jetPhi) - jetPtCorrected * std::cos(dataReader.jetPhi);
-		metPy += dataReader.jetPt * std::sin(dataReader.jetPhi) - jetPtCorrected * std::sin(dataReader.jetPhi);
-		correctedMetPx += (jetPtL1Corrected - jetPtCorrected)* std::cos(dataReader.jetPhi);
-		correctedMetPy += (jetPtL1Corrected - jetPtCorrected)* std::sin(dataReader.jetPhi);
+		if (jetPtCorrected >= jetPtCut) {
+			metPx += (dataReader.jetPt - jetPtCorrected) * std::cos(dataReader.jetPhi);
+			metPy += (dataReader.jetPt - jetPtCorrected) * std::sin(dataReader.jetPhi);
+			correctedMetPx += (jetPtL1Corrected - jetPtCorrected)* std::cos(dataReader.jetPhi);
+			correctedMetPy += (jetPtL1Corrected - jetPtCorrected)* std::sin(dataReader.jetPhi);
+		}
 
 		product.jetPt[jetCounter]   = jetPtCorrected;
 		product.jetEta[jetCounter]  = dataReader.jetEta;

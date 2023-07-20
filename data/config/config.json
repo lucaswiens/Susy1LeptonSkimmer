@@ -18,7 +18,6 @@
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-
 				"2016PostVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
@@ -29,7 +28,6 @@
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-
 				"2017" : [
 					"HLT_Mu50",
 					"HLT_IsoMu27",
@@ -73,7 +71,6 @@
 					"Operator" : ">="
 				}
 			},
-
 			"Trigger" : {
 				"2016PreVFP" : [
 					"HLT_Mu50",
@@ -85,7 +82,6 @@
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-
 				"2016PostVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
@@ -96,7 +92,6 @@
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-
 				"2017" : [
 					"HLT_Mu50",
 					"HLT_IsoMu27",
@@ -138,13 +133,11 @@
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24"
 				],
-
 				"2016PostVFP" : [
 					"HLT_Mu50",
 					"HLT_IsoMu24",
 					"HLT_IsoTkMu24"
 				],
-
 				"2017" : [
 					"HLT_Mu50",
 					"HLT_IsoMu27",
@@ -187,14 +180,12 @@
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-
 				"2017" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				],
-
 				"2018" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
@@ -211,72 +202,66 @@
 				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 			]
 		},
-
 		"Synchro" : {
-            "Selection" : {
-                "HT" : {
-                    "Threshold" : 0.0,
-                    "Operator" : ">="
-                },
-                "LT" : {
-                    "Threshold" : -1000.0,
-                    "Operator" : ">="
-                }
-            },
-            "Trigger" : {
-                "2016PreVFP" : [
-                    "HLT_Mu50",
-                    "HLT_IsoMu24",
-                    "HLT_IsoTkMu24",
-                    "HLT_Ele105_CaloIdVT_GsfTrkIdT",
-                    "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
-                    "HLT_Ele27_WPTight_Gsf",
-                    "HLT_Ele15_IsoVVVL_PFHT350",
-                    "HLT_Ele15_IsoVVVL_PFHT400"
-                ],
-
-                "2016PostVFP" : [
-                    "HLT_Mu50",
-                    "HLT_IsoMu24",
-                    "HLT_IsoTkMu24",
-                    "HLT_Ele105_CaloIdVT_GsfTrkIdT",
-                    "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
-                    "HLT_Ele27_WPTight_Gsf",
-                    "HLT_Ele15_IsoVVVL_PFHT350",
-                    "HLT_Ele15_IsoVVVL_PFHT400"
-                ],
-
-                "2017" : [
-                    "HLT_Mu50",
-                    "HLT_IsoMu27",
-                    "HLT_Mu15_IsoVVVL_PFHT450",
-                    "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
-                    "HLT_Ele115_CaloIdVT_GsfTrkIdT",
-                    "HLT_Ele35_WPTight_Gsf",
-                    "HLT_Ele15_IsoVVVL_PFHT450"
-                ],
-
-                "2018" : [
-                    "HLT_Mu50",
-                    "HLT_IsoMu24",
-                    "HLT_Mu15_IsoVVVL_PFHT450",
-                    "HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
-                    "HLT_Ele115_CaloIdVT_GsfTrkIdT",
-                    "HLT_Ele35_WPTight_Gsf",
-                    "HLT_Ele15_IsoVVVL_PFHT450"
-                ]
-            },
-            "METTrigger" : [
-                "HLT_PFMET100_PFMHT100_IDTight",
-                "HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
-                "HLT_PFMET110_PFMHT110_IDTight",
-                "HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
-                "HLT_PFMET120_PFMHT120_IDTight",
-                "HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
-            ]
-        },
-
-
+			"Selection" : {
+				"HT" : {
+					"Threshold" : 0.0,
+					"Operator" : ">="
+				},
+				"LT" : {
+					"Threshold" : -1000.0,
+					"Operator" : ">="
+				}
+			},
+			"Trigger" : {
+				"2016PreVFP" : [
+					"HLT_Mu50",
+					"HLT_IsoMu24",
+					"HLT_IsoTkMu24",
+					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
+					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
+					"HLT_Ele27_WPTight_Gsf",
+					"HLT_Ele15_IsoVVVL_PFHT350",
+					"HLT_Ele15_IsoVVVL_PFHT400"
+				],
+				"2016PostVFP" : [
+					"HLT_Mu50",
+					"HLT_IsoMu24",
+					"HLT_IsoTkMu24",
+					"HLT_Ele105_CaloIdVT_GsfTrkIdT",
+					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
+					"HLT_Ele27_WPTight_Gsf",
+					"HLT_Ele15_IsoVVVL_PFHT350",
+					"HLT_Ele15_IsoVVVL_PFHT400"
+				],
+				"2017" : [
+					"HLT_Mu50",
+					"HLT_IsoMu27",
+					"HLT_Mu15_IsoVVVL_PFHT450",
+					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
+					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
+					"HLT_Ele35_WPTight_Gsf",
+					"HLT_Ele15_IsoVVVL_PFHT450"
+				],
+				"2018" : [
+					"HLT_Mu50",
+					"HLT_IsoMu24",
+					"HLT_Mu15_IsoVVVL_PFHT450",
+					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
+					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
+					"HLT_Ele35_WPTight_Gsf",
+					"HLT_Ele15_IsoVVVL_PFHT450"
+				]
+			},
+			"METTrigger" : [
+				"HLT_PFMET100_PFMHT100_IDTight",
+				"HLT_PFMETNoMu100_PFMHTNoMu100_IDTight",
+				"HLT_PFMET110_PFMHT110_IDTight",
+				"HLT_PFMETNoMu110_PFMHTNoMu110_IDTight",
+				"HLT_PFMET120_PFMHT120_IDTight",
+				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
+			]
+		},
 		"Muon" : {
 			"Selection" : {
 				"GoodMuon" : {
@@ -356,14 +341,12 @@
 					"HLT_Ele15_IsoVVVL_PFHT350",
 					"HLT_Ele15_IsoVVVL_PFHT400"
 				],
-
 				"2017" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
 					"HLT_Ele35_WPTight_Gsf",
 					"HLT_Ele15_IsoVVVL_PFHT450"
 				],
-
 				"2018" : [
 					"HLT_Ele50_CaloIdVT_GsfTrkIdT_PFJet165",
 					"HLT_Ele115_CaloIdVT_GsfTrkIdT",
@@ -380,7 +363,6 @@
 				"HLT_PFMETNoMu120_PFMHTNoMu120_IDTight"
 			]
 		}
-
 	},
 	"METFilter" : {
 		"2016PreVFP" : [

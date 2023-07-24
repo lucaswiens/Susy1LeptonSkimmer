@@ -184,7 +184,7 @@ class Susy1LeptonProduct {
 		// Gen Level Information
 		int nGenPart, nGenLepton, nGenTau, nGenLeptonFromTau, nGenMatchedW, nGenNeutrino,
 			leptonDecayChannelFlag;
-		float genElectronPt, genElectronEta, genElectronPhi, genElectronMass, genMuonPt, genMuonEta, genMuonPhi, genMuonMass, genMetPt, genMetPhi, genHT, genLT, genLP, genDeltaPhi, genAbsoluteDeltaPhi, genWBosonMt, genWeight;
+		float genElectronPt, genElectronEta, genElectronPhi, genElectronMass, genMuonPt, genMuonEta, genMuonPhi, genMuonMass, genMetPt, genMetPhi, genHT, genLT, genLP, genDeltaPhi, genAbsoluteDeltaPhi, genWBosonMt, genWeight, sumGenWeight;
 		bool isDiLeptonEvent, isHadTauEvent, leptonsInAcceptance;
 		std::array<float, nMax> genDeltaPhiLepWSum, genDeltaPhiLepWDirect, genWSumMass, genWDirectMass, genMTLepNu, genNeutrinoPt;
 		std::array<int, nMax> grandMotherPdgId, genTauGrandMotherPdgId, genTauMotherPdgId, genLepGrandMotherPdgId, genLepMotherPdgId;

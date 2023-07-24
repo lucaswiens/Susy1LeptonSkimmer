@@ -27,13 +27,15 @@ Susy1LeptonProduct::Susy1LeptonProduct(const int &era, const bool &isData, const
 
 		if (sampleName.find("SingleEle") < 20) {
 				this->primaryDataset = "isSingleElectron";
-			}
+		}
 		else if (sampleName.find("SingleMu") < 20) {
 				this->primaryDataset = "isSingleMuon";
-			}
+		}
 		else if (sampleName.find("MET_") < 20) {
 				this->primaryDataset = "isMet";
-			}
+		}
+
+		sumGenWeight = 0;
 
 		for (const std::pair<std::string, boost::property_tree::ptree> jecSyst : configTree.get_child("Producer.Jet.JECSystematic")) {
 			jetPtJecUp.push_back(std::array<float, nMax>());
@@ -571,6 +573,7 @@ void Susy1LeptonProduct::WriteMetaData(TFile &outputFile) {
 	metaData.Branch("PreVFP", &preVFP);
 	metaData.Branch("IsData", &isData);
 	metaData.Branch("IsFastSim", &isFastSim);
+	metaData.Branch("SumGenWeight", &sumGenWeight);
 	metaData.Branch("SampleName", &sampleName);
 	metaData.Branch("primaryDataset", &primaryDataset);
 	if (isData) {

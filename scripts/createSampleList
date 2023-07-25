@@ -5,7 +5,7 @@ YEAR=${1}
 
 cd $CMSSW_BASE/src/Susy1LeptonAnalysis/Susy1LeptonSkimmer/data/samples/$YEAR
 
-SAMPLELIST="TTJets_HT TTTo2L2Nu_TuneCP5_13TeV TTToSemiLeptonic_TuneCP5_13TeV WJetsToLNu_HT DYJetsToLL_M-50_HT DYJetsToLL_M-50_TuneCP5_13TeV QCD_HT ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV ST_s-channel_4f_leptonDecays_TuneCP5_13TeV TTZToNuNu_TuneCP5_13TeV-amcatnlo-pythia8 TTZToQQ_TuneCP5_13TeV TTWJetsToLNu_TuneCP5_13TeV TTWJetsToQQ_TuneCP5_13TeV tZq_ll_4f_ckm_NLO_TuneCP5 WWTo2L2Nu_TuneCP5_13TeV WW_TuneCP5_13TeV WZ_TuneCP5_13TeV ZZ_TuneCP5_13TeV ZZTo2L2Nu WWToLNuQQ WZTo1L1Nu2Q WZTo1L3Nu WZTo2L2Q ZZTo2Q2Nu ZZTo2Q2L"
+SAMPLELIST="TTJets_HT TTTo2L2Nu_TuneCP5_13TeV TTToSemiLeptonic_TuneCP5_13TeV WJetsToLNu_HT DYJetsToLL_M-50_HT QCD_HT ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV ST_s-channel_4f_leptonDecays_TuneCP5_13TeV TTZToNuNu_TuneCP5_13TeV-amcatnlo-pythia8 TTZToQQ_TuneCP5_13TeV TTWJetsToLNu_TuneCP5_13TeV TTWJetsToQQ_TuneCP5_13TeV tZq_ll_4f_ckm_NLO_TuneCP5 WWTo2L2Nu_TuneCP5_13TeV WW_TuneCP5_13TeV WZ_TuneCP5_13TeV ZZ_TuneCP5_13TeV ZZTo2L2Nu WWToLNuQQ WZTo1L1Nu2Q WZTo1L3Nu WZTo2L2Q ZZTo2Q2Nu ZZTo2Q2L"
 
 #SAMPLELIST="ST_tW ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV"
 for SAMPLE in $SAMPLELIST
@@ -15,19 +15,19 @@ do
 	if [ ${YEAR} == "2016preVFP" ]; then
 		#GLOBALTAG=106X_mcRun2_asymptotic_preVFP_v11
 		GLOBALTAG=106X_mcRun2_asymptotic_preVFP
-		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL16*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter >> ${SAMPLE}.txt
+		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL16*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter | grep -v herwig | grep -v TuneCH3 | grep -v PSWeights | grep -v TuneCP5CR | grep -v TuneCP5up | grep -v TuneCP5down | grep -v erdON >> ${SAMPLE}.txt
 	elif [ ${YEAR} == "2016postVFP" ]; then
 		#GLOBALTAG=106X_mcRun2_asymptotic_v17
 		GLOBALTAG=106X_mcRun2_asymptotic
-		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL16*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter >> ${SAMPLE}.txt
+		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL16*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter | grep -v herwig | grep -v TuneCH3 | grep -v PSWeights | grep -v TuneCP5CR | grep -v TuneCP5up | grep -v TuneCP5down | grep -v erdON >> ${SAMPLE}.txt
 	elif [ ${YEAR} == "2017" ]; then
 		#GLOBALTAG=106X_mc2017_realistic_v10
 		GLOBALTAG=106X_mc2017_realistic
-		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL17*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter >> ${SAMPLE}.txt
+		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL17*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter | grep -v herwig | grep -v TuneCH3 | grep -v PSWeights | grep -v TuneCP5CR | grep -v TuneCP5up | grep -v TuneCP5down | grep -v erdON >> ${SAMPLE}.txt
 	elif [ ${YEAR} == "2018" ]; then
 		#GlOBALTAG=106X_upgrade2018_realistic_v16_L1v1
 		GlOBALTAG=106X_upgrade2018_realistic_v16_L1
-		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL18*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter >> ${SAMPLE}.txt
+		dasgoclient -query="dataset=/${SAMPLE}*/RunIISummer20UL18*NanoAODv9-${GLOBALTAG}*/NANOAODSIM" | grep -v BGenFilter | grep -v herwig | grep -v TuneCH3 | grep -v PSWeights | grep -v TuneCP5CR | grep -v TuneCP5up | grep -v TuneCP5down | grep -v erdON >> ${SAMPLE}.txt
 	else
 		echo "INVALID YEAR ${YEAR}! Use 2016preVFP, 2016postVFP, 2017 or 2018!"
 		exit

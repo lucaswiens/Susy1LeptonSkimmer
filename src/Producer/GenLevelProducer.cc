@@ -231,6 +231,7 @@ void GenLevelProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 	product.nGenNeutrino = genNeutrinoCounter;
 	product.genWeight = dataReader.genWeight;
 	product.sumGenWeight += dataReader.genWeight;
+	product.lheHtIncoming = dataReader.lheHtIncoming;
 
 	dataReader.ReadGenJetEntry();
 	product.genHT = 0;

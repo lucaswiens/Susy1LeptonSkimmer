@@ -105,6 +105,9 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	genJetEtaLeaf = inputTree->GetLeaf("GenJet_eta");
 	genJetPhiLeaf = inputTree->GetLeaf("GenJet_phi");
 
+	genMetPtLeaf     = inputTree->GetLeaf("GenMET_pt");
+	genMetPhiLeaf    = inputTree->GetLeaf("GenMET_phi");
+
 	nGenFatJetLeaf   = inputTree->GetLeaf("nGenJetAK8");
 	genFatJetPtLeaf  = inputTree->GetLeaf("GenJetAK8_pt");
 	genFatJetEtaLeaf = inputTree->GetLeaf("GenJetAK8_eta");
@@ -140,8 +143,7 @@ DataReader::DataReader(const std::string &fileName, const std::string &treeName,
 	genEtaLeaf         = inputTree->GetLeaf("GenPart_eta");
 	genMassLeaf        = inputTree->GetLeaf("GenPart_mass");
 	genWeightLeaf      = inputTree->GetLeaf("genWeight");
-	genMetPtLeaf       = inputTree->GetLeaf("GenMET_pt");
-	genMetPhiLeaf      = inputTree->GetLeaf("GenMET_phi");
+	lheHtIncomingLeaf  = inputTree->GetLeaf("LHE_HTIncoming");
 
 	if (isFastSim) {
 		for (TBranch *branch : TRangeDynCast<TBranch>(inputTree->GetListOfBranches())) {
@@ -564,6 +566,9 @@ void DataReader::ReadGenEntry() {
 
 	nGenPart = nGenPartLeaf->GetValue();
 	genWeight = genWeightLeaf->GetValue();
+
+	lheHtIncomingLeaf->GetBranch()->GetEntry(entry);
+	lheHtIncoming = lheHtIncomingLeaf->GetValue();
 }
 
 void DataReader::GetGenValues(const int &index) {

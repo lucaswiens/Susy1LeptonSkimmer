@@ -463,7 +463,9 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("GenMuonPhi", &genMuonPhi);
 			tree->Branch("GenMetPt", &genMetPt);
 			tree->Branch("GenMetPhi", &genMetPhi);
-			tree->Branch("LHE_HTIncoming", &lheHtIncoming);
+			if (!isFastSim) {
+				tree->Branch("LHE_HTIncoming", &lheHtIncoming);
+			}
 			tree->Branch("GenHT", &genHT);
 			tree->Branch("GenLT", &genLT);
 			tree->Branch("GenLP", &genLP);

@@ -567,8 +567,10 @@ void DataReader::ReadGenEntry() {
 	nGenPart = nGenPartLeaf->GetValue();
 	genWeight = genWeightLeaf->GetValue();
 
-	lheHtIncomingLeaf->GetBranch()->GetEntry(entry);
-	lheHtIncoming = lheHtIncomingLeaf->GetValue();
+	if (!isFastSim) {
+		lheHtIncomingLeaf->GetBranch()->GetEntry(entry);
+		lheHtIncoming = lheHtIncomingLeaf->GetValue();
+	}
 }
 
 void DataReader::GetGenValues(const int &index) {

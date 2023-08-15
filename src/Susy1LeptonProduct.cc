@@ -564,6 +564,7 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("mGluino", &gluinoMass);
 			tree->Branch("mNeutralino", &neutralinoMass);
 			tree->Branch("mChargino", &charginoMass);
+			tree->Branch("isT5qqqqWW", &isT5qqqqWW);
 		}
 	}
 }

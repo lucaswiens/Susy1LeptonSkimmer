@@ -12,11 +12,11 @@
 
 class SignalProducer : public BaseProducer {
 	private:
-		int stopPdgId, gluinoPdgId, neutralinoPdgId, charginoPdgId;
+		int stopPdgId, gluinoPdgId, neutralinoPdgId, charginoPdgId, wBosonPdgId;
 
 		// Cross Section Json File
 		pt::ptree xSectionTree;
-		std::shared_ptr<TH2F> numberOfGenEvents, numberOfGenEventsIsrWeighted;
+		std::shared_ptr<TH2F> numberOfGenEvents, numberOfGenEventsIsrWeighted, numberOfT5qqqqWWGenEvents, numberOfT5qqqqWWGenEventsIsrWeighted;
 	public:
 		SignalProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile);
 		void Produce(DataReader &dataReader, Susy1LeptonProduct &product);

@@ -190,9 +190,10 @@ class Susy1LeptonProduct {
 		std::array<float, nMax> genDeltaPhiLepWSum, genDeltaPhiLepWDirect, genWSumMass, genWDirectMass, genMTLepNu, genNeutrinoPt;
 		std::array<int, nMax> grandMotherPdgId, genTauGrandMotherPdgId, genTauMotherPdgId, genLepGrandMotherPdgId, genLepMotherPdgId;
 
-		// Fast Sim Model Information
+		// SUSY Signal Model Information
 		float susyXSectionNLO, susyXSectionNLLO, susyXSectionNLOUp, susyXSectionNLLOUp, susyXSectionNLODown, susyXSectionNLLODown;
 		int stopMass, gluinoMass, neutralinoMass, charginoMass;
+		bool isT5qqqqWW;
 };
 
 #endif;

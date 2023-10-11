@@ -39,7 +39,7 @@ def prepareArguments(sample):
 
 	xSection = getXSection.GetXSection(sample)
 
-	if "SMS-T1tttt" in sample or "SMS-T5qqqqWW" in sample or "T5qqqqVV" in sample:
+	if "T1tttt" in sample or "T5qqqqWW" in sample or "T5qqqqVV" in sample:
 		xSection = 1
 		runPeriod = "S"
 

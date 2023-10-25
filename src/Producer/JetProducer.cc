@@ -216,10 +216,11 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 			product.jetPtJerDown[jetCounter]   = jetPtCorrectedJerDown;
 			product.jetMassJerUp[jetCounter]   = jetMassRaw * correctionFactor * smearFactor.at('U');
 			product.jetMassJerDown[jetCounter] = jetMassRaw * correctionFactor * smearFactor.at('D');
+
 			for (int iJec = 0; iJec < jecSystematics.size(); iJec++) {
-				product.jetPtJecUp.at(iJec)[jetCounter] = jetPtRaw * jetJecUp.at(iJec);
-				product.jetPtJecDown.at(iJec)[jetCounter] = jetPtRaw * jetJecDown.at(iJec);
-				product.jetMassJecUp.at(iJec)[jetCounter] = jetMassRaw * jetJecUp.at(iJec);
+				product.jetPtJecUp.at(iJec)[jetCounter]     = jetPtRaw * jetJecUp.at(iJec);
+				product.jetPtJecDown.at(iJec)[jetCounter]   = jetPtRaw * jetJecDown.at(iJec);
+				product.jetMassJecUp.at(iJec)[jetCounter]   = jetMassRaw * jetJecUp.at(iJec);
 				product.jetMassJecDown.at(iJec)[jetCounter] = jetMassRaw * jetJecDown.at(iJec);
 			}
 
@@ -355,7 +356,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		}
 
 
-		const float &fatJetPtCorrected    = fatJetPtRaw * correctionFactor * smearFactor.at('N'),
+		const float &fatJetPtCorrected = fatJetPtRaw * correctionFactor * smearFactor.at('N'),
 			&fatJetPtCorrectedJerUp   = fatJetPtRaw * correctionFactor * smearFactor.at('U'),
 			&fatJetPtCorrectedJerDown = fatJetPtRaw * correctionFactor * smearFactor.at('D');
 
@@ -385,42 +386,42 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 
 		if (!passesFatJetPtCut || std::abs(dataReader.fatJetEta) > jetEtaCut) { continue;}
 
-		product.fatJetPt[fatJetCounter]                      = fatJetPtCorrected;
-		product.fatJetEta[fatJetCounter]                     = dataReader.fatJetEta;
-		product.fatJetPhi[fatJetCounter]                     = dataReader.fatJetPhi;
-		product.fatJetMass[fatJetCounter]                    = dataReader.fatJetMass * correctionFactor * smearFactor.at('N');
-		product.fatJetArea[fatJetCounter]                    = dataReader.fatJetArea;
-		product.fatJetId[fatJetCounter]                      = dataReader.fatJetId;
+		product.fatJetPt[fatJetCounter]   = fatJetPtCorrected;
+		product.fatJetEta[fatJetCounter]  = dataReader.fatJetEta;
+		product.fatJetPhi[fatJetCounter]  = dataReader.fatJetPhi;
+		product.fatJetMass[fatJetCounter] = dataReader.fatJetMass * correctionFactor * smearFactor.at('N');
+		product.fatJetArea[fatJetCounter] = dataReader.fatJetArea;
+		product.fatJetId[fatJetCounter]   = dataReader.fatJetId;
 
-		product.fatJetPtJerUp[fatJetCounter]                      = fatJetPtCorrectedJerUp;
-		product.fatJetMassJerUp[fatJetCounter]                    = dataReader.fatJetMass * correctionFactor * smearFactor.at('U');
-		product.fatJetPtJerDown[fatJetCounter]                      = fatJetPtCorrectedJerDown;
-		product.fatJetMassJerDown[fatJetCounter]                    = dataReader.fatJetMass * correctionFactor * smearFactor.at('D');
+		product.fatJetPtJerUp[fatJetCounter]     = fatJetPtCorrectedJerUp;
+		product.fatJetMassJerUp[fatJetCounter]   = dataReader.fatJetMass * correctionFactor * smearFactor.at('U');
+		product.fatJetPtJerDown[fatJetCounter]   = fatJetPtCorrectedJerDown;
+		product.fatJetMassJerDown[fatJetCounter] = dataReader.fatJetMass * correctionFactor * smearFactor.at('D');
 
-		product.fatJetDeepTagMDTvsQCD[fatJetCounter]         = dataReader.fatJetDeepTagMDTvsQCD;
-		product.fatJetDeepTagMDWvsQCD[fatJetCounter]         = dataReader.fatJetDeepTagMDWvsQCD;
-		product.fatJetDeepTagTvsQCD[fatJetCounter]           = dataReader.fatJetDeepTagTvsQCD;
-		product.fatJetDeepTagWvsQCD[fatJetCounter]           = dataReader.fatJetDeepTagWvsQCD;
+		product.fatJetDeepTagMDTvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDTvsQCD;
+		product.fatJetDeepTagMDWvsQCD[fatJetCounter] = dataReader.fatJetDeepTagMDWvsQCD;
+		product.fatJetDeepTagTvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD;
+		product.fatJetDeepTagWvsQCD[fatJetCounter]   = dataReader.fatJetDeepTagWvsQCD;
 
-		product.fatJetDeepAk8TopLooseId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('L');
-		product.fatJetDeepAk8TopMediumId[fatJetCounter]      = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('M');
-		product.fatJetDeepAk8TopTightId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('T');
-		product.fatJetDeepAk8TopVeryTightId[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('t');
+		product.fatJetDeepAk8TopLooseId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('L');
+		product.fatJetDeepAk8TopMediumId[fatJetCounter]    = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('M');
+		product.fatJetDeepAk8TopTightId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('T');
+		product.fatJetDeepAk8TopVeryTightId[fatJetCounter] = dataReader.fatJetDeepTagTvsQCD > deepAk8TopTagMap.at('t');
 
 		product.fatJetDeepAk8TopMDLooseId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('L');
 		product.fatJetDeepAk8TopMDMediumId[fatJetCounter]    = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('M');
 		product.fatJetDeepAk8TopMDTightId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('T');
 		product.fatJetDeepAk8TopMDVeryTightId[fatJetCounter] = dataReader.fatJetDeepTagTvsQCD > deepAk8TopMDTagMap.at('t');
 
-		product.fatJetDeepAk8WVeryLooseId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('l');
-		product.fatJetDeepAk8WLooseId[fatJetCounter]         = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('L');
-		product.fatJetDeepAk8WMediumId[fatJetCounter]        = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('M');
-		product.fatJetDeepAk8WTightId[fatJetCounter]         = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('T');
+		product.fatJetDeepAk8WVeryLooseId[fatJetCounter] = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('l');
+		product.fatJetDeepAk8WLooseId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('L');
+		product.fatJetDeepAk8WMediumId[fatJetCounter]    = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('M');
+		product.fatJetDeepAk8WTightId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8WTagMap.at('T');
 
-		product.fatJetDeepAk8WMDVeryLooseId[fatJetCounter]   = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('l');
-		product.fatJetDeepAk8WMDLooseId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('L');
-		product.fatJetDeepAk8WMDMediumId[fatJetCounter]      = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('M');
-		product.fatJetDeepAk8WMDTightId[fatJetCounter]       = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('T');
+		product.fatJetDeepAk8WMDVeryLooseId[fatJetCounter] = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('l');
+		product.fatJetDeepAk8WMDLooseId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('L');
+		product.fatJetDeepAk8WMDMediumId[fatJetCounter]    = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('M');
+		product.fatJetDeepAk8WMDTightId[fatJetCounter]     = dataReader.fatJetDeepTagTvsQCD > deepAk8WMDTagMap.at('T');
 
 		for (int iJec = 0; iJec < jecSystematics.size(); iJec++) {
 			product.fatJetPtJecUp.at(iJec)[fatJetCounter] = fatJetPtRaw * fatJetJecUp.at(iJec);
@@ -614,8 +615,8 @@ std::map<char, float> JetProducer::SmearFatEnergy(DataReader &dataReader, const 
 
 	float smearFactor = 1.0, smearFactorUp = 1.0, smearFactorDown = 1.0;
 	if (isMatched) {
-		smearFactor     = 1. + (resolutionSf - 1)     * (jetPtCorrected - matchedGenJetPt) / jetPtCorrected;
-		smearFactorUp   = 1. + (resolutionSfUp - 1)   * (jetPtCorrected - matchedGenJetPt) / jetPtCorrected;
+		smearFactor     = 1. + (resolutionSf     - 1) * (jetPtCorrected - matchedGenJetPt) / jetPtCorrected;
+		smearFactorUp   = 1. + (resolutionSfUp   - 1) * (jetPtCorrected - matchedGenJetPt) / jetPtCorrected;
 		smearFactorDown = 1. + (resolutionSfDown - 1) * (jetPtCorrected - matchedGenJetPt) / jetPtCorrected;
 	} else {
 		if (resolutionSf > 1.) {

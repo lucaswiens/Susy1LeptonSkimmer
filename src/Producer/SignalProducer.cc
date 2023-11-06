@@ -1,4 +1,6 @@
 #include <Susy1LeptonAnalysis/Susy1LeptonSkimmer/interface/Producer/SignalProducer.h>
+#include <iostream>
+#include <cmath>
 
 SignalProducer::SignalProducer(const pt::ptree &configTree, const pt::ptree &scaleFactorTree, std::string eraSelector, TFile &outputFile) {
 	Name = "SignalProducer";
@@ -69,6 +71,10 @@ void SignalProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product
 	product.neutralinoMass = neutralinoCounter == 0 ? -999 : floor(neutralinoMass / neutralinoCounter + 0.5);
 	product.charginoMass   = charginoCounter   == 0 ? -999 : floor(charginoMass   / charginoCounter   + 0.5);
 	product.isT5qqqqWW = t5qqqqWWCounter == 2 && wBosonCounter == 2;
+
+	// correct NanoAOD SUSY mass precision, see https://cms-talk.web.cern.ch/t/inconsistent-gen-masses-between-mini-and-nanoaod/31205
+	product.gluinoMass = round(product.gluinoMass/ 50.) * 50;
+	product.neutralinoMass = round(product.neutralinoMass/ 25.) * 25;
 
 	// Check if the mass exists in the cross section json file... Sometimes the masses are set to strange unexpected values, one might need to correct this later or discard those events
 	boost::optional< pt::ptree& > child = xSectionTree.get_child_optional("NLO+NLL Cross section [pb]." + std::to_string((int)product.gluinoMass));

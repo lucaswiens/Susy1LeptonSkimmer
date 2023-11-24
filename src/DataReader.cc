@@ -240,7 +240,6 @@ void DataReader::ReadElectronEntry() {
 }
 
 void DataReader::GetElectronValues(const int &index) {
-	nElectron               = nElectronLeaf->GetValue(index);
 	electronPt              = electronPtLeaf->GetValue(index);
 	electronEta             = electronEtaLeaf->GetValue(index);
 	electronPhi             = electronPhiLeaf->GetValue(index);

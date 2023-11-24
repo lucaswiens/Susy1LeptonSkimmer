@@ -6,6 +6,7 @@ DeltaPhiProducer::DeltaPhiProducer(const pt::ptree &configTree, const pt::ptree 
 	isoTrackPtCut = configTree.get<float>("Producer.IsoTrack.Pt");
 	hadronicMt2Cut = configTree.get<float>("Producer.IsoTrack.Mt2.Hadronic");
 	leptonicMt2Cut = configTree.get<float>("Producer.IsoTrack.Mt2.Leptonic");
+	jetPtCut  = configTree.get<float>("Producer.Jet.Pt");
 }
 
 void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
@@ -123,7 +124,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 
 	product.HT = 0;
 	for (int iJet = 0; iJet < product.nJet; iJet++) {
-		if (product.jetPt.at(iJet) >= 30) { product.HT += product.jetPt.at(iJet);}
+		if (!(product.jetPt.at(iJet) < jetPtCut)) { product.HT += product.jetPt.at(iJet);}
 		if (product.jetDeepJetLooseId[iJet])  { product.nDeepJetLooseBTag++;}
 		if (product.jetDeepJetMediumId[iJet]) { product.nDeepJetMediumBTag++;}
 		if (product.jetDeepJetTightId[iJet])  { product.nDeepJetTightBTag++;}

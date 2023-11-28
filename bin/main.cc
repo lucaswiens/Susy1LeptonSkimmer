@@ -39,7 +39,7 @@ namespace pt = boost::property_tree;
 int main(int argc, char *argv[]) {
 	//Extract informations of command line
 	if (argc < 6) {
-		std::cerr << "It seems like you did not parse the arguments correctly..\nCheck the bin/main.cc to see which argument takes which position or use the python/createBatch.py that should handle everything automatically for you." << std::endl;
+		std::cerr << "It seems like you did not parse the arguments correctly..\nThe command takes the arguments in the following way:\nNanoSkim inputFile.root outputFile.root era runPeriod isFastSim xSection" << std::endl;
 		std::exit(-1);
 	}
 
@@ -60,7 +60,6 @@ int main(int argc, char *argv[]) {
 		"Is Signal     = " << isSignal  << std::endl <<
 		"Is FastSim    = " << isFastSim << std::endl <<
 	std::endl;
-
 
 	int nMaxEvents;
 	if (argc >= 8) {

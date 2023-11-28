@@ -84,10 +84,10 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 		isoMt2Cut = -999;
 		for (int iTrack = 0; iTrack < dataReader.nIsoTrack; iTrack++) {
 			dataReader.GetIsoTrackValues(iTrack);
-			if (10 < std::abs(dataReader.isoTrackPdgId) && std::abs(dataReader.isoTrackPdgId) < 14 && (dataReader.isoTrackCharge == leptonCharge)) continue;
+			if (dataReader.isoTrackCharge == leptonCharge && dataReader.isoTrackPt > isoTrackPtCut) { continue;}
 
 			float deltaR = Utility::DeltaR(product.leptonEta, product.leptonPhi, dataReader.isoTrackEta, dataReader.isoTrackPhi);
-			if (deltaR < deltaRCut && dataReader.isoTrackPt > isoTrackPtCut) continue;
+			if (deltaR < deltaRCut) { continue;}
 
 			ROOT::Math::PtEtaPhiMVector isotrackP4 = ROOT::Math::PtEtaPhiMVector(dataReader.isoTrackPt, dataReader.isoTrackEta, dataReader.isoTrackPhi, 0);
 
@@ -111,7 +111,7 @@ void DeltaPhiProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &produ
 				isoMt2Cut = hadronicMt2Cut;
 			}
 
-			if (product.isoTrackMt2[isoTrackCounter] <= isoMt2Cut) { product.isoTrackVeto = true;}
+			if (std::abs(product.isoTrackMt2[isoTrackCounter]) < isoMt2Cut) { product.isoTrackVeto = true;}
 			isoTrackCounter++;
 		}
 	}

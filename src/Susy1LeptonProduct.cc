@@ -404,8 +404,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 			tree->Branch("FatJetDeepAk8WMDTightIdSfDown;", fatJetDeepAk8WMDTightIdSfDown.data(), "FatJetDeepAk8WMDTightIdSfDown;[nFatJet]/F");
 		}
 
-
-
 		tree->Branch("nDeepAk8TopLooseId", &nDeepAk8TopLooseId);
 		tree->Branch("nDeepAk8TopMediumId", &nDeepAk8TopMediumId);
 		tree->Branch("nDeepAk8TopTightId", &nDeepAk8TopTightId);
@@ -422,7 +420,6 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("nDeepAk8WMDLooseId", &nDeepAk8WMDLooseId);
 		tree->Branch("nDeepAk8WMDMediumId", &nDeepAk8WMDMediumId);
 		tree->Branch("nDeepAk8WMDTightId", &nDeepAk8WMDTightId);
-
 
 		tree->Branch("HT", &HT);
 		tree->Branch("LT", &LT);

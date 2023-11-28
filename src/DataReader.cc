@@ -378,7 +378,8 @@ void DataReader::ReadIsoTrackEntry() {
 void DataReader::GetIsoTrackValues(const int &index) {
 	isoTrackPdgId = isoTrackPdgIdLeaf->GetValue(index);
 	if (isFastSim) {
-		isoTrackCharge = (isoTrackPdgId > 0 - isoTrackPdgId < 0); // not correct but who cares for now
+		// Some FastSim samples miss branches, therefore the charge is calculated from the PdgId.. This should be removed once proper samples exist
+		isoTrackCharge = Utility::GetChargeFromPdgId(isoTrackPdgId);
 	} else {
 		isoTrackCharge = isoTrackChargeLeaf->GetValue(index);
 	}

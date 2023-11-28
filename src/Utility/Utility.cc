@@ -24,6 +24,15 @@ float Utility::DeltaR(const float &eta1, const float &phi1, const float &eta2, c
 	return std::sqrt(deltaPhi * deltaPhi + deltaEta * deltaEta);
 }
 
+int Utility::GetChargeFromPdgId(const int &pdgId) {
+	if (10 < std::abs(pdgId) && std::abs(pdgId) < 14) { // https://twiki.cern.ch/twiki/bin/view/Main/PdgId
+		// leptonic tracks have negative charge for positive pdgId
+		return (pdgId < 0) - (pdgId > 0);
+	}
+	// hadronic tracks have positive charge for positive pdgId
+	return (pdgId > 0) - (pdgId < 0);
+}
+
 float Utility::GetWeight(const float &x, TH1F* histogram) {
 	if(histogram==NULL) {
 		std::cerr << "ERROR! The weights input* histogram is not loaded. Returning weight 0!" << std::endl;

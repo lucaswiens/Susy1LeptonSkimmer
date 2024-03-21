@@ -300,7 +300,8 @@ void Susy1LeptonProduct::RegisterOutput(std::vector<std::shared_ptr<TTree>> outp
 		tree->Branch("nDeepJetLooseBTag", &nDeepJetLooseBTag);
 		tree->Branch("nDeepJetMediumBTag", &nDeepJetMediumBTag);
 		tree->Branch("nDeepJetTightBTag", &nDeepJetTightBTag);
-		tree->Branch("JetId", &jetId);
+		tree->Branch("JetId", jetId.data(), "JetId;[nJet]/I");
+		tree->Branch("JetPartFlav", jetPartFlav.data(), "JetPartFlav;[nJet]/I");
 		tree->Branch("JetCleanMask", jetCleanMask.data(), "JetCleanMask;[nJet]/O");
 		tree->Branch("JetIsClean", jetIsClean.data(), "JetIsClean;[nJet]/O");
 

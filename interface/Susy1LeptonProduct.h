@@ -86,8 +86,7 @@ class Susy1LeptonProduct {
 
 		// Jet Inforamtion
 		int nJet, nIsrJet,
-			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag,
-			jetId;
+			nDeepJetLooseBTag, nDeepJetMediumBTag, nDeepJetTightBTag;
 		float jetPt1, jetPtJerUp1, jetPtJerDown1,
 			jetMass1, jetMassJerUp1, jetMassJerDown1,
 			jetEta1, jetPhi1,
@@ -97,7 +96,7 @@ class Susy1LeptonProduct {
 			rho, metPt, metPtJerUp, metPtJerDown, metPhi, correctedMetPt, correctedMetPhi, caloMetPt, nIsrWeight, nIsrWeightUp, nIsrWeightDown;
 		std::vector<float> metPtJecUp, metPtJecDown;
 		std::array<int, nMax> jetPartFlav,
-			jetDeepJetId;
+			jetDeepJetId, jetId;
 		std::array<float, nMax> jetPt, jetPtJerUp, jetPtJerDown,
 			jetMass, jetMassJerUp, jetMassJerDown,
 			jetEta, jetPhi,

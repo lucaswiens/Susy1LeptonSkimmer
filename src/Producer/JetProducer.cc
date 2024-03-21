@@ -210,6 +210,7 @@ void JetProducer::Produce(DataReader &dataReader, Susy1LeptonProduct &product) {
 		product.jetEta[jetCounter]  = dataReader.jetEta;
 		product.jetPhi[jetCounter]  = dataReader.jetPhi;
 		product.jetMass[jetCounter] = dataReader.jetMass * correctionFactor * smearFactor.at('N');
+		product.jetId[jetCounter] = dataReader.jetId;
 
 		if (!product.GetIsData()) {
 			product.jetPtJerUp[jetCounter]     = jetPtCorrectedJerUp;
